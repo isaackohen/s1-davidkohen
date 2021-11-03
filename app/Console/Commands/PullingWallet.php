@@ -1,0 +1,195 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Chat;
+use App\Leaderboard;
+use App\Currency\Currency;
+use App\Invoice;
+use App\Settings;
+use App\Transaction; 
+use App\User;
+use Carbon\Carbon;
+use MongoDB\BSON\Decimal128;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+
+class PullingWallet extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'datagamble:pullingwallet';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Pulls marked wallets';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+
+
+    public function handle() {       
+
+
+        foreach (\App\Invoice::where('pull_state', '1')->get() as $invoice) {
+        try {
+
+            $currency = Currency::find($invoice->currency);
+
+            if($currency->contractaddress() === '0') {
+                $invoice->update(['pull_state' => '3']);
+                return success();
+            } else {
+               $url = 'https://eu.bsc.chaingateway.io/v1/sendBinancecoin';
+            }
+            $apikey = env('CHAINGATEWAY_APIKEY'); // API Key in your account panel
+            $password = env('CHAINGATEWAY_PASSWORD'); // Chaingateway password
+            $to = $invoice->ledger;
+            $from = $currency->fundaddress(); // WHere to send towards
+            $amount = env('CHAINGATEWAY_BNBTXFUND');//0.002315 
+            # Define function endpoint
+            $ch = curl_init($url);
+
+            # Setup request to send json via POST. This is where all parameters should be entered.
+
+            $payload = json_encode( array("from" => $from, "to" => $to, "password" => $password, "amount" => $amount));
+
+
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Content-Type:application/json", "Authorization: " . $apikey));
+
+            # Return response instead of printing.
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+            # Send request.
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            # Decode the received JSON string
+            $resultdecoded = json_decode($result, true);
+
+            $okresponse = $resultdecoded["ok"];
+                if($okresponse === true) {
+                $invoice->update(['pull_state' => '2']);
+                  return success();
+            }     
+        } catch (\Exception $e) {
+        }
+        sleep(1);
+        }
+
+        foreach (\App\Invoice::where('pull_state', '2')->get() as $invoice) {
+        try {
+
+            $currency = Currency::find($invoice->currency);
+
+            if($currency->contractaddress() === '0') {
+               $url = 'https://eu.bsc.chaingateway.io/v1/sendBinancecoin';
+            } else {
+               $url = 'https://eu.bsc.chaingateway.io/v1/sendToken';
+            }
+            $apikey = env('CHAINGATEWAY_APIKEY'); // API Key in your account panel
+            $password = env('CHAINGATEWAY_PASSWORD'); // Chaingateway password
+            $to = env('CHAINGATEWAY_ENDADDRESS'); // WHere to send towards
+
+            # Define function endpoint
+            $ch = curl_init($url);
+
+            # Setup request to send json via POST. This is where all parameters should be entered.
+
+            if($currency->contractaddress()  === '0') {
+            $payload = json_encode( array("from" => $invoice->ledger, "to" => $to, "password" => $password, "amount" => $invoice->sum));
+            } else {
+            $payload = json_encode( array("contractaddress" => $currency->contractaddress(), "from" => $invoice->ledger, "to" => $to, "password" => $password, "amount" => $invoice->sum));
+            }
+
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Content-Type:application/json", "Authorization: " . $apikey));
+
+            # Return response instead of printing.
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+            # Send request.
+            $result = curl_exec($ch);
+            Log::notice($result);
+            curl_close($ch);
+
+            # Decode the received JSON string
+            $resultdecoded = json_decode($result, true);
+
+            $okresponse = $resultdecoded["ok"];
+                if($okresponse === true) {
+                $invoice->update(['pull_state' => '3']);
+                $invoice->update(['pull_txid' => $resultdecoded["txid"]]);
+                  return success();
+            }     
+        } catch (\Exception $e) {
+        }
+sleep(1);
+                }
+ 
+        foreach (\App\Invoice::where('pull_state', '3')->get() as $invoice) {
+        try {
+
+            $currency = Currency::find($invoice->currency);
+
+            $url = 'https://eu.bsc.chaingateway.io/v1/clearAddress';
+            $apikey = env('CHAINGATEWAY_APIKEY'); // API Key in your account panel
+            $password = env('CHAINGATEWAY_PASSWORD'); // Chaingateway password
+            $to = env('CHAINGATEWAY_ENDADDRESS'); // WHere to send towards
+
+            # Define function endpoint
+            $ch = curl_init($url);
+
+            # Setup request to send json via POST. This is where all parameters should be entered.
+
+            $payload = json_encode( array("binancecoinaddress" => $invoice->ledger, "newaddress" => $to, "password" => $password));
+
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Content-Type:application/json", "Authorization: " . $apikey));
+
+            # Return response instead of printing.
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+            # Send request.
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            # Decode the received JSON string
+            $resultdecoded = json_decode($result, true);
+
+            $okresponse = $resultdecoded["ok"];
+                if($okresponse === true) {
+                $invoice->update(['pull_state' => '4']);
+                if($currency->contractaddress() === '0') {
+                $invoice->update(['pull_txid' => $resultdecoded["txid"]]);
+                }
+                  return success();
+                }
+            
+        } catch (\Exception $e) {
+        }
+        sleep(1);
+        }
+
+    }
+    }
