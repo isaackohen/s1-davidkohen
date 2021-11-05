@@ -1,10 +1,12 @@
 <template>
     <div class="container-fluid">
-        <div class="row page-title">
-            <div class="col-md-12">
-                <h4 class="mb-1 mt-0">Activity Log</h4>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title">Activity Log</h4>
+				</div>
+			</div>
+		</div>
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -20,7 +22,7 @@
                                             <div class="row justify-content-sm-between border-bottom" v-for="entry in activity">
                                                 <div class="col-lg-9 mb-2 mb-lg-0 d-flex align-items-center">
                                                     <div class="mr-2">
-                                                        <img :src="entry.user.avatar" alt="image" class="avatar-xs rounded-circle" data-toggle="tooltip" :title="entry.user.name">
+                                                        <img :src="entry.user.avatar" alt="image" style="width: 30px;" class="me-3 avatar rounded-circle" data-toggle="tooltip" :title="entry.user.name">
                                                     </div>
                                                     {{ entry.user.name }} -&nbsp;<span v-html="entry.html"></span>
                                                 </div>

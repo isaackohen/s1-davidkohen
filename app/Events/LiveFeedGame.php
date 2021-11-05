@@ -38,14 +38,14 @@ class LiveFeedGame implements ShouldBroadcastNow {
         if($this->game->type === 'external') {
             $game_id = $this->game->game;
             $getgamename = (\App\Gameslist::where('id', $game_id)->first());
-            $image = 'Image/https://cdn.davidkohen.com/i/cdn'.$getgamename->image.'?q=95&mask=ellipse&auto=compress&sharp=10&w=20&h=20&fit=crop&usm=5&fm=png';
+            $image = 'Image/https://games.cdn4.dk/games'.$getgamename->image.'?q=95&mask=ellipse&auto=compress&sharp=10&w=20&h=20&fit=crop&usm=5&fm=png';
             $meta = array('id' => $game_id, 'icon' => $image, 'name' => $getgamename->name, 'category' => array($getgamename->category));
-            Log::alert($meta);
+            //Log::alert($meta);
             $delay = 0;
         } else {
 
         $meta = \App\Games\Kernel\Game::find($this->game->game)->metadata()->toArray() ?? 0;
-        Log::alert($this->delay);
+        //Log::alert($this->delay);
         $delay = $this->delay ?? 0;
         }
         return [

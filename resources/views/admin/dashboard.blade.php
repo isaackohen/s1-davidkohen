@@ -51,7 +51,7 @@
     <div class="col-xl-4">
         <div class="card">
             <div class="card-body pt-2">
-                <a href="/admin/wallet" class="btn btn-primary btn-sm mt-2 float-right">
+                <a href="/admin/wallet" class="btn btn-primary btn-sm float-end">
                     View
                 </a>
                 <h6 class="header-title mb-4">Latest withdraws</h6>

@@ -1,14 +1,24 @@
 <template>
     <div>
         <div class="container-fluid">
-            <div class="row page-title">
-                <div class="col-md-12">
-                    <div class="float-right">
-                        <router-link tag="button" to="/admin/wallet_ignored" class="btn btn-danger">Ignored</router-link>
-                    </div>
-                    <h4 class="mb-1 mt-1">Withdraws & Payments</h4>
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-12">
+					<div class="page-title-box">
+						<h4 class="page-title">Withdraws & Payments</h4>
+						<div class="page-title-right">
+							<form class="float-sm-end mt-3 mt-sm-0">
+								<div class="row g-2">
+									<div class="col-md-auto">
+										<div class="btn-group">
+											<router-link tag="button" to="/admin/wallet_ignored" class="btn btn-danger">Ignored</router-link>
+										</div>
+									</div>
+								</div> 
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
         </div>
         <div class="row" v-if="withdraws">
             <div class="col-12 col-md-8">

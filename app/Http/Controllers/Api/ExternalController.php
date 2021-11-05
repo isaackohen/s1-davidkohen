@@ -51,7 +51,7 @@ class ExternalController
             $user->balance($currency)->subtract(floatval($bet), Transaction::builder()->meta($roundid)->game($gameid)->get());
         }
 
-        if($win > 0) {
+        if($win > 0) { 
             $winFloat = $_GET["win"] / 100;
             $win = number_format($currency->convertUSDToToken($winFloat), 8, '.', '');
             $user->balance($currency)->add(floatval($win), Transaction::builder()->meta($roundid)->game($gameid)->get());
@@ -59,28 +59,28 @@ class ExternalController
 
 
         if($final === '1') {
-            $wager = Transaction::where("meta", "=", $roundid)->first()->amount;
-            $wagerTrimmed = floatval(trim($wager, '-'));
-            //Log::critical($wagerTrimmed);
-            $win = floatval($win);
+            $wagerFloat = $_GET["totalBet"] / 100 ?? 0;
+            $wager = floatval(number_format($currency->convertUSDToToken($wagerFloat), 8, '.', '')) ?? 0;
+            $winFloat = $_GET["totalWin"] / 100 ?? 0;
+            $win = floatval(number_format($currency->convertUSDToToken($winFloat), 8, '.', '')) ?? 0;
 
             $status = 'lose';
-            if($win > $wagerTrimmed) $status = 'win';
-            if($wagerTrimmed < 0.0000001) {
-                $multi = 0;
+            if($win > $wager) $status = 'win';
+            if($wager > 0) {
+                $multi = (float) ($win / $wager);
             } else {
-                $multi = (float) ($win / $wagerTrimmed);
+                $multi = 0;
             }
-			$profit = (($win - $wagerTrimmed) <= 0) ? 0 : ($win - $wagerTrimmed);
+			$profit = ($win - $wager);
 
             $game = Game::create([
                 'id' => DB::table('games')->count() + 1,
                 'user' => $user->_id,
                 'game' => $gameid,
-                'wager' => $wagerTrimmed,
+                'wager' => $wager,
                 'multiplier' => $multi,
                 'status' => $status,
-                'profit' => $profit,
+                'profit' => $win,
                 'server_seed' => '-1',
                 'client_seed' => '-1',
                 'nonce' => '-1',
@@ -134,16 +134,21 @@ class ExternalController
 
 	public function methodGetUrl(Request $request) 
 	{
-
-        try {
+        Log::notice($request);
 			if(auth('sanctum')->guest()) {
 				$mode = 'demo';
 				$currencyId = 'usd';
 			} else {
-				$mode = 'real';
 				$userId = auth('sanctum')->user()->id;
 				$currencyId = auth('sanctum')->user()->clientCurrency()->id();
 			}
+
+                if($request->mode === true) {
+                    $mode = 'real';
+                }   else {
+                    $mode = 'demo';
+                }
+            $mode = $request->RealMode ?? 'real';
 			$apikey = env('API_KEY');
 			$url = "https://api.dk.games/v2/createSession?apikey=".$apikey."&userid=".$userId."-".$currencyId."&game=".$request->id."&mode=".$mode;
 			$result = file_get_contents($url);
@@ -152,15 +157,15 @@ class ExternalController
 			$gameslist = (Gameslist::where('id', $request->id)->first());
 			return APIResponse::success([
 				'url' => $decodeArray['url'],
+                'mode' => false,
 				'id' => $gameslist['id'],
 				'name' => $gameslist['name'],
+                'image' => $gameslist['image'],
 				'provider' => $gameslist['provider']
 			]);
-        } catch (\Exception $e) {
 			return APIResponse::success([
 				'status' => 'error'
 			]);
-        }
 
     }
 }

@@ -31,7 +31,7 @@ abstract class Currency {
     protected abstract function options(): array;
 
     public function minBet(): float {
-        return 0.00000001;
+        return 0.0000001;
     }
 
     public function tokenPrice() {
@@ -42,7 +42,7 @@ abstract class Currency {
             return $json->market_data->current_price->usd;
         } catch (\Exception $e) {
 			try{
-			   $result = Cache::remember('rate', 300, function () {
+			   $result = Cache::remember('rate', 60, function () {
 					return file_get_contents("https://min-api.cryptocompare.com/data/pricemulti?fsyms={$this->name()}&tsyms=USD");
 			   });
 			   $price = json_decode($result, true);
@@ -62,8 +62,10 @@ abstract class Currency {
     }
 
     public function getBotBet() {
-        return $this->randomBotBet($this->convertUSDToToken(1), $this->convertUSDToToken(25));
+        $getBotbet = $this->randomBotBet($this->convertUSDToToken(0.15), $this->convertUSDToToken(5));
+        return $getBotbet;
     }
+
 
     /**
      * Gets random bet value. Higher values are less common.
@@ -72,13 +74,15 @@ abstract class Currency {
      * @return mixed
      */
     protected function randomBotBet(float $min, float $max) {
-     /*   try {
-            $diff = 100000000;
+        try {
+            $diff = 150000000;
             return min(mt_rand($min * $diff, $max * $diff) / $diff, mt_rand($min * $diff, $max * $diff) / $diff);
         } catch (\Exception $e) {
             return $this->randomBotBet(1, 100);
-        }*/
+        }
     }
+
+
 
     /** @return WalletOption[] */
     public function getOptions(): array {

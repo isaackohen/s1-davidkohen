@@ -1,5 +1,5 @@
 window._ = require('lodash');
-window.Popper = require('popper.js').default;
+window.Popper = require('@popperjs/core').default;
 window.$ = window.jQuery = require('jquery');
 
 import TwoFactorAuthModal from "./components/modals/TwoFactorAuthModal";

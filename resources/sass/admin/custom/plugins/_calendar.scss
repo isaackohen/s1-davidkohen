@@ -7,6 +7,16 @@
     margin-bottom: 0;
 }
 
+.fc-view-container{
+    .table-bordered {
+        th,
+        td {
+          border: $table-border-width solid $table-border-color;
+        }
+    }
+}
+
+
 .fc-view {
     margin-top: 30px;
 }
@@ -99,11 +109,9 @@ th.fc-day-header {
     font-size: 1rem;
 }
 
-.fc-state-hover {
-    background: $gray-300;
-}
-
-.fc-state-highlight {
+.fc-state-hover,
+.fc-state-highlight,
+.fc-cell-overlay {
     background: $gray-300;
 }
 
@@ -113,10 +121,6 @@ th.fc-day-header {
     background-color: $primary;
     color: $white;
     text-shadow: none;
-}
-
-.fc-cell-overlay {
-    background: $gray-300;
 }
 
 .fc-unthemed {
@@ -165,12 +169,29 @@ th.fc-day-header {
     }
 }
 
+.fc-content-skeleton{
+    .fc-day-top {
+        .fc-day-number {
+            float: right;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+            line-height: 20px;
+            background-color: $gray-100;
+            border-radius: 50%;
+            margin: 5px;
+            font-size: 11px;
+        }
+    }
+}
+
 @include media-breakpoint-down(sm) {
     .fc-toolbar {
         display: block;
         .fc-left,
         .fc-right,
         .fc-center {
+            text-align: left;
             float: none;
             display: block;
             clear: both;
@@ -196,6 +217,28 @@ th.fc-day-header {
 // overriding button sizes
 .fc-toolbar {
     .btn {
-        @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-line-height-sm, $btn-border-radius-sm);
+        @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+    }
+}
+
+.fc-list-item-title,
+.fc-list-item-time {
+    color: $white;
+}
+
+[dir="rtl"] .fc-toolbar{
+    .btn-group{
+        .btn{
+            &:first-child{
+                border-top-left-radius: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                border-radius: $btn-border-radius;
+            }
+            &:last-child{
+                border-top-right-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                border-radius: $btn-border-radius;
+            }
+        }
     }
 }

@@ -14,8 +14,14 @@
 					<div class="gameFooter">
 						<b>{{ externalgame.name }}</b>
 						<small>by <u style="cursor: pointer;" @click="$router.push(`/game/provider/${externalgame.provider}`)">{{ externalgame.provider }}</u></small>
+						<div class="right">
+							<div class="form-check pl-0">
+                        		<label class="form-check-label">{{ $t('general.games.toggleDemoMode') }}</label>
+                        		<toggle-button class="toggleDemoMode" :value="RealMode" @change="toggleDemoMode" :labels="{checked: 'real', unchecked: 'demo'}"/>
+                    		</div>
+						</div>
 					</div>
-				</div>
+				</div> 
 				<div class="container-fluid game-container-slick">
 					<div class="games-arrows" id="c1-arrows">
 					  <div class="games-arrow" @click="showPrev"><i class="fas fa-arrow-circle-left"></i></div>
@@ -47,6 +53,7 @@
     export default {
         data() {
             return {
+            	RealMode: null,
 				Loading: true,
                 carouselSettings: {
                   "dots": false,
@@ -91,15 +98,22 @@
             showPrev() {
                 this.$refs.casinoCarousel.prev()
             },
+            toggleDemoMode() {
+	            axios.post('/api/externalGame/getUrl', { id: this.$route.params.id, mode: this.RealMode }).then(({ data }) => {
+	                this.externalgame = data;
+	            	this.RealMode = externalgame.mode;
+	           });
+            },
         },
         computed: {
             ...mapGetters(['isGuest', 'gameInstance'])
         },
         components: { VueSlickCarousel },
         created() {
-            axios.post('/api/externalGame/getUrl', { id: this.$route.params.id }).then(({ data }) => {
+            axios.post('/api/externalGame/getUrl', { id: this.$route.params.id, mode: this.RealMode }).then(({ data }) => {
                 this.externalgame = data;
 				this.$store.dispatch('pushRecentGame', data.id);
+				this.RealMode = true;
 				this.Loading = false;
            });
             axios.post('/api/externalGame/getGamesbyProvider', { id: this.$route.params.id }).then(({ data }) => {
@@ -388,6 +402,17 @@
 				font-size: 0.8em;
 				display: flex;
 				align-items: center;
+
+		        .form-check {
+		            height: 40px;
+		            display: flex;
+		            align-items: center;
+
+		            .profileToggle {
+		                margin: auto;
+		                margin-right: 0;
+		            }
+		        }
 
 				.loaderContainer {
 					transform: scale(.2) translate(-200%);

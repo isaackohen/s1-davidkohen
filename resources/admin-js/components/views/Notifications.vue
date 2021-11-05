@@ -1,14 +1,28 @@
 <template>
     <div>
-        <div class="row page-title">
-            <div class="col-md-12">
-                <div class="float-right">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#create_standalone">Send notification</button>
-                    <button class="btn btn-danger" data-toggle="modal" data-target="#create">Send push notification</button>
-                </div>
-                <h4 class="mb-1 mt-0">Notifications</h4>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title">Notifications</h4>
+					<div class="page-title-right">
+						<div class="float-sm-end mt-3 mt-sm-0">
+							<div class="row g-2">
+								<div class="col-md-auto">
+									<div class="btn-group">
+										<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_standalone">Send notification</button>
+									</div>
+								</div>
+								<div class="col-md-auto">
+									<div class="btn-group">
+										<button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#create">Send push notification</button>
+									</div>
+								</div>
+							</div> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
         <div class="row" v-if="data.subscribers">
             <div class="col-12">
                 <div class="card">
@@ -27,7 +41,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <a href="javascript:void(0)" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#create_global">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#create_global">
                             Create
                         </a>
                         <h5 class="card-title mt-0 mb-0 header-title">Global Notifications</h5>
@@ -58,7 +72,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header py-3 px-4 border-bottom-0 d-block">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                         <h5 class="modal-title">Global Notification</h5>
                     </div>
                     <div class="modal-body p-4">
@@ -80,7 +94,7 @@
                             <div class="row mt-2">
                                 <div class="col-6"></div>
                                 <div class="col-6 text-right">
-                                    <button type="button" class="btn btn-light mr-1" id="close_global" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-light mr-1" id="close_global" data-bs-dismiss="modal">Close</button>
                                     <div class="btn btn-success" id="finish_global" @click="sendGlobal">Send</div>
                                 </div>
                             </div>
@@ -93,7 +107,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header py-3 px-4 border-bottom-0 d-block">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                         <h5 class="modal-title">Notification</h5>
                     </div>
                     <div class="modal-body p-4">
@@ -115,7 +129,7 @@
                             <div class="row mt-2">
                                 <div class="col-6"></div>
                                 <div class="col-6 text-right">
-                                    <button type="button" class="btn btn-light mr-1" id="close_standalone" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-light mr-1" id="close_standalone" data-bs-dismiss="modal">Close</button>
                                     <div class="btn btn-success" id="finish_standalone" @click="sendWeb">Send</div>
                                 </div>
                             </div>
@@ -128,7 +142,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header py-3 px-4 border-bottom-0 d-block">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">×</button>
                         <h5 class="modal-title">Push Notification</h5>
                     </div>
                     <div class="modal-body p-4">
@@ -150,7 +164,7 @@
                             <div class="row mt-2">
                                 <div class="col-6"></div>
                                 <div class="col-6 text-right">
-                                    <button type="button" class="btn btn-light mr-1" id="close" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-light mr-1" id="close" data-bs-dismiss="modal">Close</button>
                                     <div class="btn btn-success" id="finish" @click="sendPush">Send</div>
                                 </div>
                             </div>

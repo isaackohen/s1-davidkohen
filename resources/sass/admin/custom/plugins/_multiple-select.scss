@@ -3,10 +3,10 @@
 //
 
 .ms-container {
-    background: transparent url('../../../../sass/admin/custom/images/plugin/multiple-arrow.png') no-repeat 50% 50%;
+    background: transparent url('../../../images/plugin/multiple-arrow.png') no-repeat 50% 50%;
     width: auto;
     max-width: 370px;
-
+    
     .ms-list {
         box-shadow: none;
         border: $input-border-width solid $input-border-color;
@@ -56,4 +56,5 @@
     font-family: $font-family-secondary;
     color: $dark !important;
     font-size: 13px;
+    padding-left: 5px !important;
 }

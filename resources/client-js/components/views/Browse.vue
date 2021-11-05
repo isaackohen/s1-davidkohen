@@ -10,12 +10,12 @@
 		  
 			<div class="container-fluid">
 			   <div class="search">
-				  <div class="row">
+				  <div class="row-list">
 					 <div class="col-md-8">
 						<input v-model="keyword" autocomplete="off" type="text" class="lobby search-input" :placeholder="'Search in ' + count + ' games..'" name="">
 					 </div>
 					 <div class="col-md-4">
-						<div class="row">
+						<div class="row-list">
 						   <div class="provider-select-menu">
 							  <button @click="openProviders" class="btn btn-primary searchbar"><i :class="'fas ' + (ProvidersList ? 'fa-chevron-up' : 'fa-chevron-down')" aria-hidden="true"></i> Select Providers</button>		
 						   </div>
@@ -28,10 +28,7 @@
 						<div class="custom-dropdown">
 							<template v-for="provider in Providers">
 							   <div class="custom-control custom-checkbox">
-								  <label>
-									 <input v-model="checkedProviders" type="checkbox" v-bind:value="provider.name" class="form-check-input custom-control-input checkbox">
-									 <div class="name-selector custom-control-label">{{ provider.name }}</div>
-								  </label>
+									<div @click="selectProvider(provider.name)" :class="'custom-select-option ' + (checkedProviders.includes(provider.name) ? 'selected' : '')">{{ provider.name }}</div>
 							   </div>
 							</template> 
 						</div>
@@ -39,58 +36,32 @@
 					<div class="list-categories" :class="{ 'show' : CategoriesList }">
 						<div class="custom-dropdown">
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="inhouse" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">In-House</div>
-							  </label>
+								<div @click="selectCategory('inhouse')" :class="'custom-select-option ' + (checkedCategories.includes('inhouse') ? 'selected' : '')">In-House</div>
 						   </div>
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="slots" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Slots</div>
-							  </label>
+								<div @click="selectCategory('slots')" :class="'custom-select-option ' + (checkedCategories.includes('slots') ? 'selected' : '')">Slots</div>
 						   </div>
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="live-table" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Live Tables</div>
-							  </label>
+								<div @click="selectCategory('live-table')" :class="'custom-select-option ' + (checkedCategories.includes('live-table') ? 'selected' : '')">Live Tables</div>
 						   </div>
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="live" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Live</div>
-							  </label>
+								<div @click="selectCategory('live')" :class="'custom-select-option ' + (checkedCategories.includes('live') ? 'selected' : '')">Live</div>
 						   </div>
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="scratch-cards" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Scratchcards</div>
-							  </label>
+								<div @click="selectCategory('scratch-cards')" :class="'custom-select-option ' + (checkedCategories.includes('scratch-cards') ? 'selected' : '')">Scratchcards</div>
+						   </div>
+							<div class="custom-control custom-checkbox">
+								<div @click="selectCategory('multiplayer')" :class="'custom-select-option ' + (checkedCategories.includes('multiplayer') ? 'selected' : '')">Multiplayer</div>
+						   </div>
+						   
+						   <div class="custom-control custom-checkbox">
+								<div @click="selectCategory('virtualsport');selectCategory('virtualsports')" :class="'custom-select-option ' + ((checkedCategories.includes('virtualsport') && checkedCategories.includes('virtualsports')) ? 'selected' : '')">Virtual Sports</div>
 						   </div>
 						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="multiplayer" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Multiplayer</div>
-							  </label>
+								<div @click="selectCategory('rollback')" :class="'custom-select-option ' + (checkedCategories.includes('rollback') ? 'selected' : '')">RollBack</div>
 						   </div>
-						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="virtualsport,virtualsports" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Virtual Sports</div>
-							  </label>
-						   </div>
-						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="rollback" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">RollBack</div>
-							  </label>
-						   </div>
-						   <div class="custom-control custom-checkbox">
-							  <label>
-								 <input v-model="checkedCategories" type="checkbox" value="Video Slots" class="form-check-input custom-control-input checkbox">
-								 <div class="name-selector custom-control-label">Video Slots</div>
-							  </label>
+							<div class="custom-control custom-checkbox">
+								<div @click="selectCategory('Video Slots')" :class="'custom-select-option ' + (checkedCategories.includes('Video Slots') ? 'selected' : '')">Video Slots</div>
 						   </div>
 						</div>
 					 </div>
@@ -286,6 +257,20 @@
 			openCategories() {
 				this.ProvidersList ? (this.ProvidersList = false) : (this.ProvidersList = false);
 				this.CategoriesList = !this.CategoriesList;
+			},
+			selectProvider(item) {
+				if(this.checkedProviders.indexOf(item) != -1 ) {
+					this.checkedProviders.splice((this.checkedProviders.indexOf(item)), 1);
+				}  else {
+					this.checkedProviders.push(item);
+				}
+			},
+			selectCategory(item) {
+				if(this.checkedCategories.indexOf(item) != -1 ) {
+					this.checkedCategories.splice((this.checkedCategories.indexOf(item)), 1);
+				}  else {
+					this.checkedCategories.push(item);
+				}
 			}
         }
     }
@@ -301,6 +286,81 @@
 		min-height: 60px;
 		padding: 10px;
 		border-radius: 16px;
+		
+		.custom-select-option {
+			display: flex;
+			align-items: center;
+			font-size: medium;
+			position: relative;
+			cursor: pointer;
+			text-transform: capitalize;
+		}
+
+		.custom-select-option::before {
+			content: '';
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 1.2rem;
+			height: 1.2rem;
+			border-radius: .25rem;
+			@include themed() {
+				border: 1px solid darken(t('secondary'), 20%);
+			}
+			margin-right: .5rem;
+			flex-shrink: 0;
+		}
+
+		.custom-select-option.selected::before {
+			@include themed() {
+				border-color: t('secondary');
+			}
+		}
+
+		.custom-select-option.selected::after {
+			content: '';
+			display: block;
+			width: .7rem;
+			height: .7rem;
+			border-radius: .15rem;
+			@include themed() {
+				background-color: t('secondary');
+			}
+			position: absolute;
+			left: calc(.25rem)
+		}
+					
+		.row-list {
+		    display: flex;
+			flex-wrap: wrap;
+			
+			.col-md-8,.col-md-4 {
+				position: relative;
+				width: 100%;
+				padding-right: 15px;
+				padding-left: 15px;
+			}
+			
+			@media (min-width: 768px) {
+				.col-md-8 {
+					flex: 0 0 66.6666666667%;
+					max-width: 66.6666666667%;
+				}
+				
+				.col-md-4 {
+					flex: 0 0 33.3333333333%;
+					max-width: 33.3333333333%;
+				}
+			}
+			
+		}
+		
+		@media (max-width: 768px) {
+			.row-list {
+			    margin-right: -15px;
+				margin-left: -15px;
+			}
+		}
 		
 		.search-input {
 			width: 100%;
@@ -376,25 +436,8 @@
 			z-index: 1;
 			display: block;
 			min-height: 1.08rem;
-			padding-left: 1.5rem;
 			-webkit-print-color-adjust: exact;
-			
-			label {
-				display: inline-block;
-				margin-bottom: 0.5rem;
-				position: relative;
-				margin-bottom: 0;
-				vertical-align: top;
-				
-				.name-selector {
-					user-select: none;
-					font-size: 1rem;
-					cursor: pointer;
-					text-transform: capitalize;
-				}
-				
-			}
-			
+			user-select: none;
 		}
 		
 		.list-providers.show,.list-categories.show {

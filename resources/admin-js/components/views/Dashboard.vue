@@ -1,10 +1,13 @@
 <template>
     <div class="container-fluid">
-        <div class="row page-title align-items-center">
-            <div class="col-sm-4 col-xl-6">
-                <h4 class="mb-1 mt-0">Stats</h4>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title"> Stats</h4>
+					
+				</div>
+			</div>
+		</div>
 
         <div class="dashboard">
             <div class="spinner-border d-flex ml-auto mr-auto" v-if="!deposits"></div>

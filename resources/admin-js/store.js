@@ -90,7 +90,12 @@ export default new Vuex.Store({
             Bus.$emit('layoutSizeChange');
         },
         updateData(state) {
-            axios.post('/api/data/games').then(({ data }) => state.games = data);
+			var payload = {
+					category: ['inhouse']
+			};
+			axios.post('/api/data/games', payload).then(({ data }) => {
+				state.games = data = data[0].games;
+			});
             axios.post('/api/data/currencies').then(({ data }) => {
                 state.currencies = data;
                 if(!state.currency || data[state.currency] === undefined) state.currency = data[Object.keys(data)[0]].id;

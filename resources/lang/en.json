@@ -238,6 +238,9 @@
         }
     },
     "general":{
+        "games": {
+        "toggleDemoMode": "Mode"
+        },
         "language":"English",
         "slowmode": "Slow mode is enabled: 1 message each 5 sec",
         "slider": {
@@ -301,6 +304,7 @@
 			"providers": "Providers",
 			"all": "All Games",
 			"p-games": "Provider Games",
+            "searchsidebar": "Search Games",
 			"search": "Search for Games & Providers",
 			"no_search": " <b>No matching results</b><br> Try again using other terms"
         },

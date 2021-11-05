@@ -1,10 +1,12 @@
 <template>
     <div>
-        <div class="row page-title align-items-center">
-            <div class="col-sm-4 col-xl-6">
-                <h4 class="mb-1 mt-0">Users</h4>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title">Users</h4>
+				</div>
+			</div>
+		</div>
         <div class="row">
             <div class="col-12">
                 <div class="card">

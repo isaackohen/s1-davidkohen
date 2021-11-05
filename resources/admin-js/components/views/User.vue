@@ -1,9 +1,12 @@
 <template>
     <div class="container-fluid" v-if="info">
-        <div class="row page-title">
-            <div class="col-md-12">
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title">User</h4>
+				</div>
+			</div>
+		</div>
 
         <div class="row">
             <div class="col-lg-3">

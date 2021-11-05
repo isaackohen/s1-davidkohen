@@ -49,11 +49,13 @@ Route::post('/notifications/data', 'NotificationsController@notificationsData');
 Route::post('/toggle_module', 'ModuleController@toggle');
 Route::post('/option_value', 'ModuleController@setValue');
 Route::post('/option_value', 'ModuleController@setValue');
-Route::post('modules', 'ModuleController@modules');
+Route::post('modules', 'ModuleController@setData');
 Route::post('/toggle', 'GamesController@toggle');
+Route::post('/extToggle', 'GamesController@extToggle');
 
-Route::prefix('externalgames')->group(function() {
+Route::prefix('extgames')->group(function() {
 	Route::post('settings', 'GamesController@settings');
+	Route::post('games', 'GamesController@games');
 });
 
 Route::post('/currencyOption', 'CurrenciesController@currencyOption');

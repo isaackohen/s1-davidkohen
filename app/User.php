@@ -190,7 +190,7 @@ class User extends \Jenssegers\Mongodb\Auth\User {
 		if($level > $vipLevel) {
 			$vipLevel = $level;
 		}
-        Cache::put('vip:'.$this->_id.':level', $vipLevel, now()->addMinutes(1));
+        Cache::put('vip:'.$this->_id.':level', $vipLevel, now()->addMinutes(5));
         return $vipLevel;
     }
 

@@ -2,6 +2,9 @@
 // tables.scss
 //
 
+th {
+    font-weight: $font-weight-bold;
+}
 
 //Table centered (Custom)
 .table-centered {
@@ -11,11 +14,16 @@
 }
 
 
+// Table 
+
+.table-nowrap {
+    th,td {
+        white-space: nowrap;
+    }
+}
+
 // Custom table components (Custom)
 .table {
-    th {
-        font-weight: $font-weight-bold;
-    }
     .table-user {
         img {
             height: 30px;
@@ -32,12 +40,5 @@
 
     &:hover {
         color: $gray-700;
-    }
-}
-
-// Tables fluid
-.table-nowrap {
-    th, td {
-      white-space: nowrap;
     }
 }

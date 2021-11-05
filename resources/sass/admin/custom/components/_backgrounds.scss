@@ -10,7 +10,6 @@ $value in $theme-colors {
     }
 }
 
-// Gradient
-.bg-gradient {
-    background: $bg-gradient;
+.bg-ghost {
+    opacity: 0.4;
 }

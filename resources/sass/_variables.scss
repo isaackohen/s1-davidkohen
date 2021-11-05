@@ -1,18 +1,12 @@
 $container-max-widths: (
     md: 720px,
     lg: 960px,
-    xl: 1228px
+    xl: 1203px
 );
 
-@import "node_modules/bootstrap/scss/functions";
-@import "node_modules/bootstrap/scss/variables";
-@import "node_modules/bootstrap/scss/mixins/_breakpoints";
-@import "polyfills";
-@import "themes";
-
 $font-family-sans-serif: 'Poppins', sans-serif;
-$font-size-base: 0.875rem;
-$line-height-base: 1.15;
+$font-size-base: 0.95rem;
+$line-height-base: 1.5;
 
 $input-btn-focus-box-shadow: none;
 $btn-focus-box-shadow: none;
@@ -21,6 +15,14 @@ $input-btn-focus-width: 0;
 $sidebar-width: 55px;
 $header-height: 73px;
 $chat-width: 295px;
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins/_breakpoints";
+@import "polyfills";
+@import "themes";
+
+
 
 @mixin blur($color, $opacity, $unsupportedOpacity, $blur) {
     background-color: rgba($color, $unsupportedOpacity);

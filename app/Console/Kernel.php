@@ -12,6 +12,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Cache;
 use App\Console\Commands\PullingWallet;
 use App\Console\Commands\WalletReset;
+use App\Console\Commands\MindepositUpdate;
 
 class Kernel extends ConsoleKernel {
 
@@ -36,6 +37,7 @@ class Kernel extends ConsoleKernel {
 		$schedule->command(WalletReset::class)->daily();
        // $schedule->command(ProcessTRXPayments::class)->everyMinute();
 	   $schedule->command(PullingWallet::class)->everyTwoMinutes();
+       $schedule->command(MindepositUpdate::class)->everyThirtyMinutes();
 
         $expression = Cache::get('schedule:expressions:rain');
         if (!$expression) {

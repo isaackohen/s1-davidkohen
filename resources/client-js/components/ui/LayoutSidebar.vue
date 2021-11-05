@@ -17,49 +17,50 @@
                     <icon icon="fal fa-history"></icon>
                     <div class="letter-spacing">{{ $t('general.sidebar.recent') }}</div>
                 </router-link>
-				
-				<router-link tag="div" to="/game/subcategory/popular" class="game">
-                    <icon icon="fad fa-fire"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.popular') }}</div>
-                </router-link>
-				
-				<router-link tag="div" to="/game/subcategory/new" class="game">
-                    <icon icon="fas fa-bahai"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.new') }}</div>
+
+                <router-link tag="div" to="/browse" class="game">
+                    <icon icon="fas fa-search-dollar"></icon>
+                    <div class="letter-spacing">{{ $t('general.sidebar.searchsidebar') }}</div>
                 </router-link>
 
                 <div onclick="window.open(window.location.origin + '/admin')" v-if="!isGuest && user.user.access === 'admin'" class="game">
                     <i class="fas fa-cog"></i>
                     <div class="letter-spacing">{{ $t('general.sidebar.admin') }}</div>
                 </div>
-				
+				                <div class="divider"></div>
+
 				<div class="main-header">
 					{{ $t('general.head.games') }}
 				</div>
-			
+	
+                <router-link tag="div" to="/browse" class="game">
+                    <icon icon="fas fa-th-large"></icon>
+                    <div class="letter-spacing">{{ $t('general.sidebar.all') }}</div>
+                </router-link>
+
 				<router-link tag="div" to="/game/category/inhouse" class="game">
                     <icon icon="fas fa-acorn"></icon>
                     <div class="letter-spacing">{{ $t('general.sidebar.inhouse') }}</div>
                 </router-link>
 				
                 <router-link tag="div" to="/game/category/slots" class="game">
-                    <icon icon="fak fa-777"></icon>
+                    <icon icon="fak fa-cherry"></icon>
                     <div class="letter-spacing">{{ $t('general.sidebar.slots') }}</div>
                 </router-link>
-				
-				<router-link tag="div" to="/game/subcategory/tablegames" class="game">
-                    <icon icon="fas fa-table"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.tablegames') }}</div>
-                </router-link>
-				
-				<router-link tag="div" to="/game/namecategory/roulette" class="game">
-                    <icon icon="far fa-dot-circle"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.roulette') }}</div>
-                </router-link>
-				
-				<router-link tag="div" to="/game/category/live" class="game">
-                    <icon icon="fak fa-blackjack"></icon>
+	
+                <router-link tag="div" to="/game/category/live" class="game">
+                    <icon icon="fad fa-star-shooting"></icon>
                     <div class="letter-spacing">{{ $t('general.sidebar.live') }}</div>
+                </router-link>
+
+                <router-link tag="div" to="/providers" class="game">
+                    <icon icon="fas fa-gamepad"></icon>
+                    <div class="letter-spacing">{{ $t('general.sidebar.providers') }}</div>
+                </router-link>
+
+				<router-link tag="div" to="/game/namecategory/blackjack" class="game">
+                    <icon icon="fak fa-poker-cards"></icon>
+                    <div class="letter-spacing">{{ $t('general.sidebar.blackjack') }}</div>
                 </router-link>
 				
 				<router-link tag="div" to="/game/category/virtualsports" class="game">
@@ -67,28 +68,9 @@
                     <div class="letter-spacing">{{ $t('general.sidebar.virtualsports') }}</div>
                 </router-link>
 
-                <router-link tag="div" to="/game/subcategory/bonus" class="game">
-                    <icon icon="fad fa-box-full"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.bonus') }}</div>
-                </router-link>
-				
 				<router-link tag="div" to="/game/category/scratch-cards" class="game">
                     <icon icon="fad fa-sparkles"></icon>
                     <div class="letter-spacing">{{ $t('general.sidebar.scratchcards') }}</div>
-                </router-link>
-
-                <router-link tag="div" to="/game/subcategory/gameshows" class="game">
-                    <icon icon="fad fa-star-shooting"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.gameshows') }}</div>
-                </router-link>
-				<router-link tag="div" to="/providers" class="game">
-                    <icon icon="fas fa-gamepad"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.providers') }}</div>
-                </router-link>
-				
-				<router-link tag="div" to="/browse" class="game">
-                    <icon icon="fas fa-th-large"></icon>
-                    <div class="letter-spacing">{{ $t('general.sidebar.all') }}</div>
                 </router-link>
 
                 <div class="divider"></div>

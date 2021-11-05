@@ -40,10 +40,11 @@ class BotNewAccount implements ShouldQueue {
     }
 
     public function handle() {
+        $avatar = 'https://avatars.dicebear.com/api/human/'.uniqid().'.svg?background=%23ffc815';
         $user = User::create([
             'name' => $this->username,
             'password' => Hash::make(uniqid()),
-            'avatar' => '/avatar/' . uniqid(),
+            'avatar' => $avatar,
             'email' => null,
             'client_seed' => \App\Games\Kernel\ProvablyFair::generateServerSeed(),
             'access' => 'user',

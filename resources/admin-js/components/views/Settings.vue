@@ -1,10 +1,41 @@
 <template>
     <div>
-        <div class="row page-title" v-if="settingsMutable.length > 0">
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-xl-2 col-lg-3 col-6">
+								<img src="/img/misc/cal.png" class="me-4 align-self-center img-fluid" alt="cal">
+							</div>
+							<div class="col-xl-10 col-lg-9">
+								<div class="mt-4 mt-lg-0">
+									<h5 class="mt-0 mb-1 fw-bold">Settings list</h5>
+									<p class="text-muted mb-2">
+										These options are related to the platform settings, 
+										please make sure that the platform is in maintenance mode before changing system/default settings or platform.
+									</p>
+									<button class="btn btn-primary mt-2 me-1" id="btn-new-event" data-bs-toggle="modal" data-bs-target="#event-modal">
+										Create New Setting
+									</button>
+								</div>
+							</div>
+						</div>
+						
+					</div> <!-- end card body-->
+				</div> <!-- end card -->
+			</div>
+			<!-- end col-12 -->
+		</div>
+		<div class="row page-title" v-if="settingsMutable.length > 0">
             <div class="col-md-12">
-                <div class="float-right">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#create">Create</button>
-                </div>
 				<h3 class="mb-1 mt-0">General Settings</h3>
 				<h6>The general settings for your platform and external services.</h6>
 				<hr> 
@@ -14,7 +45,7 @@
             <div class="col-xl-3 col-lg-6" v-for="setting in settingsMutable">
                 <div class="card">
                     <div class="card-body">
-                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-dark" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
+                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
                         <div class="text-muted">
                             {{ setting.description }}
                             <div class="form-group mt-2">
@@ -49,7 +80,7 @@
             <div class="col-xl-3 col-lg-6" v-for="setting in settingsGlobal">
                 <div class="card">
                     <div class="card-body">
-                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-dark" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
+                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
                         <div class="text-muted">
                             {{ setting.description }}
                             <div class="form-group mt-2">
@@ -71,7 +102,7 @@
             <div class="col-xl-3 col-lg-6" v-for="setting in settingsBonus">
                 <div class="card">
                     <div class="card-body">
-                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-dark" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
+                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
                         <div class="text-muted">
                             {{ setting.description }}
                             <div class="form-group mt-2">
@@ -93,7 +124,7 @@
             <div class="col-xl-3 col-lg-6" v-for="setting in settingsImmutable">
                 <div class="card">
                     <div class="card-body">
-                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-dark" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
+                        <h5><a @click="clipboard(setting.name)" href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" title="Copy">{{ setting.name }}</a></h5>
                         <div class="text-muted">
                             {{ setting.description }}
                             <div class="form-group mt-2">
@@ -104,31 +135,25 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="create" tabindex="-1" style="display: none;" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header py-3 px-4 border-bottom-0 d-block">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h5 class="modal-title">New Key</h5>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form class="needs-validation" name="event-form" id="form-event" novalidate="">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="control-label">Key</label>
-                                        <input class="form-control" placeholder="Key" type="text" id="key" v-model="newSettingKey">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="control-label">Description</label>
-                                        <input class="form-control" placeholder="Description" id="description" v-model="newSettingDescription">
-                                    </div>
-                                </div>
+		<div class="modal fade" id="event-modal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header py-3 px-4 border-bottom-0 d-block">
+						<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-hidden="true"></button>
+						<h5 class="modal-title" id="modal-title">New Key</h5>
+					</div>
+					<div class="modal-body px-4 pb-4">
+						<form class="needs-validation was-validated" name="event-form" id="form-event" novalidate="">
+							<div class="row">
 								<div class="col-12">
-									<div class="form-group">
-										<label class="control-label">Category</label>
+									<div class="mb-3">
+										<label class="form-label">Key</label>
+										<input class="form-control" placeholder="Key" type="text" id="key" v-model="newSettingKey">
+									</div>
+								</div>
+								<div class="col-12">
+									<div class="mb-3">
+										<label class="form-label">Category</label>
 										<select class="form-control" id="cat" v-model="newSettingCat">
 												<option value="">None</option>
 												<option value="general">General Settings</option>
@@ -140,21 +165,24 @@
 												<option value="custom">Client Specific Custom Setting</option>
 												<option value="system">System Variable</option>
 										</select>
+										<div class="invalid-feedback">Please select a valid event category</div>
 									</div>
-								</div> 
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-6"></div>
-                                <div class="col-6 text-right">
-                                    <button type="button" class="btn btn-light mr-1" id="close" data-dismiss="modal">Close</button>
-                                    <div class="btn btn-success" id="finish" @click="create">Create</div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+								</div>
+							</div>
+							<div class="row mt-2">
+								<div class="col-6">
+									<button type="button" class="btn btn-danger" id="btn-delete-event" style="display: none;">Delete</button>
+								</div>
+								<div class="col-6 text-end">
+									<button type="button" class="btn btn-light me-1" data-bs-dismiss="modal">Close</button>
+									<button type="submit" class="btn btn-success" id="btn-save-event" @click="create">Save</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div> <!-- end modal-content-->
+			</div> <!-- end modal dialog-->
+		</div>
     </div>
 </template>
 

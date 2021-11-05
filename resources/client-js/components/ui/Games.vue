@@ -7,13 +7,13 @@
 
             <div class="games">
                 <div v-for="game in cat" :key="game.id" :class="`game_poster_${game.type} game-${game.id} game_type-${game.type} hvr-float-shadow`">
-                    <div :class="`game_poster_${game.type}-image game_tp-image`" v-if="game.ext" :style="`background: url('https://games.cdn4.dk/games${game.icon}?q=85&auto=format&fit=crop&sharp=9&w=209&h=140&usm=6') no-repeat !important; background-position-x: center !important;`"  @click="game.ext ? $router.push(`/casino/${game.id}`) : $router.push(`/game/${game.id}`)">
+                    <div :class="`game_poster_${game.type}-image game_tp-image`" v-if="game.ext" :style="`background: url('https://games.cdn4.dk/games${game.icon}?q=93&auto=format&fit=crop&sharp=5&w=205&h=137&usm=5') no-repeat !important; background-position-x: center !important;`"  @click="game.ext ? $router.push(`/casino/${game.id}`) : $router.push(`/game/${game.id}`)">
                    
                     <div :class="`game_poster_${game.type}-provider`" v-if="game.ext" @click="game.ext ? $router.push(`/casino/${game.id}`) : $router.push(`/game/${game.id}`)">
                         {{ game.p }}
                     </div>
                     </div>
-                    <div :class="`game_poster_${game.type}-image game_tp-image`" v-if="!game.ext" @click="game.ext ? $router.push(`/casino/${game.id}`) : $router.push(`/game/${game.id}`)" :style="`background: url('https://cdn.davidkohen.com/provablyfair/${game.id}.png?q=95&sharp=5&w=205&h=145&fit=crop&usm=5&fm=png') no-repeat !important; background-position-x: center !important;`">
+                    <div :class="`game_poster_${game.type}-image game_tp-image`" v-if="!game.ext" @click="game.ext ? $router.push(`/casino/${game.id}`) : $router.push(`/game/${game.id}`)" :style="`background: url('https://cdn.davidkohen.com/provablyfair/${game.id}.png?q=99&sharp=5&w=205&h=145&fit=crop&usm=5&fm=png') no-repeat !important; background-position-x: center !important;`">
 
                         <div class="unavailable" v-if="game.d">
                             <div class="slanting">

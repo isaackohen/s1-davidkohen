@@ -2,7 +2,6 @@
 
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
-@import '~bootstrap-vue/src/index.scss';
 
 @import "superwheel";
 @import '~vue-context/src/sass/vue-context';
@@ -469,7 +468,12 @@ hr {
 .theme--default .theme-switcher [data-dark] {
     display: none;
 }
-
+.right {
+    display: flex;
+    cursor: pointer;
+    position: relative;
+    margin-left: auto;
+}
 .os-theme-thin-light > .os-scrollbar-horizontal {
     right: 14px;
     height: 14px;

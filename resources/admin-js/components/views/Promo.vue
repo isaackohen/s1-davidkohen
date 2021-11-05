@@ -1,20 +1,34 @@
 <template>
     <div>
-        <div class="row page-title">
-            <div class="col-md-12">
-                <div class="float-right">
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#create">Create</button>
-                    <button class="btn btn-danger" onclick="axios.post('/admin/promocode/remove_inactive').then(() => window.location.reload())">Cleanup</button>
-                </div>
-                <h4 class="mb-1 mt-0">Promocodes</h4>
-            </div>
-        </div>
+		<div class="row">
+			<div class="col-12">
+				<div class="page-title-box">
+					<h4 class="page-title">Promocodes</h4>
+					<div class="page-title-right">
+						<div class="float-sm-end mt-3 mt-sm-0">
+							<div class="row g-2">
+								<div class="col-md-auto">
+									<div class="btn-group">
+										<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create">Create</button>
+									</div>
+								</div>
+								<div class="col-md-auto">
+									<div class="btn-group">
+										<button class="btn btn-danger" onclick="axios.post('/admin/promocode/remove_inactive').then(() => window.location.reload())">Cleanup</button>
+									</div>
+								</div>
+							</div> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
         <div class="row">
             <div class="col-xl-3 col-lg-6" v-for="code in promo">
                 <div class="card">
                     <div class="card-body" :set="data = getData(code)">
-                        <div :class="`badge badge-${data.color} float-right`">{{ code.sum.toFixed(code.currency.startsWith('local_') ? 2 : 8) }} {{ currencies[code.currency].name }}</div>
-                        <h5><a href="javascript:void(0)" class="text-dark">{{ code.code }}</a></h5>
+                        <div :class="`badge badge-soft-danger float-end`">{{ code.sum.toFixed(code.currency.startsWith('local_') ? 2 : 8) }} {{ currencies[code.currency].name }}</div>
+                        <h4><a href="javascript:void(0)" class="text-muted">{{ code.code }}</a></h4>
                         <div class="text-muted mb-4">
                             <div>Created: {{ new Date(code.created_at).toLocaleString() }}</div>
                             <div>Usages: {{ code.times_used }}<span v-if="code.usages >= 0">/{{ code.usages }}</span></div>
@@ -46,11 +60,11 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="create" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal fade" id="create" tabindex="-1" style="display: none;" aria-hidden="true" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header py-3 px-4 border-bottom-0 d-block">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-hidden="true">×</button>
                         <h5 class="modal-title">Promocode</h5>
                     </div>
                     <div class="modal-body p-4">
@@ -86,8 +100,8 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-6"></div>
-                                <div class="col-6 text-right">
-                                    <button type="button" class="btn btn-light mr-1" id="close" data-dismiss="modal">Close</button>
+                                <div class="col-6 text-end">
+                                    <button type="button" class="btn btn-light mr-1" id="close" data-bs-dismiss="modal">Close</button>
                                     <div class="btn btn-success" id="finish" @click="create">Create</div>
                                 </div>
                             </div>

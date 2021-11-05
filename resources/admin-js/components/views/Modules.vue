@@ -14,8 +14,12 @@
                             <h6 class="text-muted font-weight-normal mt-0 mb-3">{{ game.id }}</h6>
                             <div class="card-text text-center btn-group">
                                 <button type="button" class="btn btn-primary btn-sm" @click="load(game, false)">Real</button>
-                                <button type="button" class="btn btn-danger btn-sm" @click="load(game, true)">Demo</button>
+                                <button type="button" class="btn btn-info btn-sm" @click="load(game, true)">Demo</button>
                             </div>
+							<div @click="toggleGame(game.id)" class="form-switch mt-1">
+								<input type="checkbox" name="color-scheme-mode" value="light" id="light-mode-check" :checked="!game.isDisabled" class="form-check-input"> 
+								<label for="light-mode-check" class="form-check-label">{{ game.isDisabled ? 'Disabled' : 'Enabled' }}</label>
+							</div>
                         </div>
                     </div>
                 </div>
@@ -129,6 +133,9 @@
                 this.isDemo = isDemo;
 
                 axios.post('/admin/modules', { game: this.game.id, demo: this.isDemo }).then(({ data }) => this.modules = data);
+            },
+			toggleGame(id) {
+                axios.post('/admin/toggle', { name: id }).then(() => this.$store.dispatch('updateData'));
             }
         }
     }

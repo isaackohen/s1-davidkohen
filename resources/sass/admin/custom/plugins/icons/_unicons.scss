@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'unicons';
-  src: url('../../../../sass/admin/custom/fonts/unicons.eot?2256574');
-  src: url('../../../../sass/admin/custom/fonts/unicons.eot?2256574#iefix') format('embedded-opentype'),
-       url('../../../../sass/admin/custom/fonts/unicons.woff2?2256574') format('woff2'),
-       url('../../../../sass/admin/custom/fonts/unicons.woff?2256574') format('woff'),
-       url('../../../../sass/admin/custom/fonts/unicons.ttf?2256574') format('truetype'),
-       url('../../../../sass/admin/custom/fonts/unicons.svg?2256574#unicons') format('svg');
+  src: url('../../../../fonts/unicons.eot?2256574');
+  src: url('../../../../fonts/unicons.eot?2256574#iefix') format('embedded-opentype'),
+       url('../../../../fonts/unicons.woff2?2256574') format('woff2'),
+       url('../../../../fonts/unicons.woff?2256574') format('woff'),
+       url('../../../../fonts/unicons.ttf?2256574') format('truetype'),
+       url('../../../../fonts/unicons.svg?2256574#unicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -19,7 +19,7 @@
   }
 }
 */
-
+ 
 .uil {
   line-height: inherit;
 }
@@ -29,36 +29,37 @@
   font-style: normal;
   font-weight: normal;
   speak: none;
-
+ 
   display: inline-block;
   text-decoration: inherit;
   width: 1em;
   // margin-right: .2em;
   text-align: center;
   /* opacity: .8; */
-
+ 
   /* For safety - reset parent styles, that can break glyph codes*/
   font-variant: normal;
   text-transform: none;
-
+ 
   /* fix buttons height, for twitter bootstrap */
   line-height: 1em;
-
+  vertical-align: middle;
+ 
   /* Animation center compensation - margins should be symmetric */
   /* remove if not needed */
   // margin-left: .2em;
-
+ 
   /* you can be more comfortable with increased icons size */
   font-size: 120%;
-
+ 
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
+ 
   /* Uncomment for 3D effect */
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
-
+ 
 .uil-0-plus:before { content: '\e800'; } /* '' */
 .uil-10-plus:before { content: '\e801'; } /* '' */
 .uil-12-plus:before { content: '\e802'; } /* '' */

@@ -2,6 +2,8 @@
 namespace App\Http\Controllers\Admin;
 
 use \Cache;
+use Artisan;
+use App\Gameslist;
 use App\DisabledGame;
 use App\Utils\APIResponse;
 use App\Games\Kernel\Game;
@@ -24,8 +26,20 @@ class GamesController extends Controller
 
 			Cache::put('disabledGame:'.\request('name'), false);
 		}
+		Artisan::call('optimize:clear');
+		Artisan::call('cache:clear');
 		return APIResponse::success();
     }
+	
+	public function extToggle(Request $request) {
+		$game = Gameslist::where('_id', \request('id'))->first();
+		$game->update([
+			'd' => ($game->d === 1) ? 0 : 1
+		]);
+		Artisan::call('optimize:clear');
+		Artisan::call('cache:clear');
+		return APIResponse::success();
+	}
 	
 	public function settings()
     {
@@ -55,6 +69,11 @@ class GamesController extends Controller
                 'value' => Settings::get('category_featured')
             ]
         ]);
+    }
+	
+	public function games()
+    {
+		return APIResponse::success(Gameslist::where('d', '!=', '1')->get()->toArray());
     }
 	
 }

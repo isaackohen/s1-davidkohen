@@ -8,9 +8,9 @@ mix.extend('addWebpackLoaders', (webpackConfig, loaderRules) => {
 });
 
 mix.js('resources/client-js/app.js', 'public/js')
-	//.js('resources/admin-js/app.js', 'public/js/admin')
-    //.sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/admin/app.scss', 'public/css/admin')
+mix.js('resources/admin-js/app.js', 'public/js/admin')
+    .sass('resources/sass/app.scss', 'public/css')
+	.sass('resources/sass/admin/app.scss', 'public/css/admin')
     .sass('resources/sass/error.scss', 'public/css')
     .copy('resources/img', 'public/img')
     .copy('resources/sounds', 'public/sounds')
@@ -28,7 +28,8 @@ mix.js('resources/client-js/app.js', 'public/js')
                 assetNameRegExp: /\.optimize\.css$/g,
                 cssProcessor: require('cssnano'),
                 cssProcessorPluginOptions: {
-                    preset: ['default', { discardComments: { removeAll: true } }],
+                    //Default
+                    preset: ['advanced', { discardComments: { removeAll: true } }],
                 },
                 canPrint: true
             }),

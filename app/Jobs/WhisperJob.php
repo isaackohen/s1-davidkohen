@@ -58,7 +58,7 @@ class WhisperJob implements ShouldQueue {
 
         if($whisper->user) auth()->login($whisper->user);
 
-        //$this->info('Event ' . $event . ' with data ' . json_encode($message->data->data) . ' -> to @' . ($whisper->user ? $whisper->user->name : 'guest'));
+        $this->info('Event ' . $event . ' with data ' . json_encode($message->data->data) . ' -> to @' . ($whisper->user ? $whisper->user->name : 'guest'));
 
         $response = $whisper->process($message->data->data);
         $whisper->sendResponse($response);

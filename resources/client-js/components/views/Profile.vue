@@ -183,15 +183,19 @@
                         <div class="settingsNotifyLoading" v-if="tfa_loading"><loader></loader></div>
 
                         <template v-if="!profile.user.tfa_enabled">
+							<div class="text-center  mt-2">
                             {{ $t('general.profile.copy_this_to_2fa') }}
+							</div>
                             <input onclick="this.select()" type="text" style="cursor: pointer !important;" class="mt-1" :value="profile.secret" readonly>
                             <div class="mt-2">
                                 <div class="text-center mb-2 mt-2">{{ $t('general.profile.keep_secure') }}</div>
                                 <canvas id="qrcanvas" class="d-flex ml-auto mr-auto"></canvas>
                             </div>
-                            <div>{{ $t('general.profile.2fa_code') }}</div>
-                            <input type="text" v-model="tfa_code" class="mt-1">
-                            <button class="btn btn-primary mt-2 btn-block" @click="enable2FA">{{ $t('general.profile.2fa_enable') }}</button>
+							<div class="text-center  mt-2">
+								<div>{{ $t('general.profile.2fa_code') }}</div>
+								<input type="text" v-model="tfa_code" class="mt-1">
+								<button class="btn btn-primary mt-2 btn-block" @click="enable2FA">{{ $t('general.profile.2fa_enable') }}</button>
+							</div>
                         </template>
                         <template v-else>
                             <div class="text-center" v-html="$t('general.profile.2fa_enabled')"></div>
@@ -553,6 +557,18 @@
 
 <style lang="scss">
     @import 'resources/sass/variables';
+	
+	.settingsNotify input {
+		text-align: center;
+	}
+	
+	.ml-auto, .mx-auto {
+		margin-left: auto!important;
+	}
+
+	.mr-auto, .mx-auto {
+		margin-right: auto!important;
+	}
 
     .profile-loader {
         display: flex;

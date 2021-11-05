@@ -1,4 +1,4 @@
-//
+// 
 // footer.scss
 //
 
@@ -7,12 +7,13 @@
     padding: 19px 15px 20px;
     position: absolute;
     right: 0;
-    color: $gray-600;
+    color: $text-muted;
     left: $leftbar-width;
-    background: #292d36 !important;
+    border-top: 1px solid $card-border-color;
+
     .footer-links {
         a {
-            color: $gray-600;
+            color: $text-muted;
             margin-left: 1.5rem;
             transition: all .4s;
             &:hover {
@@ -35,5 +36,26 @@
     .footer {
         left: 0 !important;
         text-align: center;
+    }
+}
+
+body[data-layout-mode="horizontal"] {
+    .footer {
+        left: 0 !important;
+    }
+
+    &[data-layout-width="boxed"] {
+        .footer {
+            max-width: $boxed-layout-width !important;
+        }
+    }
+}
+
+body[data-layout-mode="detached"] {
+    @include media-breakpoint-up(lg) {
+        .footer {
+            position: inherit;
+            margin: 0 10px;
+        }
     }
 }
