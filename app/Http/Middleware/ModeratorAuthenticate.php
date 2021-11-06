@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class ModeratorAuthenticate {
-
+class ModeratorAuthenticate
+{
     /**
      * Handle an incoming request.
      *
@@ -13,9 +13,14 @@ class ModeratorAuthenticate {
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next) {
-        if(!auth('sanctum')->guest()) if(auth('sanctum')->user()->access === 'admin' || auth('sanctum')->user()->access === 'moderator') return $next($request);
+    public function handle($request, Closure $next)
+    {
+        if (! auth('sanctum')->guest()) {
+            if (auth('sanctum')->user()->access === 'admin' || auth('sanctum')->user()->access === 'moderator') {
+                return $next($request);
+            }
+        }
+
         return redirect('/');
     }
-
 }

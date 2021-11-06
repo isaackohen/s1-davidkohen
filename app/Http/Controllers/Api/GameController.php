@@ -1,20 +1,21 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
-use App\User;
-use App\DisabledGamesReff;
-use Illuminate\Support\Facades\Log;
 use App\Currency\Currency;
+use App\DisabledGamesReff;
 use App\Game as GameResult;
+use App\Games\Kernel\Data;
 use App\Games\Kernel\Extended\ExtendedGame;
 use App\Games\Kernel\Game;
-use App\Games\Kernel\Data;
 use App\Games\Kernel\Module\ModuleSeeder;
 use App\Games\Kernel\ProvablyFairResult;
-use Illuminate\Support\Facades\DB;
 use App\Settings;
+use App\User;
 use App\Utils\APIResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GameController
 {
@@ -24,38 +25,53 @@ class GameController
      */
     public function play(Request $request)
     {
+        $game = Game::find($request->api_id);
+        if ($game == null) {
+            return ['code' => -3, 'message' => 'Unknown API game id'];
+        }
+        if ($game->isDisabled()) {
+            return ['code' => -5, 'message' => 'Game is disabled'];
+        }
+        if (auth()->user() != null && ! $game->ignoresMultipleClientTabs() && DB::table('games')->where('game', $request->api_id)->where('user', auth()->user()->_id)->where('status', 'in-progress')->count() > 0) {
+            return ['code' => -8, 'message' => 'Game already has started'];
+        }
 
-		$game = Game::find($request->api_id);
-        if($game == null) return ['code' => -3, 'message' => 'Unknown API game id'];
-        if($game->isDisabled()) return ['code' => -5, 'message' => 'Game is disabled'];
-        if(auth()->user() != null && !$game->ignoresMultipleClientTabs() && DB::table('games')->where('game', $request->api_id)->where('user', auth()->user()->_id)->where('status', 'in-progress')->count() > 0) return ['code' => -8, 'message' => 'Game already has started'];
+        if (auth()->user() == null && ! $request->demo) {
+            return ['code' => -2, 'message' => 'Not authorized'];
+        }
+        if (auth()->user() == null && $request->demo) {
+            return APIResponse::reject(-2, 'Please login to play');
+        }
+        if (! $game->usesCustomWagerCalculations() && floatval($request->bet) < floatval(Currency::find($request->currency)->option('min_bet'))) {
+            return ['code' => -1, 'message' => 'Invalid wager value'];
+        }
+        if (! $game->usesCustomWagerCalculations() && floatval($request->bet) > floatval(Currency::find($request->currency)->option('max_bet'))) {
+            return ['code' => -9, 'message' => 'Invalid wager value'];
+        }
+        if (auth()->user() != null && (auth()->user()->balance(Currency::find($request->currency))->demo($request->demo)->get() < floatval($request->bet))) {
+            return ['code' => -4, 'message' => 'Not enough money'];
+        }
 
-        if(auth()->user() == null && !$request->demo) return ['code' => -2, 'message' => 'Not authorized'];
-        if(auth()->user() == null && $request->demo) return APIResponse::reject(-2, 'Please login to play');
-		if(!$game->usesCustomWagerCalculations() && floatval($request->bet) < floatval(Currency::find($request->currency)->option('min_bet'))) return ['code' => -1, 'message' => 'Invalid wager value'];
-		if(!$game->usesCustomWagerCalculations() && floatval($request->bet) > floatval(Currency::find($request->currency)->option('max_bet'))) return ['code' => -9, 'message' => 'Invalid wager value'];
-		if(auth()->user() != null && (auth()->user()->balance(Currency::find($request->currency))->demo($request->demo)->get() < floatval($request->bet))) return ['code' => -4, 'message' => 'Not enough money'];
- 
         $data = new Data(auth()->user(), [
             'api_id' => $request->api_id,
             'bet' => $request->bet,
             'currency' => $request->currency,
             'demo' => $request->demo,
             'quick' => $request->quick,
-            'data' => (array) $request->data
+            'data' => (array) $request->data,
         ]);
-		
-		if(auth()->user() != null && auth()->user()->referral != null && auth()->user()->games() >= floatval(\App\Settings::get('referrer_activity_requirement', 100))) {
+
+        if (auth()->user() != null && auth()->user()->referral != null && auth()->user()->games() >= floatval(\App\Settings::get('referrer_activity_requirement', 100))) {
             $referrer = \App\User::where('_id', $this->user->referral)->first();
             $referrals = $referrer->referral_wager_obtained ?? [];
-            if(!in_array(auth()->user()->_id, $referrals)) {
+            if (! in_array(auth()->user()->_id, $referrals)) {
                 array_push($referrals, auth()->user()->_id);
                 $referrer->update(['referral_wager_obtained' => $referrals]);
                 $referrer->balance(Currency::find('btc'))->add(floatval(Currency::find('btc')->option('referral_bonus')), \App\Transaction::builder()->message('Active referral bonus')->get());
             }
         }
 
-        if(auth()->user() != null && auth()->user()->vipLevel() > 0 && auth()->user()->vip_discord_notified == null) {
+        if (auth()->user() != null && auth()->user()->vipLevel() > 0 && auth()->user()->vip_discord_notified == null) {
             auth()->user()->notify(new \App\Notifications\VipDiscordNotification());
             auth()->user()->update(['vip_discord_notified' => true]);
         }
@@ -74,11 +90,11 @@ class GameController
             return ['code' => 1, 'message' => 'Invalid game id'];
         }
         if ($game->status != 'in-progress') {
-             return ['code' => 2, 'message' => 'Game is finished'];
+            return ['code' => 2, 'message' => 'Game is finished'];
         }
 
         $apiGame = Game::find($game->game);
-        if (!($apiGame instanceof ExtendedGame)) {
+        if (! ($apiGame instanceof ExtendedGame)) {
             return ['code' => 3, 'message' => 'Unsupported game operation'];
         }
 
@@ -92,12 +108,12 @@ class GameController
                 'turn' => $game->data['turn'] + 1,
                 'history' => $game->data['history'],
                 'user_data' => $game->data['user_data'],
-                'game_data' => $game->data['game_data']
-            ]
+                'game_data' => $game->data['game_data'],
+            ],
         ]);
 
         $turnData = $apiGame->turn($game, (array) $request->data)->toArray();
-        switch($turnData['type']) {
+        switch ($turnData['type']) {
             case 'fail':
                 $apiGame->setTurn($game, $apiGame->getTurn($game) - 1);
                 break;
@@ -107,14 +123,15 @@ class GameController
                 break;
             case 'finish':
                 $game->update([
-					'status' => $game->profit == 0 ? 'lose' : 'win'
-				]);
+                    'status' => $game->profit == 0 ? 'lose' : 'win',
+                ]);
                 $apiGame->finish($game);
                 break;
         }
+
         return APIResponse::success(array_merge($turnData, [
             'game' => $game->makeHidden('server_seed')->makeHidden('nonce')->makeHidden('data')->toArray(),
-			'turn' => $apiGame->getTurn($game)
+            'turn' => $apiGame->getTurn($game),
         ]));
     }
 
@@ -125,7 +142,7 @@ class GameController
     public function finish(Request $request)
     {
         $request->validate([
-            'id' => 'required'
+            'id' => 'required',
         ]);
 
         $game = GameResult::where('_id', $request->id)->first();
@@ -137,14 +154,14 @@ class GameController
         }
 
         $apiGame = Game::find($game->game);
-        if (!($apiGame instanceof ExtendedGame)) {
+        if (! ($apiGame instanceof ExtendedGame)) {
             return APIResponse::reject(3, 'Unsupported game operation');
         }
 
         $apiGame->finish($game);
-        
+
         return APIResponse::success([
-            'game' => $game->toArray()
+            'game' => $game->toArray(),
         ]);
     }
 
@@ -159,29 +176,34 @@ class GameController
         if ($game == null) {
             return APIResponse::reject(-3, 'Unknown API game id');
         }
+
         return APIResponse::success($game->data());
     }
-	
-	public function restore(Request $request)
+
+    public function restore(Request $request)
     {
         $game = Game::find($request->api_id);
-		if($game == null) return ['code' => 1, 'message' => 'Unknown API game id'];
-        if($game->isDisabled()) return ['code' => 2, 'message' => 'Game is disabled'];
-		
-		$latestGame = GameResult::orderBy('id', 'desc')
+        if ($game == null) {
+            return ['code' => 1, 'message' => 'Unknown API game id'];
+        }
+        if ($game->isDisabled()) {
+            return ['code' => 2, 'message' => 'Game is disabled'];
+        }
+
+        $latestGame = GameResult::orderBy('id', 'desc')
                 ->where('game', $game->metadata()->id())
                 ->where('user', optional(auth()->user())->_id)
-				->where('status', 'in-progress')
+                ->where('status', 'in-progress')
                 ->first();
-		
-		if(!$latestGame) { 
-			return ['code' => 3, 'message' => 'Nothing to restore'];
-		}
-		
-		return APIResponse::success([
+
+        if (! $latestGame) {
+            return ['code' => 3, 'message' => 'Nothing to restore'];
+        }
+
+        return APIResponse::success([
             'game' => $latestGame->makeHidden('server_seed')->makeHidden('nonce')->makeHidden('data')->toArray(),
-			'history' => $latestGame->data['history'],
-			'user_data' => $latestGame->data['user_data']
+            'history' => $latestGame->data['history'],
+            'user_data' => $latestGame->data['user_data'],
         ]);
     }
 
@@ -198,26 +220,29 @@ class GameController
         if ($game->status === 'in-progress' || $game->status === 'cancelled') {
             return APIResponse::reject(2, 'Game is not finished');
         }
-		
-		if($game->type === "external") {
+
+        if ($game->type === 'external') {
             $getgamename = (\App\Gameslist::where('id', $game->game)->first());
             $image = 'Image/https://cdn.davidkohen.com/i/cdn'.$getgamename->image.'?q=95&mask=ellipse&auto=compress&sharp=10&w=20&h=20&fit=crop&usm=5&fm=png';
-            $metadata = array('id' => $game->game, 'icon' => $image, 'name' => $getgamename->name, 'category' => array($getgamename->category));
-		} else {
-			$metadata = Game::find($game->game)->metadata()->toArray();
-		}
+            $metadata = ['id' => $game->game, 'icon' => $image, 'name' => $getgamename->name, 'category' => [$getgamename->category]];
+        } else {
+            $metadata = Game::find($game->game)->metadata()->toArray();
+        }
 
         return APIResponse::success([
             'metadata' => $metadata,
             'info' => $game->toArray(),
-            'user' => User::where('_id', $game->user)->first()->toArray()
+            'user' => User::where('_id', $game->user)->first()->toArray(),
         ]);
-    }  
-	
-	public function pushBullData(Request $request) 
-	{
-		if(User::getIp() !== '127.0.0.1' && User::getIp() !== env('SERVER_IP')) return APIResponse::reject(1, 'Access to this API request is restricted for ' . User::getIp());
+    }
+
+    public function pushBullData(Request $request)
+    {
+        if (User::getIp() !== '127.0.0.1' && User::getIp() !== env('SERVER_IP')) {
+            return APIResponse::reject(1, 'Access to this API request is restricted for '.User::getIp());
+        }
         Game::find('bullvsbear')->state()->pushData($request->data)->sendDataUpdateEvent();
+
         return APIResponse::success();
-	}
+    }
 }

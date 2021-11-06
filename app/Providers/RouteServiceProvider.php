@@ -5,8 +5,8 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
-class RouteServiceProvider extends ServiceProvider {
-
+class RouteServiceProvider extends ServiceProvider
+{
     /**
      * This namespace is applied to your controller routes.
      *
@@ -27,7 +27,8 @@ class RouteServiceProvider extends ServiceProvider {
      * Define your route model bindings, pattern filters, etc.
      * @return void
      */
-    public function boot() {
+    public function boot()
+    {
         parent::boot();
     }
 
@@ -35,7 +36,8 @@ class RouteServiceProvider extends ServiceProvider {
      * Define the routes for the application.
      * @return void
      */
-    public function map() {
+    public function map()
+    {
         $this->mapApiRoutes();
         $this->mapAuthRoutes();
         //
@@ -43,14 +45,16 @@ class RouteServiceProvider extends ServiceProvider {
         $this->mapWebRoutes();
     }
 
-    protected function mapAuthRoutes() {
+    protected function mapAuthRoutes()
+    {
         Route::prefix('auth')
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/auth.php'));
     }
 
-    protected function mapAdminRoutes() {
+    protected function mapAdminRoutes()
+    {
         Route::prefix('admin')
             ->middleware('admin')
             ->namespace('App\Http\Controllers\Admin')
@@ -62,7 +66,8 @@ class RouteServiceProvider extends ServiceProvider {
      * These routes all receive session state, CSRF protection, etc.
      * @return void
      */
-    protected function mapWebRoutes() {
+    protected function mapWebRoutes()
+    {
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
@@ -73,11 +78,11 @@ class RouteServiceProvider extends ServiceProvider {
      * These routes are typically stateless.
      * @return void
      */
-    protected function mapApiRoutes() {
+    protected function mapApiRoutes()
+    {
         Route::prefix('api')
             ->middleware('api')
             ->namespace('App\Http\Controllers\Api')
             ->group(base_path('routes/api.php'));
     }
-
 }

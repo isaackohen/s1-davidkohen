@@ -1,39 +1,48 @@
-<?php namespace App\Currency\BitGo;
+<?php
+
+namespace App\Currency\BitGo;
 
 use neto737\BitGoSDK\Enum\CurrencyCode;
 
-class Ripple extends BitGoCurrency {
-
-    function id(): string {
-        return "bg_xrp";
+class Ripple extends BitGoCurrency
+{
+    public function id(): string
+    {
+        return 'bg_xrp';
     }
 
-    public function walletId(): string {
-        return "xrp";
+    public function walletId(): string
+    {
+        return 'xrp';
     }
 
-    function name(): string {
-        return "XRP";
+    public function name(): string
+    {
+        return 'XRP';
     }
 
-    public function alias(): string {
-        return "ripple";
+    public function alias(): string
+    {
+        return 'ripple';
     }
 
-    public function displayName(): string {
-        return "Ripple";
+    public function displayName(): string
+    {
+        return 'Ripple';
     }
 
-    function icon(): string {
-        return "xrp";
+    public function icon(): string
+    {
+        return 'xrp';
     }
 
-    function style(): string {
-        return "white";
+    public function style(): string
+    {
+        return 'white';
     }
 
-    public function getCurrencyCode() {
+    public function getCurrencyCode()
+    {
         return env('APP_DEBUG') ? CurrencyCode::RIPPLE_TESTNET : CurrencyCode::RIPPLE;
     }
-
 }

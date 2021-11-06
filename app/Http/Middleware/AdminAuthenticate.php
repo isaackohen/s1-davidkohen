@@ -7,8 +7,8 @@ use App\Games\Kernel\Game;
 use Carbon\Carbon;
 use Closure;
 
-class AdminAuthenticate {
-
+class AdminAuthenticate
+{
     /**
      * Handle an incoming request.
      *
@@ -16,14 +16,16 @@ class AdminAuthenticate {
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next) {
-        if(!auth('sanctum')->guest()) {
-            if(auth('sanctum')->user()->access === 'admin' && auth('sanctum')->user()->validate2FA(true)) {
+    public function handle($request, Closure $next)
+    {
+        if (! auth('sanctum')->guest()) {
+            if (auth('sanctum')->user()->access === 'admin' && auth('sanctum')->user()->validate2FA(true)) {
                 return $next($request);
             }
-			return redirect('/');
+
+            return redirect('/');
         }
+
         return redirect('/');
     }
-
 }

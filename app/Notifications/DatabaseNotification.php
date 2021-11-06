@@ -1,4 +1,6 @@
-<?php namespace App\Notifications;
+<?php
+
+namespace App\Notifications;
 
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Jenssegers\Mongodb\Eloquent\Model;

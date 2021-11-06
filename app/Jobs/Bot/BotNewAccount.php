@@ -16,8 +16,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Hash;
 
-class BotNewAccount implements ShouldQueue {
-
+class BotNewAccount implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $games;
@@ -25,11 +25,15 @@ class BotNewAccount implements ShouldQueue {
     private $iFromMs;
     private $iToMs;
 
-    public function __construct($games, $iFromMs, $iToMs) {
-        $createUsername = function() use(&$createUsername) {
+    public function __construct($games, $iFromMs, $iToMs)
+    {
+        $createUsername = function () use (&$createUsername) {
             $faker = Factory::create();
             $username = $faker->userName;
-            if(User::where('name', $username)->first() != null) return $createUsername();
+            if (User::where('name', $username)->first() != null) {
+                return $createUsername();
+            }
+
             return str_replace('.', mt_rand(0, 2) === 1 ? '_' : '', $username);
         };
 
@@ -39,7 +43,8 @@ class BotNewAccount implements ShouldQueue {
         $this->iToMs = $iToMs;
     }
 
-    public function handle() {
+    public function handle()
+    {
         $avatar = 'https://avatars.dicebear.com/api/human/'.uniqid().'.svg?background=%23ffc815';
         $user = User::create([
             'name' => $this->username,
@@ -55,14 +60,17 @@ class BotNewAccount implements ShouldQueue {
             'register_multiaccount_hash' => null,
             'login_multiaccount_hash' => null,
             'private_bets' => mt_rand(0, 100) <= floatval(Settings::get('hidden_bets_probability', 20, true)),
-            'private_profile' => mt_rand(0, 100) <= floatval(Settings::get('hidden_profile_probability', 20, true))
+            'private_profile' => mt_rand(0, 100) <= floatval(Settings::get('hidden_profile_probability', 20, true)),
         ]);
 
-        $getGame = function() use(&$getGame) {
+        $getGame = function () use (&$getGame) {
             $games = \App\Games\Kernel\Game::list();
             $gameInstance = $games[mt_rand(0, count($games) - 1)];
-            if($gameInstance->isDisabled() || $gameInstance instanceof MultiplayerGame
-                || $gameInstance instanceof Roulette) return $getGame();
+            if ($gameInstance->isDisabled() || $gameInstance instanceof MultiplayerGame
+                || $gameInstance instanceof Roulette) {
+                return $getGame();
+            }
+
             return $gameInstance;
         };
 
@@ -71,11 +79,10 @@ class BotNewAccount implements ShouldQueue {
 
         $gameInstance = $getGame();
         $interval = 0;
-        for($game = 0; $game < $this->games; $game++) {
+        for ($game = 0; $game < $this->games; $game++) {
             $bet = $currency->getBotBet();
             $interval += mt_rand($this->iFromMs, $this->iToMs);
             dispatch((new BotPlayGame($bet, $currency->id(), $gameInstance, $user))->delay(now()->addMilliseconds($interval)));
         }
     }
-
 }

@@ -15,8 +15,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class MultiplayerNextGame implements ShouldQueue {
-
+class MultiplayerNextGame implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Game $game;
@@ -26,7 +26,8 @@ class MultiplayerNextGame implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct(Game $game) {
+    public function __construct(Game $game)
+    {
         $this->game = $game;
     }
 
@@ -35,8 +36,8 @@ class MultiplayerNextGame implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
         $this->game->nextGame();
     }
-
 }

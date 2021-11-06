@@ -1,4 +1,6 @@
-<?php namespace App\Games;
+<?php
+
+namespace App\Games;
 
 use App\Game;
 use App\Games\Kernel\Data;
@@ -15,84 +17,104 @@ use App\Games\Kernel\ProvablyFair;
 use App\Games\Kernel\ProvablyFairResult;
 use Illuminate\Support\Facades\Log;
 
-class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
-
-    function metadata(): Metadata {
+class Stairs extends ExtendedGame implements MultiplierCanBeLimited
+{
+    public function metadata(): Metadata
+    {
         return new class extends Metadata {
-            function id(): string {
+            public function id(): string
+            {
                 return 'stairs';
             }
 
-            function name(): string {
+            public function name(): string
+            {
                 return 'Stairs';
             }
 
-            function icon(): string {
+            public function icon(): string
+            {
                 return 'stairs';
             }
 
-            public function category(): array {
+            public function category(): array
+            {
                 return [GameCategory::$originals];
             }
         };
     }
 
-    public function start(\App\Game $game) {
+    public function start(Game $game)
+    {
         $this->pushData($game, ['mines' => intval($this->userData($game)['data']['mines'])]);
     }
 
-    public function getModuleData(\App\Game $game) {
+    public function getModuleData(Game $game)
+    {
         return floatval($this->gameData($game)['mines']);
     }
 
-    public function turn(\App\Game $game, array $turnData): Turn {
+    public function turn(Game $game, array $turnData): Turn
+    {
         $rows = [20, 19, 19, 18, 19, 15, 17, 13, 12, 19, 10, 9, 8];
         $row = $rows[$this->getTurn($game) - 1];
-        if(intval($turnData['cell']) >= $row || intval($turnData['cell']) < 0) return new FailedTurn($game, []);
+        if (intval($turnData['cell']) >= $row || intval($turnData['cell']) < 0) {
+            return new FailedTurn($game, []);
+        }
 
         $this->pushHistory($game, intval($turnData['cell']));
 
         $row = (new ProvablyFair($this, $game->server_seed))->result()->result()[$this->gameData($game)['mines'] - 1][$this->getTurn($game) - 1];
-        if(in_array(intval($turnData['cell']), $row)) return new LoseGame($game, ['death' => $row]);
+        if (in_array(intval($turnData['cell']), $row)) {
+            return new LoseGame($game, ['death' => $row]);
+        }
 
         $game->update([
-            'multiplier' => $this->data()[$this->gameData($game)['mines']][$this->getTurn($game)]
+            'multiplier' => $this->data()[$this->gameData($game)['mines']][$this->getTurn($game)],
         ]);
 
         $this->pushData($game, [strval($this->getTurn($game)) => intval($turnData['cell'])]);
 
-        if($this->getTurn($game) >= 13) return new FinishGame($game, ['death' => $row]);
+        if ($this->getTurn($game) >= 13) {
+            return new FinishGame($game, ['death' => $row]);
+        }
+
         return new ContinueGame($game, ['death' => $row]);
     }
 
-    public function isLoss(ProvablyFairResult $result, \App\Game $game, array $turnData): bool {
+    public function isLoss(ProvablyFairResult $result, Game $game, array $turnData): bool
+    {
         /*if($this->getTurn($game) > 1) for($i = 1; $i < $this->getTurn($game); $i++) {
             if(in_array($this->gameData($game)[strval($i)], (new ProvablyFair($this, $result->server_seed()))->result()->result()[$this->gameData($game)['mines'] - 1][$i - 1])) return false;
         }*/
         return in_array(intval($turnData['cell']), (new ProvablyFair($this, $result->server_seed()))->result()->result()[$this->gameData($game)['mines'] - 1][$this->getTurn($game)]);
     }
 
-    function result(ProvablyFairResult $result): array {
+    public function result(ProvablyFairResult $result): array
+    {
         $rows = [20, 19, 19, 18, 19, 15, 17, 13, 12, 19, 10, 9, 8];
         $output = [];
-        for($mines = 1; $mines <= 7; $mines++) {
+        for ($mines = 1; $mines <= 7; $mines++) {
             $row = [];
-            for($i = 1; $i <= count($rows); $i++) {
+            for ($i = 1; $i <= count($rows); $i++) {
                 $array = range(0, $rows[$i - 1]);
                 $floats = $result->extractFloats($rows[$i - 1] * $i);
                 $floats = array_splice($floats, $i - 1, $mines * $i);
                 $index = 0;
-                array_push($row, array_slice(array_map(function($float) use(&$array, &$floats, &$mines, &$rows, &$i, &$index) {
+                array_push($row, array_slice(array_map(function ($float) use (&$array, &$floats, &$mines, &$rows, &$i, &$index) {
                     $index = $index + 1;
+
                     return array_splice($array, floor($float * ($rows[$i - 1] - $index + 1)), 1)[0] ?? 5;
                 }, $floats), 0, $mines));
             }
             array_push($output, $row);
         }
+
         return $output;
     }
 
-    public function data(): array {
+    public function data(): array
+    {
         return [
             1 => $this->applyHouseEdge([
                 13 => 2.71,
@@ -107,7 +129,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 1.19,
                 3 => 1.12,
                 2 => 1.06,
-                1 => 1.00
+                1 => 1.00,
             ]),
             2 => $this->applyHouseEdge([
                 13 => 8.60,
@@ -122,7 +144,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 1.50,
                 3 => 1.33,
                 2 => 1.18,
-                1 => 1.06
+                1 => 1.06,
             ]),
             3 => $this->applyHouseEdge([
                 13 => 30.94,
@@ -137,7 +159,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 1.93,
                 3 => 1.59,
                 2 => 1.33,
-                1 => 1.12
+                1 => 1.12,
             ]),
             4 => $this->applyHouseEdge([
                 13 => 131.51,
@@ -152,7 +174,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 2.53,
                 3 => 1.93,
                 2 => 1.50,
-                1 => 1.19
+                1 => 1.19,
             ]),
             5 => $this->applyHouseEdge([
                 13 => 701.37,
@@ -167,7 +189,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 3.37,
                 3 => 2.38,
                 2 => 1.72,
-                1 => 1.27
+                1 => 1.27,
             ]),
             6 => $this->applyHouseEdge([
                 13 => 5260.29,
@@ -182,7 +204,7 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 4.60,
                 3 => 2.98,
                 2 => 1.98,
-                1 => 1.36
+                1 => 1.36,
             ]),
             7 => $this->applyHouseEdge([
                 13 => 73644.00,
@@ -197,25 +219,27 @@ class Stairs extends ExtendedGame implements MultiplierCanBeLimited {
                 4 => 6.44,
                 3 => 3.79,
                 2 => 2.31,
-                1 => 1.46
-            ])
+                1 => 1.46,
+            ]),
         ];
     }
 
-    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float {
+    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float
+    {
         return $this->data()[$this->gameData($game)['mines']][$this->getTurn($game)];
     }
 
-    public function getBotData(): array {
+    public function getBotData(): array
+    {
         return [
-            'mines' => mt_rand(1, 7)
+            'mines' => mt_rand(1, 7),
         ];
     }
 
-    public function getBotTurnData($turnId): array {
+    public function getBotTurnData($turnId): array
+    {
         return [
-            'cell' => mt_rand(0, 19)
+            'cell' => mt_rand(0, 19),
         ];
     }
-
 }

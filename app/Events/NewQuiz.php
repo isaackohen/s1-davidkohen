@@ -1,4 +1,6 @@
-<?php namespace App\Events;
+<?php
+
+namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -6,13 +8,14 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewQuiz implements ShouldBroadcastNow {
-
+class NewQuiz implements ShouldBroadcastNow
+{
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private string $quiz;
 
-    public function __construct(string $quiz) {
+    public function __construct(string $quiz)
+    {
         $this->quiz = $quiz;
     }
 
@@ -21,14 +24,15 @@ class NewQuiz implements ShouldBroadcastNow {
      *
      * @return Channel
      */
-    public function broadcastOn() {
+    public function broadcastOn()
+    {
         return new Channel('Everyone');
     }
 
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         return [
-            'quiz' => $this->quiz
+            'quiz' => $this->quiz,
         ];
     }
-
 }

@@ -15,7 +15,7 @@ return [
     */
 
     'discord' => [
-        'token' => env('DISCORD_BOT_TOKEN')
+        'token' => env('DISCORD_BOT_TOKEN'),
     ],
 
     'mailgun' => [

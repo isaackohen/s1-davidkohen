@@ -1,44 +1,55 @@
-<?php namespace App\Currency\Local;
+<?php
+
+namespace App\Currency\Local;
 
 use App\Currency\Option\WalletOption;
 
-class Usd extends LocalCurrency {
-
-    function id(): string {
-        return "local_usd";
+class Usd extends LocalCurrency
+{
+    public function id(): string
+    {
+        return 'local_usd';
     }
 
-    function walletId(): string {
-        return "usd";
+    public function walletId(): string
+    {
+        return 'usd';
     }
 
-    function name(): string {
-        return "USD";
+    public function name(): string
+    {
+        return 'USD';
     }
 
-    function alias(): string {
-        return "usd";
+    public function alias(): string
+    {
+        return 'usd';
     }
 
-    function displayName(): string {
-        return "USD";
+    public function displayName(): string
+    {
+        return 'USD';
     }
 
-    protected function options(): array {
+    protected function options(): array
+    {
         return [
             new class extends WalletOption {
-                function id() {
-                    return "bulkcash_usd";
+                public function id()
+                {
+                    return 'bulkcash_usd';
                 }
-                function name(): string {
-                    return "USD";
+
+                public function name(): string
+                {
+                    return 'USD';
                 }
-            }
+            },
         ];
     }
 
-    public function tokenPrice() {
+    public function tokenPrice()
+    {
         return 1;
     }
-
 }

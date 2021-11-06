@@ -1,4 +1,6 @@
-<?php namespace App\Events;
+<?php
+
+namespace App\Events;
 
 use App\Chat;
 use App\Game;
@@ -9,15 +11,16 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MultiplayerGameBet implements ShouldBroadcastNow {
-
+class MultiplayerGameBet implements ShouldBroadcastNow
+{
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private User $user;
     private Game $game;
     private array $data;
 
-    public function __construct(User $user, Game $game, array $data) {
+    public function __construct(User $user, Game $game, array $data)
+    {
         $this->user = $user;
         $this->game = $game;
         $this->data = $data;
@@ -28,16 +31,17 @@ class MultiplayerGameBet implements ShouldBroadcastNow {
      *
      * @return Channel
      */
-    public function broadcastOn() {
+    public function broadcastOn()
+    {
         return new Channel('Everyone');
     }
 
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         return [
             'user' => array_merge($this->user->toArray(), ['vipLevel' => $this->user->vipLevel()]),
             'game' => $this->game->toArray(),
-            'data' => $this->data
+            'data' => $this->data,
         ];
     }
-
 }

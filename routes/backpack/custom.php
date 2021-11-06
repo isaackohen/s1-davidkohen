@@ -25,7 +25,5 @@ Route::group([
     Route::get('providers/{id}/enableProvider', 'ProvidersCrudController@enableProvider');
     Route::get('providers/updateProviders', 'ProvidersCrudController@updateProviderList');
 
-
-
     Route::crud('settings', 'SettingsCrudController');
 }); // this should be the absolute last line of this file

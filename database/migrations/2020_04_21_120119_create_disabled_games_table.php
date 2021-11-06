@@ -13,7 +13,8 @@ class CreateDisabledGamesTable extends Migration
      */
     public function up()
     {
-        Schema::create('disabled_games', function (Blueprint $table) {});
+        Schema::create('disabled_games', function (Blueprint $table) {
+        });
     }
 
     /**

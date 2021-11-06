@@ -1,4 +1,6 @@
-<?php namespace App\Games;
+<?php
+
+namespace App\Games;
 
 use App\Game;
 use App\Games\Kernel\Data;
@@ -13,57 +15,72 @@ use App\Games\Kernel\Module\General\Wrapper\MultiplierCanBeLimited;
 use App\Games\Kernel\ProvablyFair;
 use App\Games\Kernel\ProvablyFairResult;
 
-class VideoPoker extends ExtendedGame implements MultiplierCanBeLimited {
-
-    function metadata(): Metadata {
+class VideoPoker extends ExtendedGame implements MultiplierCanBeLimited
+{
+    public function metadata(): Metadata
+    {
         return new class extends Metadata {
-            function id(): string {
+            public function id(): string
+            {
                 return 'videopoker';
             }
 
-            function name(): string {
+            public function name(): string
+            {
                 return 'VideoPoker';
             }
 
-            function icon(): string{
+            public function icon(): string
+            {
                 return 'fas fa-spade';
             }
 
-            public function category(): array {
+            public function category(): array
+            {
                 return [GameCategory::$originals, GameCategory::$table];
             }
         };
     }
 
-    public function start(\App\Game $game) {}
+    public function start(Game $game)
+    {
+    }
 
-    public function turn(\App\Game $game, array $turnData): Turn {
-        if($this->getTurn($game) === 1) {
+    public function turn(Game $game, array $turnData): Turn
+    {
+        if ($this->getTurn($game) === 1) {
             $game->update([
-                'multiplier' => 1
+                'multiplier' => 1,
             ]);
             $this->pushData($game, ['deck' => array_slice((new ProvablyFair($this, $game->server_seed))->result()->result(), 0, 5)]);
             $this->pushHistory($game, ['deck' => $this->gameData($game)['deck']]);
+
             return new ContinueGame($game, ['deck' => $this->gameData($game)['deck']]);
         } else {
             $game->update([
-                'multiplier' => $this->getMultiplier($game, $turnData, true, $game->server_seed)
+                'multiplier' => $this->getMultiplier($game, $turnData, true, $game->server_seed),
             ]);
             $this->pushData($game, ['deck' => array_slice((new ProvablyFair($this, $game->server_seed))->result()->result(), 0, 5)]);
             $this->pushHistory($game, ['deck' => $this->gameData($game)['deck']]);
+
             return new FinishGame($game, ['deck' => $this->gameData($game)['deck']]);
         }
     }
 
-    private function getMultiplier(Game $game, ?array $turnData, bool $replace, string $server_seed) {
+    private function getMultiplier(Game $game, ?array $turnData, bool $replace, string $server_seed)
+    {
         $deck = (new ProvablyFair($this, $server_seed))->result()->result();
 
-        if($turnData != null) {
+        if ($turnData != null) {
             if ($replace) {
-                if(count($turnData['hold']) > 5) $turnData['hold'] = [];
+                if (count($turnData['hold']) > 5) {
+                    $turnData['hold'] = [];
+                }
                 $rest = array_slice($deck, 5, 10);
                 for ($i = 0; $i < 5; $i++) {
-                    if (in_array($i, $turnData['hold'])) continue;
+                    if (in_array($i, $turnData['hold'])) {
+                        continue;
+                    }
                     $deck[$i] = $rest[$i];
                 }
             }
@@ -77,56 +94,101 @@ class VideoPoker extends ExtendedGame implements MultiplierCanBeLimited {
         $userTypes = [];
         $userSlots = [];
 
-        for($i = 1; $i <= 52; $i++) array_push($values, $this->deck()[$i]['value']);
-		for($i = 1; $i <= 52; $i++) array_push($types, $this->deck()[$i]['type']);
-		for($i = 0; $i < 5; $i++) array_push($userValues, $this->deck()[$deck[$i] + 1]['value']);
-		for($i = 0; $i < 5; $i++) array_push($userTypes, $this->deck()[$deck[$i] + 1]['type']);
-		for($i = 0; $i < 5; $i++) array_push($userSlots, $this->deck()[$deck[$i] + 1]['slot']);	
-		$totalSlots = $userSlots[0] + $userSlots[1] + $userSlots[2] + $userSlots[3] + $userSlots[4];
-		$isStraight = false;
-		if($totalSlots == 10 && in_array('A', $userValues) && in_array('2', $userValues) && in_array('3', $userValues) && in_array('4', $userValues) && in_array('5', $userValues)) $isStraight = true;
-		if($totalSlots == 15 && in_array('6', $userValues) && in_array('5', $userValues) && in_array('4', $userValues) && in_array('3', $userValues) && in_array('2', $userValues)) $isStraight = true;
-		if($totalSlots == 20 && in_array('6', $userValues) && in_array('7', $userValues) && in_array('5', $userValues) && in_array('4', $userValues) && in_array('3', $userValues)) $isStraight = true;
-		if($totalSlots == 25 && in_array('7', $userValues) && in_array('8', $userValues) && in_array('6', $userValues) && in_array('5', $userValues) && in_array('4', $userValues)) $isStraight = true;
-		if($totalSlots == 30 && in_array('8', $userValues) && in_array('9', $userValues) && in_array('7', $userValues) && in_array('6', $userValues) && in_array('5', $userValues)) $isStraight = true;
-		if($totalSlots == 35 && in_array('9', $userValues) && in_array('10', $userValues) && in_array('8', $userValues) && in_array('7', $userValues) && in_array('6', $userValues)) $isStraight = true;
-		if($totalSlots == 40 && in_array('10', $userValues) && in_array('J', $userValues) && in_array('9', $userValues) && in_array('8', $userValues) && in_array('7', $userValues)) $isStraight = true;
-		if($totalSlots == 45 && in_array('J', $userValues) && in_array('Q', $userValues) && in_array('10', $userValues) && in_array('9', $userValues) && in_array('8', $userValues)) $isStraight = true;
-		if($totalSlots == 50 && in_array('Q', $userValues) && in_array('K', $userValues) && in_array('J', $userValues) && in_array('10', $userValues) && in_array('9', $userValues)) 
+        for ($i = 1; $i <= 52; $i++) {
+            array_push($values, $this->deck()[$i]['value']);
+        }
+        for ($i = 1; $i <= 52; $i++) {
+            array_push($types, $this->deck()[$i]['type']);
+        }
+        for ($i = 0; $i < 5; $i++) {
+            array_push($userValues, $this->deck()[$deck[$i] + 1]['value']);
+        }
+        for ($i = 0; $i < 5; $i++) {
+            array_push($userTypes, $this->deck()[$deck[$i] + 1]['type']);
+        }
+        for ($i = 0; $i < 5; $i++) {
+            array_push($userSlots, $this->deck()[$deck[$i] + 1]['slot']);
+        }
+        $totalSlots = $userSlots[0] + $userSlots[1] + $userSlots[2] + $userSlots[3] + $userSlots[4];
+        $isStraight = false;
+        if ($totalSlots == 10 && in_array('A', $userValues) && in_array('2', $userValues) && in_array('3', $userValues) && in_array('4', $userValues) && in_array('5', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 15 && in_array('6', $userValues) && in_array('5', $userValues) && in_array('4', $userValues) && in_array('3', $userValues) && in_array('2', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 20 && in_array('6', $userValues) && in_array('7', $userValues) && in_array('5', $userValues) && in_array('4', $userValues) && in_array('3', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 25 && in_array('7', $userValues) && in_array('8', $userValues) && in_array('6', $userValues) && in_array('5', $userValues) && in_array('4', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 30 && in_array('8', $userValues) && in_array('9', $userValues) && in_array('7', $userValues) && in_array('6', $userValues) && in_array('5', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 35 && in_array('9', $userValues) && in_array('10', $userValues) && in_array('8', $userValues) && in_array('7', $userValues) && in_array('6', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 40 && in_array('10', $userValues) && in_array('J', $userValues) && in_array('9', $userValues) && in_array('8', $userValues) && in_array('7', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 45 && in_array('J', $userValues) && in_array('Q', $userValues) && in_array('10', $userValues) && in_array('9', $userValues) && in_array('8', $userValues)) {
+            $isStraight = true;
+        }
+        if ($totalSlots == 50 && in_array('Q', $userValues) && in_array('K', $userValues) && in_array('J', $userValues) && in_array('10', $userValues) && in_array('9', $userValues)) {
+            $isStraight = true;
+        }
+        $isFlush = count(array_count_values($userTypes)) == 1;
+        $o = array_count_values($userValues);
+        $pairs = 0;
+        $triplets = 0;
+        $fours = 0;
+        foreach ($o as $value => $occur) {
+            if ($occur == 3) {
+                $triplets++;
+            } elseif ($occur >= 4) {
+                $fours += 1;
+            } elseif ($occur >= 2) {
+                $pairs += 1;
+            }
+        }
+        if (in_array('A', $userValues) && in_array('K', $userValues) && in_array('Q', $userValues) && in_array('J', $userValues) && in_array('10', $userValues)) {
+            return 800;
+        } elseif ($isStraight && $isFlush) {
+            return HouseEdgeModule::apply($this, 60);
+        } elseif ($fours == 1) {
+            return HouseEdgeModule::apply($this, 22);
+        } elseif ($triplets == 1 && $pairs == 1) {
+            return HouseEdgeModule::apply($this, 9);
+        } elseif ($isFlush) {
+            return HouseEdgeModule::apply($this, 6);
+        } elseif ($isStraight) {
+            return HouseEdgeModule::apply($this, 4);
+        } elseif ($triplets == 1) {
+            return HouseEdgeModule::apply($this, 3);
+        } elseif ($pairs == 2) {
+            return HouseEdgeModule::apply($this, 2);
+        } elseif ((count(array_keys($userValues, 'A')) == 2) || (count(array_keys($userValues, 'K')) == 2) || (count(array_keys($userValues, 'Q')) == 2) || (count(array_keys($userValues, 'J')) == 2)) {
+            return HouseEdgeModule::apply($this, 1);
+        } elseif ($pairs == 1) {
+            return 0;
+        }
 
-		$isStraight = true;
-		$isFlush = count(array_count_values($userTypes)) == 1;
-		$o = array_count_values($userValues);
-		$pairs = 0;
-		$triplets = 0;
-		$fours = 0;
-		foreach ($o as $value => $occur) {
-			if($occur == 3) $triplets++;
-			else if($occur >= 4) $fours += 1;
-			else if($occur >= 2) $pairs += 1;
-		}
-		if(in_array('A', $userValues) && in_array('K', $userValues) && in_array('Q', $userValues) && in_array('J', $userValues) && in_array('10', $userValues)) return 800;
-		else if($isStraight && $isFlush) return HouseEdgeModule::apply($this, 60);
-		else if($fours == 1) return HouseEdgeModule::apply($this, 22);
-		else if($triplets == 1 && $pairs == 1) return HouseEdgeModule::apply($this, 9);
-		else if($isFlush) return HouseEdgeModule::apply($this, 6);
-		else if($isStraight) return HouseEdgeModule::apply($this, 4);
-		else if($triplets == 1) return HouseEdgeModule::apply($this, 3);
-		else if($pairs == 2) return HouseEdgeModule::apply($this, 2);
-		else if((count(array_keys($userValues, 'A')) == 2) || (count(array_keys($userValues, 'K')) == 2) || (count(array_keys($userValues, 'Q')) == 2) || (count(array_keys($userValues, 'J')) == 2)) return HouseEdgeModule::apply($this, 1);
-		else if($pairs == 1) return 0;
-		return 0;
+        return 0;
     }
 
-    public function isLoss(ProvablyFairResult $result, \App\Game $game, array $turnData): bool {
+    public function isLoss(ProvablyFairResult $result, Game $game, array $turnData): bool
+    {
         return $this->getMultiplier($game, $turnData, $this->getTurn($game) == 1, $result->server_seed()) < 1;
     }
 
-    function result(ProvablyFairResult $result): array {
+    public function result(ProvablyFairResult $result): array
+    {
         return $this->getCards($result, 10, true);
     }
 
-    private function deck() {
+    private function deck()
+    {
         return [
             1 => ['type' => 'spades', 'value' => 'A', 'slot' => 0],
             2 => ['type' => 'spades', 'value' => '2', 'slot' => 1],
@@ -179,18 +241,19 @@ class VideoPoker extends ExtendedGame implements MultiplierCanBeLimited {
             49 => ['type' => 'diamonds', 'value' => '10', 'slot' => 9],
             50 => ['type' => 'diamonds', 'value' => 'J', 'slot' => 10],
             51 => ['type' => 'diamonds', 'value' => 'Q', 'slot' => 11],
-            52 => ['type' => 'diamonds', 'value' => 'K', 'slot' => 12]
+            52 => ['type' => 'diamonds', 'value' => 'K', 'slot' => 12],
         ];
     }
 
-    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float {
+    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float
+    {
         return $this->getMultiplier($game, null, false, $result->server_seed());
     }
 
-    public function getBotTurnData($turnId): array {
+    public function getBotTurnData($turnId): array
+    {
         return [
-            'hold' => [-1, -1, -1, -1, -1, -1]
+            'hold' => [-1, -1, -1, -1, -1, -1],
         ];
     }
-
 }

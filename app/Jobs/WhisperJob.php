@@ -18,8 +18,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class WhisperJob implements ShouldQueue {
-
+class WhisperJob implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $message;
@@ -29,7 +29,8 @@ class WhisperJob implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct($message) {
+    public function __construct($message)
+    {
         $this->message = $message;
     }
 
@@ -38,13 +39,18 @@ class WhisperJob implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
         $message = json_decode($this->message);
-        if(!isset($message->event)) return;
+        if (! isset($message->event)) {
+            return;
+        }
         $event = str_replace('client-', '', $message->event);
 
         $whisper = WebSocketWhisper::find($event);
-        if($whisper == null) return;
+        if ($whisper == null) {
+            return;
+        }
 
         $token = $message->data->token;
 
@@ -56,12 +62,13 @@ class WhisperJob implements ShouldQueue {
         $accessToken = PersonalAccessToken::findToken($token);
         $whisper->user = $message->data->token ? $accessToken->tokenable->withAccessToken(tap($accessToken->forceFill(['last_used_at' => now()]))->save()) : null;
 
-        if($whisper->user) auth()->login($whisper->user);
+        if ($whisper->user) {
+            auth()->login($whisper->user);
+        }
 
-        $this->info('Event ' . $event . ' with data ' . json_encode($message->data->data) . ' -> to @' . ($whisper->user ? $whisper->user->name : 'guest'));
+        $this->info('Event '.$event.' with data '.json_encode($message->data->data).' -> to @'.($whisper->user ? $whisper->user->name : 'guest'));
 
         $response = $whisper->process($message->data->data);
         $whisper->sendResponse($response);
     }
-
 }

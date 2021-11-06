@@ -2,9 +2,9 @@
 
 namespace App\Token;
 
+use App\Token\PersonalAccessToken;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
-use App\Token\PersonalAccessToken;
 
 class NewAccessToken implements Arrayable, Jsonable
 {
@@ -29,7 +29,7 @@ class NewAccessToken implements Arrayable, Jsonable
      * @param  string  $plainTextToken
      * @return void
      */
-    public function __construct(\App\Token\PersonalAccessToken $accessToken, string $plainTextToken)
+    public function __construct(PersonalAccessToken $accessToken, string $plainTextToken)
     {
         $this->accessToken = $accessToken;
         $this->plainTextToken = $plainTextToken;

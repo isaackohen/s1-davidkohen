@@ -1,11 +1,13 @@
-<?php namespace App\Http\Middleware;
+<?php
+
+namespace App\Http\Middleware;
 
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Support\Facades\Cookie;
 
-class MultiaccountCheck {
-
+class MultiaccountCheck
+{
     /**
      * Handle an incoming request.
      *
@@ -13,9 +15,12 @@ class MultiaccountCheck {
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next) {
-        if(!Cookie::has('s')) Cookie::queue(Cookie::make('s', uniqid().Carbon::now()->timestamp, 525600 /* 1 year */));
+    public function handle($request, Closure $next)
+    {
+        if (! Cookie::has('s')) {
+            Cookie::queue(Cookie::make('s', uniqid().Carbon::now()->timestamp, 525600 /* 1 year */));
+        }
+
         return $next($request);
     }
-
 }

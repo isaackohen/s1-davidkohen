@@ -57,7 +57,7 @@ return [
 
     'middlewares' => [
         'web',
-        'admin'
+        'admin',
         //'auth',
     ],
 

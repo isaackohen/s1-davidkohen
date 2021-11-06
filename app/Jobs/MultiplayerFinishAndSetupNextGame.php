@@ -13,8 +13,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MultiplayerFinishAndSetupNextGame implements ShouldQueue {
-
+class MultiplayerFinishAndSetupNextGame implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private \App\Games\Kernel\Game $game;
@@ -26,7 +26,8 @@ class MultiplayerFinishAndSetupNextGame implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct(\App\Games\Kernel\Game $game, array $data, $nextGameDelay) {
+    public function __construct(\App\Games\Kernel\Game $game, array $data, $nextGameDelay)
+    {
         $this->game = $game;
         $this->data = $data;
         $this->nextGameDelay = $nextGameDelay;
@@ -37,12 +38,12 @@ class MultiplayerFinishAndSetupNextGame implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
         event(new MultiplayerGameFinished($this->game, $this->data));
 
         $this->game->onDispatchedFinish();
 
         dispatch((new MultiplayerNextGame($this->game))->delay($this->nextGameDelay));
     }
-
 }

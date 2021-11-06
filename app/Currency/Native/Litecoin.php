@@ -1,33 +1,41 @@
-<?php namespace App\Currency\Native;
+<?php
 
-class Litecoin extends V16RPCBitcoin {
+namespace App\Currency\Native;
 
-    function id(): string {
-        return "native_ltc";
+class Litecoin extends V16RPCBitcoin
+{
+    public function id(): string
+    {
+        return 'native_ltc';
     }
 
-    public function walletId(): string {
-        return "ltc";
+    public function walletId(): string
+    {
+        return 'ltc';
     }
 
-    function name(): string {
-        return "LTC";
+    public function name(): string
+    {
+        return 'LTC';
     }
 
-    public function alias(): string {
+    public function alias(): string
+    {
         return 'litecoin';
     }
 
-    public function displayName(): string {
-        return "Litecoin";
+    public function displayName(): string
+    {
+        return 'Litecoin';
     }
 
-    function icon(): string {
-        return "ltc";
+    public function icon(): string
+    {
+        return 'ltc';
     }
 
-    public function style(): string {
-        return "#bfbbbb";
+    public function style(): string
+    {
+        return '#bfbbbb';
     }
-
 }

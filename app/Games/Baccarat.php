@@ -1,4 +1,6 @@
-<?php namespace App\Games;
+<?php
+
+namespace App\Games;
 
 use App\Currency\Currency;
 use App\Events\MultiplayerTimerStart;
@@ -15,70 +17,77 @@ use App\Jobs\MultiplayerFinishAndSetupNextGame;
 use App\Jobs\MultiplayerUpdateData;
 use App\Jobs\MultiplayerUpdateTimestamp;
 
-class Baccarat extends MultiplayerGame {
-
-    function metadata(): Metadata {
+class Baccarat extends MultiplayerGame
+{
+    public function metadata(): Metadata
+    {
         return new class extends Metadata {
-            function id(): string {
+            public function id(): string
+            {
                 return 'baccarat';
             }
 
-            function name(): string {
+            public function name(): string
+            {
                 return 'Baccarat';
             }
 
-            function icon(): string {
+            public function icon(): string
+            {
                 return 'baccarat';
             }
 
-            public function category(): array {
+            public function category(): array
+            {
                 return [GameCategory::$originals, GameCategory::$table];
             }
         };
     }
 
-    private function getScore($hand) {
+    private function getScore($hand)
+    {
         return ($hand[0]['baccaratValue'] + $hand[1]['baccaratValue']) % 10;
     }
 
-    private function getResult(array $result) {
+    private function getResult(array $result)
+    {
         $player = [
             $this->deck()[$result[0] + 1],
-            $this->deck()[$result[2] + 1]
+            $this->deck()[$result[2] + 1],
         ];
 
         $dealer = [
             $this->deck()[$result[1] + 1],
-            $this->deck()[$result[3] + 1]
+            $this->deck()[$result[3] + 1],
         ];
 
         $index = 3;
 
-        $drawThirdCards = function(&$playerScore, &$bankerScore) use(&$player, &$dealer, $result, &$index) {
-            if($playerScore <= 5) {
+        $drawThirdCards = function (&$playerScore, &$bankerScore) use (&$player, &$dealer, $result, &$index) {
+            if ($playerScore <= 5) {
                 $index++;
                 array_push($player, $this->deck()[$result[$index] + 1]);
             }
-            if(!isset($player[2]) && $bankerScore <= 5) {
+            if (! isset($player[2]) && $bankerScore <= 5) {
                 $index++;
                 array_push($dealer, $this->deck()[$result[$index] + 1]);
             }
-            if(isset($player[2])) {
-                if($bankerScore <= 2) {
+            if (isset($player[2])) {
+                if ($bankerScore <= 2) {
                     $index++;
                     array_push($dealer, $this->deck()[$result[$index] + 1]);
-                } else if($bankerScore === 3 && $player[2]['baccaratValue'] != 8) {
+                } elseif ($bankerScore === 3 && $player[2]['baccaratValue'] != 8) {
                     $index++;
                     array_push($dealer, $this->deck()[$result[$index] + 1]);
-                } else if($bankerScore === 3 && $player[2]['baccaratValue'] == 8) {
+                } elseif ($bankerScore === 3 && $player[2]['baccaratValue'] == 8) {
                     // Banker 3 vs 8
-                } else if($bankerScore == 4 && in_array($player[2]['baccaratValue'], [2, 3, 4, 5, 6, 7])) {
+                } elseif ($bankerScore == 4 && in_array($player[2]['baccaratValue'], [2, 3, 4, 5, 6, 7])) {
                     $index++;
                     array_push($dealer, $this->deck()[$result[$index] + 1]);
-                } else if($bankerScore == 5 && in_array($player[2]['baccaratValue'], [4, 5, 6, 7])) {
+                } elseif ($bankerScore == 5 && in_array($player[2]['baccaratValue'], [4, 5, 6, 7])) {
                     $index++;
                     array_push($dealer, $this->deck()[$result[$index] + 1]);
-                } else if($bankerScore == 6 && in_array($player[2]['baccaratValue'], [6, 7])) {
+                } elseif ($bankerScore == 6 && in_array($player[2]['baccaratValue'], [6, 7])) {
                     $index++;
                     array_push($dealer, $this->deck()[$result[$index] + 1]);
                 }
@@ -93,28 +102,33 @@ class Baccarat extends MultiplayerGame {
         $playerScore = $this->getScore($player);
         $dealerScore = $this->getScore($dealer);
 
-        if(!($playerScore == 8 || $playerScore == 9 || $dealerScore == 8 || $dealerScore == 9)) $drawThirdCards($playerScore, $dealerScore);
+        if (! ($playerScore == 8 || $playerScore == 9 || $dealerScore == 8 || $dealerScore == 9)) {
+            $drawThirdCards($playerScore, $dealerScore);
+        }
 
         return [
             'player' => $player,
             'dealer' => $dealer,
             'score' => [
                 'player' => $playerScore,
-                'dealer' => $dealerScore
+                'dealer' => $dealerScore,
             ],
-            'status' => $playerScore == $dealerScore ? 'draw' : ($playerScore > $dealerScore ? 'player' : 'banker')
+            'status' => $playerScore == $dealerScore ? 'draw' : ($playerScore > $dealerScore ? 'player' : 'banker'),
         ];
     }
 
-    function result(ProvablyFairResult $result): array {
+    public function result(ProvablyFairResult $result): array
+    {
         return $this->getCards($result, 6);
     }
 
-    protected function getPlayerData(Game $game): array {
+    protected function getPlayerData(Game $game): array
+    {
         return ['bet' => $this->userData($game)['data']['bet']];
     }
 
-    public function nextGame() {
+    public function nextGame()
+    {
         $this->state()->resetPlayers();
         $this->state()->clientSeed(ProvablyFair::generateServerSeed());
         $this->state()->serverSeed(ProvablyFair::generateServerSeed());
@@ -135,29 +149,32 @@ class Baccarat extends MultiplayerGame {
         dispatch((new MultiplayerUpdateTimestamp($this, -1))->delay(now()->addSeconds(15)));
     }
 
-    public function onDispatchedFinish() {
+    public function onDispatchedFinish()
+    {
         $result = $this->getResult((new ProvablyFair($this))->result()->result());
         $this->state()->data($result);
 
-        foreach($this->getActiveGames() as $game) {
+        foreach ($this->getActiveGames() as $game) {
             $multiplier = 0;
             $profit = 0;
 
-            foreach((array) $this->userData($game)['data']['bet'] as $key => $value) {
-                if($value == 0) continue;
+            foreach ((array) $this->userData($game)['data']['bet'] as $key => $value) {
+                if ($value == 0) {
+                    continue;
+                }
 
-                if($result['status'] === 'draw' && $key === 'draw') {
+                if ($result['status'] === 'draw' && $key === 'draw') {
                     $multiplier += HouseEdgeModule::apply($this, 8);
                     $profit += $value * HouseEdgeModule::apply($this, 8);
-                } else if($result['status'] === 'player' && $key === 'player') {
+                } elseif ($result['status'] === 'player' && $key === 'player') {
                     $multiplier += HouseEdgeModule::apply($this, 2);
                     $profit += $value * HouseEdgeModule::apply($this, 2);
-                } else if($result['status'] === 'banker' && $key === 'banker') {
+                } elseif ($result['status'] === 'banker' && $key === 'banker') {
                     $multiplier += HouseEdgeModule::apply($this, 1.95);
                     $profit += $value * HouseEdgeModule::apply($this, 1.95);
                 }
 
-                if(($key === 'pair_player' && (isset($result['player'][2]) ? ($result['player'][2]['baccaratValue'] == $result['player'][1]['baccaratValue']
+                if (($key === 'pair_player' && (isset($result['player'][2]) ? ($result['player'][2]['baccaratValue'] == $result['player'][1]['baccaratValue']
                             || $result['player'][0]['baccaratValue'] == $result['player'][1]['baccaratValue'] || $result['player'][0] == $result['player'][2]['baccaratValue'])
                             : $result['player'][0]['baccaratValue'] == $result['player'][1]['baccaratValue']))
                     || ($key === 'pair_banker' && (isset($result['dealer'][2]) ? ($result['dealer'][2]['baccaratValue'] == $result['dealer'][1]['baccaratValue']
@@ -172,19 +189,21 @@ class Baccarat extends MultiplayerGame {
         }
     }
 
-    public function startChain() {
+    public function startChain()
+    {
         dispatch(new MultiplayerFinishAndSetupNextGame($this, [
             'player' => [],
             'dealer' => [],
             'score' => [
                 'player' => 0,
-                'dealer' => 0
+                'dealer' => 0,
             ],
-            'status' => 'player'
+            'status' => 'player',
         ], now()));
     }
 
-    private function deck() {
+    private function deck()
+    {
         return [
             1 => ['type' => 'spades', 'value' => 'A', 'baccaratValue' => 1],
             2 => ['type' => 'spades', 'value' => '2', 'baccaratValue' => 2],
@@ -237,15 +256,21 @@ class Baccarat extends MultiplayerGame {
             49 => ['type' => 'diamonds', 'value' => '10', 'baccaratValue' => 10],
             50 => ['type' => 'diamonds', 'value' => 'J', 'baccaratValue' => 10],
             51 => ['type' => 'diamonds', 'value' => 'Q', 'baccaratValue' => 10],
-            52 => ['type' => 'diamonds', 'value' => 'K', 'baccaratValue' => 10]
+            52 => ['type' => 'diamonds', 'value' => 'K', 'baccaratValue' => 10],
         ];
     }
 
-    public function customWagerCalculation(Data $data): ?bool {
+    public function customWagerCalculation(Data $data): ?bool
+    {
         $totalBet = 0;
-        foreach((array) $data->game()->bet as $key => $value) $totalBet += $value;
-        if($totalBet < Currency::find($data->currency())->minBet() || ($data->user() != null && $data->user()->balance(Currency::find($data->currency()))->demo($data->demo())->get() < $totalBet)) return false;
+        foreach ((array) $data->game()->bet as $key => $value) {
+            $totalBet += $value;
+        }
+        if ($totalBet < Currency::find($data->currency())->minBet() || ($data->user() != null && $data->user()->balance(Currency::find($data->currency()))->demo($data->demo())->get() < $totalBet)) {
+            return false;
+        }
         $data->bet($totalBet);
+
         return true;
     }
 }

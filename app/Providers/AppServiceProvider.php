@@ -15,13 +15,14 @@ use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 use Torann\GeoIP\Facades\GeoIP;
 
-class AppServiceProvider extends ServiceProvider {
-
+class AppServiceProvider extends ServiceProvider
+{
     /**
      * Register any application services.
      * @return void
      */
-    public function register() {
+    public function register()
+    {
         //
     }
 
@@ -29,8 +30,8 @@ class AppServiceProvider extends ServiceProvider {
      * Bootstrap any application services.
      * @return void
      */
-    public function boot() {
+    public function boot()
+    {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
-
 }

@@ -1,4 +1,6 @@
-<?php namespace App\Events;
+<?php
+
+namespace App\Events;
 
 use App\Chat;
 use App\Game;
@@ -9,13 +11,14 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ChatRemoveMessages implements ShouldBroadcastNow {
-
+class ChatRemoveMessages implements ShouldBroadcastNow
+{
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     private $ids;
 
-    public function __construct(array $ids) {
+    public function __construct(array $ids)
+    {
         $this->ids = $ids;
     }
 
@@ -24,14 +27,15 @@ class ChatRemoveMessages implements ShouldBroadcastNow {
      *
      * @return Channel
      */
-    public function broadcastOn() {
+    public function broadcastOn()
+    {
         return new Channel('Everyone');
     }
 
-    public function broadcastWith() {
+    public function broadcastWith()
+    {
         return [
-            'ids' => $this->ids
+            'ids' => $this->ids,
         ];
     }
-
 }

@@ -1,4 +1,6 @@
-<?php namespace App\Games\Kernel\Multiplayer;
+<?php
+
+namespace App\Games\Kernel\Multiplayer;
 
 use App\Currency\Currency;
 use App\Events\BalanceModification;
@@ -14,51 +16,59 @@ use App\Leaderboard;
 use App\Transaction;
 use App\User;
 
-abstract class MultiplayerGame extends ExtendedGame {
+abstract class MultiplayerGame extends ExtendedGame
+{
+    abstract public function nextGame();
 
-    public abstract function nextGame();
-    public abstract function onDispatchedFinish();
-    public abstract function startChain();
+    abstract public function onDispatchedFinish();
 
-    protected function getPlayerData(Game $game): array {
+    abstract public function startChain();
+
+    protected function getPlayerData(Game $game): array
+    {
         return [];
     }
 
-    public function state(): MultiplayerGameStateBuilder {
+    public function state(): MultiplayerGameStateBuilder
+    {
         return new MultiplayerGameStateBuilder($this);
     }
 
-    public function getActiveGames() {
+    public function getActiveGames()
+    {
         return Game::where('game', $this->metadata()->id())->where('status', 'in-progress')
             ->where('server_seed', $this->state()->serverSeed())
             ->where('client_seed', $this->state()->clientSeed())->get();
     }
 
-    public function start(Game $game) {
+    public function start(Game $game)
+    {
         $data = $this->getPlayerData($game);
         $user = User::where('_id', $game->user)->first();
         $this->state()->players([
             'user' => $user->toArray(),
             'game' => $game->toArray(),
-            'data' => $this->getPlayerData($game)
+            'data' => $this->getPlayerData($game),
         ]);
         event(new MultiplayerGameBet($user, $game, $data));
     }
 
-    public function turn(Game $game, array $turnData): Turn {
+    public function turn(Game $game, array $turnData): Turn
+    {
         return new ContinueGame($game, []);
     }
 
-    protected function win(Game $game, float $multiplier, int $delay) {
+    protected function win(Game $game, float $multiplier, int $delay)
+    {
         $game->update([
             'status' => $multiplier == 0 ? 'lose' : 'win',
             'profit' => $game->wager * $multiplier,
-            'multiplier' => $multiplier
+            'multiplier' => $multiplier,
         ]);
 
         event(new LiveFeedGame($game, $delay));
 
-        if($multiplier > 0) {
+        if ($multiplier > 0) {
             $user = User::where('_id', $game->user)->first();
             $currency = Currency::find($game->currency);
             $user->balance($currency)->demo($game->demo)->quiet(true)
@@ -69,44 +79,53 @@ abstract class MultiplayerGame extends ExtendedGame {
         Leaderboard::insert($game);
     }
 
-    protected function acceptBet(Data $data) {
+    protected function acceptBet(Data $data)
+    {
         return $this->state()->betting();
     }
 
-    protected function canBeFinished(): bool {
+    protected function canBeFinished(): bool
+    {
         return false;
     }
 
-    protected function allowCancellation(): bool {
+    protected function allowCancellation(): bool
+    {
         return false;
     }
 
-    protected function acceptsDemo() {
+    protected function acceptsDemo()
+    {
         return false;
     }
 
-    public function ignoresMultipleClientTabs() {
+    public function ignoresMultipleClientTabs()
+    {
         return true;
     }
 
-    public function isLoss(ProvablyFairResult $result, \App\Game $game, array $turnData): bool {
+    public function isLoss(ProvablyFairResult $result, Game $game, array $turnData): bool
+    {
         return true;
     }
 
-    public function client_seed() {
+    public function client_seed()
+    {
         return $this->state()->clientSeed();
     }
 
-    public function server_seed() {
+    public function server_seed()
+    {
         return $this->state()->serverSeed();
     }
 
-    public function nonce() {
+    public function nonce()
+    {
         return $this->state()->nonce();
     }
 
-    public function data(): array {
+    public function data(): array
+    {
         return $this->state()->toArray();
     }
-
 }

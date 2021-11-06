@@ -1,4 +1,6 @@
-<?php namespace App\Notifications;
+<?php
+
+namespace App\Notifications;
 
 use App\Currency\Currency;
 use App\User;
@@ -7,32 +9,34 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
-class TipNotification extends Notification {
-
+class TipNotification extends Notification
+{
     use Queueable;
 
     private $message;
     private $data;
 
-    public function __construct($from, $currency, $amount) {
+    public function __construct($from, $currency, $amount)
+    {
         $this->message = 'general.chat_commands.modal.tip.notify';
         $this->data = [
             'name' => $from->name,
             'value' => $amount,
-            'currency' => $currency->name()
+            'currency' => $currency->name(),
         ];
     }
 
-    public function via($notifiable) {
+    public function via($notifiable)
+    {
         return ['database', 'broadcast'];
     }
 
-    public function toArray($notifiable) {
+    public function toArray($notifiable)
+    {
         return [
             'title' => 'casino',
             'message' => $this->message,
-            'data' => $this->data
+            'data' => $this->data,
         ];
     }
-
 }

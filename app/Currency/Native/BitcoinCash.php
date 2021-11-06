@@ -1,53 +1,63 @@
-<?php namespace App\Currency\Native;
+<?php
+
+namespace App\Currency\Native;
 
 use App\Settings;
 use Illuminate\Support\Facades\Log;
 use Nbobtc\Command\Command;
 
-class BitcoinCash extends V17RPCBitcoin {
-
-    function id(): string {
-        return "native_bch";
+class BitcoinCash extends V17RPCBitcoin
+{
+    public function id(): string
+    {
+        return 'native_bch';
     }
 
-    public function walletId(): string {
-        return "bch";
+    public function walletId(): string
+    {
+        return 'bch';
     }
 
-    function name(): string {
-        return "BCH";
+    public function name(): string
+    {
+        return 'BCH';
     }
 
-    function icon(): string {
-        return "bch";
+    public function icon(): string
+    {
+        return 'bch';
     }
 
-    public function alias(): string {
+    public function alias(): string
+    {
         return 'bitcoin-cash';
     }
 
-    public function displayName(): string {
-        return "Bitcoin Cash";
+    public function displayName(): string
+    {
+        return 'Bitcoin Cash';
     }
 
-    function style(): string {
-        return "#8dc351";
+    public function style(): string
+    {
+        return '#8dc351';
     }
 
-    public function coldWalletBalance(): float {
+    public function coldWalletBalance(): float
+    {
         try {
-            return json_decode(file_get_contents('https://rest.bitcoin.com/v2/address/details/' . $this->option('transfer_address')))->balance;
+            return json_decode(file_get_contents('https://rest.bitcoin.com/v2/address/details/'.$this->option('transfer_address')))->balance;
         } catch (\Exception $e) {
             return -1;
         }
     }
 
-    public function hotWalletBalance(): float {
+    public function hotWalletBalance(): float
+    {
         try {
-            return json_decode(file_get_contents('https://rest.bitcoin.com/v2/address/details/' . $this->option('withdraw_address')))->balance;
+            return json_decode(file_get_contents('https://rest.bitcoin.com/v2/address/details/'.$this->option('withdraw_address')))->balance;
         } catch (\Exception $e) {
             return -1;
         }
     }
-
 }

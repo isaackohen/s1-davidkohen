@@ -1,4 +1,6 @@
-<?php namespace App\Games;
+<?php
+
+namespace App\Games;
 
 use App\Game;
 use App\Games\Kernel\Data;
@@ -14,59 +16,76 @@ use App\Games\Kernel\Module\General\Wrapper\MultiplierCanBeLimited;
 use App\Games\Kernel\ProvablyFair;
 use App\Games\Kernel\ProvablyFairResult;
 
-class HiLo extends ExtendedGame implements MultiplierCanBeLimited {
-
-    function metadata(): Metadata {
+class HiLo extends ExtendedGame implements MultiplierCanBeLimited
+{
+    public function metadata(): Metadata
+    {
         return new class extends Metadata {
-            function id(): string {
+            public function id(): string
+            {
                 return 'hilo';
             }
 
-            function name(): string {
+            public function name(): string
+            {
                 return 'HiLo';
             }
 
-            function icon(): string {
+            public function icon(): string
+            {
                 return 'hilo';
             }
 
-            public function category(): array {
+            public function category(): array
+            {
                 return [GameCategory::$originals, GameCategory::$table];
             }
         };
     }
 
-    public function start(\App\Game $game) {
+    public function start(Game $game)
+    {
         $card = intval($this->userData($game)['data']['starting']);
         $this->pushData($game, ['current' => $card]);
         $this->pushHistory($game, $card);
     }
 
-    public function turn(\App\Game $game, array $turnData): Turn {
+    public function turn(Game $game, array $turnData): Turn
+    {
         $card = (new ProvablyFair($this, $game->server_seed))->result()->result()[$this->getTurn($game) - 1] + 1;
         $generated = $this->deck()[$card];
         $current = $this->deck()[$this->gameData($game)['current']];
 
-        if($turnData['type'] === 'skip') {
-            if($this->getTurn($game) >= 3 + 1) return new FailedTurn($game, []);
-            if($game->multiplier === 0) $game->update(['multiplier' => 1]);
+        if ($turnData['type'] === 'skip') {
+            if ($this->getTurn($game) >= 3 + 1) {
+                return new FailedTurn($game, []);
+            }
+            if ($game->multiplier === 0) {
+                $game->update(['multiplier' => 1]);
+            }
             $this->pushData($game, [strval($this->getTurn($game)) => $card]);
             $this->pushData($game, ['current' => $card]);
             $this->pushHistory($game, $card);
+
             return new ContinueGame($game, ['current' => $card]);
         }
 
-        if(($turnData['type'] === 'higher' && $current['rank'] >= $generated['rank'])
+        if (($turnData['type'] === 'higher' && $current['rank'] >= $generated['rank'])
             || ($turnData['type'] === 'lower' && $current['rank'] <= $generated['rank'])
-            || ($turnData['type'] === 'same' && $current['rank'] != $generated['rank']))
+            || ($turnData['type'] === 'same' && $current['rank'] != $generated['rank'])) {
             return new LoseGame($game, ['current' => $card]);
+        }
 
-        if($turnData['type'] === 'higher') $multiplier = HouseEdgeModule::apply($this, 12.350 / (13 - ($current['slot'] - 1)));
-        else if($turnData['type'] === 'lower') $multiplier = HouseEdgeModule::apply($this, (12.350 / ($current['slot'])));
-        else if($turnData['type'] === 'same') $multiplier = HouseEdgeModule::apply($this, 16.83);
+        if ($turnData['type'] === 'higher') {
+            $multiplier = HouseEdgeModule::apply($this, 12.350 / (13 - ($current['slot'] - 1)));
+        } elseif ($turnData['type'] === 'lower') {
+            $multiplier = HouseEdgeModule::apply($this, (12.350 / ($current['slot'])));
+        } elseif ($turnData['type'] === 'same') {
+            $multiplier = HouseEdgeModule::apply($this, 16.83);
+        }
 
         $game->update([
-            'multiplier' => $this->getTurn($game) == 1 ? $multiplier : $game->multiplier + $multiplier
+            'multiplier' => $this->getTurn($game) == 1 ? $multiplier : $game->multiplier + $multiplier,
         ]);
 
         $this->pushData($game, [strval($this->getTurn($game)) => $card]);
@@ -76,7 +95,8 @@ class HiLo extends ExtendedGame implements MultiplierCanBeLimited {
         return new ContinueGame($game, ['current' => $card]);
     }
 
-    private function deck() {
+    private function deck()
+    {
         return [
             1 => ['type' => 'spades', 'value' => 'A', 'rank' => 0, 'slot' => 1],
             2 => ['type' => 'spades', 'value' => '2', 'rank' => 1, 'slot' => 2],
@@ -129,11 +149,12 @@ class HiLo extends ExtendedGame implements MultiplierCanBeLimited {
             49 => ['type' => 'diamonds', 'value' => '10', 'rank' => 9, 'slot' => 10],
             50 => ['type' => 'diamonds', 'value' => 'J', 'rank' => 10, 'slot' => 11],
             51 => ['type' => 'diamonds', 'value' => 'Q', 'rank' => 11, 'slot' => 12],
-            52 => ['type' => 'diamonds', 'value' => 'K', 'rank' => 12, 'slot' => 13]
+            52 => ['type' => 'diamonds', 'value' => 'K', 'rank' => 12, 'slot' => 13],
         ];
     }
 
-    public function isLoss(ProvablyFairResult $result, \App\Game $game, array $turnData): bool {
+    public function isLoss(ProvablyFairResult $result, Game $game, array $turnData): bool
+    {
         $card = (new ProvablyFair($this, $result->server_seed()))->result()->result()[$this->getTurn($game)] + 1;
         $generated = $this->deck()[$card];
         $current = $this->deck()[$this->gameData($game)['current']];
@@ -148,24 +169,27 @@ class HiLo extends ExtendedGame implements MultiplierCanBeLimited {
             || ($turnData['type'] === 'lower' && $current['rank'] < $generated['rank']);
     }
 
-    function result(ProvablyFairResult $result): array {
+    public function result(ProvablyFairResult $result): array
+    {
         return $this->getCards($result, 52);
     }
 
-    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float {
+    public function multiplier(?Game $game, ?Data $data, ProvablyFairResult $result): float
+    {
         return $this->getTurn($game) === 0 ? 0 : $game->multiplier;
     }
 
-    public function getBotData(): array {
+    public function getBotData(): array
+    {
         return [
-            'starting' => mt_rand(1, 52)
+            'starting' => mt_rand(1, 52),
         ];
     }
 
-    public function getBotTurnData($turnId): array {
+    public function getBotTurnData($turnId): array
+    {
         return [
-            'type' => mt_rand(0, 100) <= 50 ? 'higher' : (mt_rand(0, 100) <= 75 ? 'lower' : 'same')
+            'type' => mt_rand(0, 100) <= 50 ? 'higher' : (mt_rand(0, 100) <= 75 ? 'lower' : 'same'),
         ];
     }
-
 }

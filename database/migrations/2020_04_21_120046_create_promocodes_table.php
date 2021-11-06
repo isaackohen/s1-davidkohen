@@ -13,7 +13,8 @@ class CreatePromocodesTable extends Migration
      */
     public function up()
     {
-        Schema::create('promocodes', function (Blueprint $table) {});
+        Schema::create('promocodes', function (Blueprint $table) {
+        });
     }
 
     /**

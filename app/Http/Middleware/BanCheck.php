@@ -1,9 +1,11 @@
-<?php namespace App\Http\Middleware;
+<?php
+
+namespace App\Http\Middleware;
 
 use Closure;
 
-class BanCheck {
-
+class BanCheck
+{
     /**
      * Handle an incoming request.
      *
@@ -11,9 +13,12 @@ class BanCheck {
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next) {
-        if(!auth('sanctum')->guest() && auth('sanctum')->user()->ban) return response()->view('errors.ban');
+    public function handle($request, Closure $next)
+    {
+        if (! auth('sanctum')->guest() && auth('sanctum')->user()->ban) {
+            return response()->view('errors.ban');
+        }
+
         return $next($request);
     }
-
 }
