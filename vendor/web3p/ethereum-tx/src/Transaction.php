@@ -19,10 +19,47 @@ use Elliptic\EC\KeyPair;
 use ArrayAccess;
 use Web3p\EthereumUtil\Util;
 
+/**
+ * It's a instance for generating/serializing ethereum transaction.
+ * 
+ * ```php
+ * use Web3p\EthereumTx\Transaction;
+ * 
+ * // generate transaction instance with transaction parameters
+ * $transaction = new Transaction([
+ *     'nonce' => '0x01',
+ *     'from' => '0xb60e8dd61c5d32be8058bb8eb970870f07233155',
+ *     'to' => '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+ *     'gas' => '0x76c0',
+ *     'gasPrice' => '0x9184e72a000',
+ *     'value' => '0x9184e72a',
+ *     'chainId' => 1, // optional
+ *     'data' => '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675'
+ * ]);
+ * 
+ * // generate transaction instance with hex encoded transaction
+ * $transaction = new Transaction('0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83');
+ * ```
+ * 
+ * ```php
+ * After generate transaction instance, you can sign transaction with your private key.
+ * <code>
+ * $signedTransaction = $transaction->sign('your private key');
+ * ```
+ * 
+ * Then you can send serialized transaction to ethereum through http rpc with web3.php.
+ * ```php
+ * $hashedTx = $transaction->serialize();
+ * ```
+ * 
+ * @author Peter Lai <alk03073135@gmail.com>
+ * @link https://www.web3p.xyz
+ * @filesource https://github.com/web3p/ethereum-tx
+ */
 class Transaction implements ArrayAccess
 {
     /**
-     * attributeMap
+     * Attribute map for keeping order of transaction key/value
      * 
      * @var array
      */
@@ -90,35 +127,35 @@ class Transaction implements ArrayAccess
     ];
 
     /**
-     * txData
+     * Raw transaction data
      * 
      * @var array
      */
-    protected $txData;
+    protected $txData = [];
 
     /**
-     * rlp
+     * RLP encoding instance
      * 
      * @var \Web3p\RLP\RLP
      */
     protected $rlp;
 
     /**
-     * secp256k1
+     * secp256k1 elliptic curve instance
      * 
      * @var \Elliptic\EC
      */
     protected $secp256k1;
 
     /**
-     * privateKey
+     * Private key instance
      * 
      * @var \Elliptic\EC\KeyPair
      */
     protected $privateKey;
 
     /**
-     * util
+     * Ethereum util instance
      * 
      * @var \Web3p\EthereumUtil\Util
      */
@@ -163,12 +200,12 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * get
+     * Return the value in the transaction with given key or return the protected property value if get(property_name} function is existed.
      * 
-     * @param string $name
+     * @param string $name key or protected property name
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         $method = 'get' . ucfirst($name);
 
@@ -179,13 +216,13 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * set
+     * Set the value in the transaction with given key or return the protected value if set(property_name} function is existed.
      * 
-     * @param string $name
-     * @param mixed $value
+     * @param string $name key, eg: to
+     * @param mixed value
      * @return void
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $method = 'set' . ucfirst($name);
 
@@ -196,9 +233,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * toString
+     * Return hash of the ethereum transaction without signature.
      * 
-     * @return string
+     * @return string hex encoded of the transaction
      */
     public function __toString()
     {
@@ -206,10 +243,10 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * offsetSet
+     * Set the value in the transaction with given key.
      * 
-     * @param string $offset
-     * @param string $value
+     * @param string $offset key, eg: to
+     * @param string value
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -247,9 +284,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * offsetExists
+     * Return whether the value is in the transaction with given key.
      * 
-     * @param string $offset
+     * @param string $offset key, eg: to
      * @return bool
      */
     public function offsetExists($offset)
@@ -263,9 +300,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * offsetUnset
+     * Unset the value in the transaction with given key.
      * 
-     * @param string $offset
+     * @param string $offset key, eg: to
      * @return void
      */
     public function offsetUnset($offset)
@@ -278,10 +315,10 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * offsetGet
+     * Return the value in the transaction with given key.
      * 
-     * @param string $offset
-     * @return mixed
+     * @param string $offset key, eg: to 
+     * @return mixed value of the transaction
      */
     public function offsetGet($offset)
     {
@@ -294,9 +331,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * getTxData
+     * Return raw ethereum transaction data.
      * 
-     * @return array
+     * @return array raw ethereum transaction data
      */
     public function getTxData()
     {
@@ -304,9 +341,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * serialize
+     * RLP serialize the ethereum transaction.
      * 
-     * @return \Web3p\RLP\RLP\Buffer
+     * @return \Web3p\RLP\RLP\Buffer serialized ethereum transaction
      */
     public function serialize()
     {
@@ -330,16 +367,21 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * sign
+     * Sign the transaction with given hex encoded private key.
      * 
-     * @param string $privateKey
-     * @return string
+     * @param string $privateKey hex encoded private key
+     * @return string hex encoded signed ethereum transaction
      */
     public function sign(string $privateKey)
     {
+        if ($this->util->isHex($privateKey)) {
+            $privateKey = $this->util->stripZero($privateKey);
+            $ecPrivateKey = $this->secp256k1->keyFromPrivate($privateKey, 'hex');
+        } else {
+            throw new InvalidArgumentException('Private key should be hex encoded string');
+        }
         $txHash = $this->hash(false);
-        $privateKey = $this->secp256k1->keyFromPrivate($privateKey, 'hex');
-        $signature = $privateKey->sign($txHash, [
+        $signature = $ecPrivateKey->sign($txHash, [
             'canonical' => true
         ]);
         $r = $signature->r;
@@ -355,18 +397,18 @@ class Transaction implements ArrayAccess
         $this->offsetSet('r', '0x' . $r->toString(16));
         $this->offsetSet('s', '0x' . $s->toString(16));
         $this->offsetSet('v', $v);
-        $this->privateKey = $privateKey;
+        $this->privateKey = $ecPrivateKey;
 
         return $this->serialize();
     }
 
     /**
-     * hash
+     * Return hash of the ethereum transaction with/without signature.
      *
-     * @param bool $includeSignature
-     * @return string
+     * @param bool $includeSignature hash with signature
+     * @return string hex encoded hash of the ethereum transaction
      */
-    public function hash($includeSignature=false)
+    public function hash(bool $includeSignature=false)
     {
         $chainId = $this->offsetGet('chainId');
 
@@ -402,9 +444,9 @@ class Transaction implements ArrayAccess
     }
 
     /**
-     * getFromAddress
+     * Recover from address with given signature (r, s, v) if didn't set from.
      * 
-     * @return string
+     * @return string hex encoded ethereum address
      */
     public function getFromAddress()
     {

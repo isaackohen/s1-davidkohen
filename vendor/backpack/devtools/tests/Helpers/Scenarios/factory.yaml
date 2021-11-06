@@ -1,0 +1,4 @@
+models:
+  Factory:
+    id
+    timestamps

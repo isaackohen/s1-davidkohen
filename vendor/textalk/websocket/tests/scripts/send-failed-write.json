@@ -14,6 +14,13 @@
         "return": false
     },
     {
+        "function": "get_resource_type",
+        "params": [
+            "@mock-stream"
+        ],
+        "return": "stream"
+    },
+    {
         "function": "stream_get_meta_data",
         "params": [
             "@mock-stream"
@@ -27,5 +34,10 @@
             "unread_bytes": 2,
             "seekable": false
         }
+    },
+    {
+        "function": "fclose",
+        "params": [],
+        "return": true
     }
 ]

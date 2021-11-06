@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Giant extends Model
+{
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
+    use HasFactory, SoftDeletes;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'bigInteger',
+        'binary',
+        'boolean',
+        'char',
+        'dateTimeTz',
+        'dateTime',
+        'date',
+        'decimal',
+        'double',
+        'enum',
+        'float',
+        'foreignId',
+        'geometryCollection',
+        'geometry',
+        'integer',
+        'ipAddress',
+        'json',
+        'jsonb',
+        'lineString',
+        'longText',
+        'macAddress',
+        'mediumInteger',
+        'mediumText',
+        'morphs',
+        'multiLineString',
+        'multiPoint',
+        'multiPolygon',
+        'point',
+        'polygon',
+        'rememberToken',
+        'smallInteger',
+        'string',
+        'text',
+        'timeTz',
+        'time',
+        'timestamp',
+        'timestampTz',
+        'tinyInteger',
+        'unsignedBigInteger',
+        'unsignedDecimal',
+        'unsignedInteger',
+        'unsignedMediumInteger',
+        'unsignedSmallInteger',
+        'unsignedTinyInteger',
+        'uuidMorphs',
+        'uuid',
+        'year',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'integer',
+        'bigInteger' => 'integer',
+        'boolean' => 'boolean',
+        'dateTimeTz' => 'datetime',
+        'dateTime' => 'datetime',
+        'date' => 'date',
+        'decimal' => 'decimal:2',
+        'double' => 'double',
+        'float' => 'float',
+        'foreignId' => 'integer',
+        'json' => 'array',
+        'mediumInteger' => 'integer',
+        'smallInteger' => 'integer',
+        'timestamp' => 'timestamp',
+        'timestampTz' => 'timestamp',
+        'tinyInteger' => 'integer',
+        'unsignedBigInteger' => 'integer',
+        'unsignedDecimal' => 'decimal:2',
+        'unsignedInteger' => 'integer',
+        'unsignedMediumInteger' => 'integer',
+        'unsignedSmallInteger' => 'integer',
+        'unsignedTinyInteger' => 'integer',
+    ];
+
+
+    public function user()
+    {
+        return $this->belongsTo(\App\User::class);
+    }
+
+    public function foreignId()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(\App\Tag::class);
+    }
+}

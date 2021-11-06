@@ -3,6 +3,7 @@
 namespace MongoDB\Tests\SpecTests;
 
 use stdClass;
+
 use function basename;
 use function file_get_contents;
 use function glob;
@@ -18,9 +19,7 @@ class RetryableReadsSpecTest extends FunctionalTestCase
 {
     /** @var array */
     private static $skippedOperations = [
-        'listCollectionNames' => 'Not implemented',
         'listCollectionObjects' => 'Not implemented',
-        'listDatabaseNames' => 'Not implemented',
         'listDatabaseObjects' => 'Not implemented',
         'listIndexNames' => 'Not implemented',
     ];
@@ -31,7 +30,7 @@ class RetryableReadsSpecTest extends FunctionalTestCase
      * @param stdClass $expected Expected command document
      * @param stdClass $actual   Actual command document
      */
-    public static function assertCommandMatches(stdClass $expected, stdClass $actual)
+    public static function assertCommandMatches(stdClass $expected, stdClass $actual): void
     {
         static::assertDocumentsMatch($expected, $actual);
     }
@@ -39,15 +38,18 @@ class RetryableReadsSpecTest extends FunctionalTestCase
     /**
      * Execute an individual test case from the specification.
      *
-     * @dataProvider provideTests
      * @param stdClass     $test           Individual "tests[]" document
      * @param array        $runOn          Top-level "runOn" array with server requirements
      * @param array|object $data           Top-level "data" array to initialize collection
      * @param string       $databaseName   Name of database under test
      * @param string|null  $collectionName Name of collection under test
      * @param string|null  $bucketName     Name of GridFS bucket under test
+     *
+     * @dataProvider provideTests
+     * @group matrix-testing-exclude-server-4.4-driver-4.2
+     * @group matrix-testing-exclude-server-5.0-driver-4.2
      */
-    public function testRetryableReads(stdClass $test, array $runOn = null, $data, $databaseName, $collectionName, $bucketName)
+    public function testRetryableReads(stdClass $test, ?array $runOn = null, $data, string $databaseName, ?string $collectionName, ?string $bucketName): void
     {
         if (isset($runOn)) {
             $this->checkServerRequirements($runOn);
@@ -107,11 +109,13 @@ class RetryableReadsSpecTest extends FunctionalTestCase
         foreach (glob(__DIR__ . '/retryable-reads/*.json') as $filename) {
             $json = $this->decodeJson(file_get_contents($filename));
             $group = basename($filename, '.json');
-            $runOn = isset($json->runOn) ? $json->runOn : null;
-            $data = isset($json->data) ? $json->data : [];
-            $databaseName = isset($json->database_name) ? $json->database_name : null;
-            $collectionName = isset($json->collection_name) ? $json->collection_name : null;
-            $bucketName = isset($json->bucket_name) ? $json->bucket_name : null;
+            $runOn = $json->runOn ?? null;
+            $data = $json->data ?? [];
+            // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+            $databaseName = $json->database_name ?? null;
+            $collectionName = $json->collection_name ?? null;
+            $bucketName = $json->bucket_name ?? null;
+            // phpcs:enable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
             foreach ($json->tests as $test) {
                 $name = $group . ': ' . $test->description;

@@ -13,11 +13,15 @@ class Client extends Base
 {
     // Default options
     protected static $default_options = [
-      'timeout'       => 5,
-      'fragment_size' => 4096,
       'context'       => null,
+      'filter'        => ['text', 'binary'],
+      'fragment_size' => 4096,
       'headers'       => null,
+      'logger'        => null,
       'origin'        => null, // @deprecated
+      'persistent'    => false,
+      'return_obj'    => false,
+      'timeout'       => 5,
     ];
 
     protected $socket_uri;
@@ -31,15 +35,16 @@ class Client extends Base
      *   - fragment_size: Set framgemnt size.  Default: 4096
      *   - headers:       Associative array of headers to set/override.
      */
-    public function __construct($uri, $options = array())
+    public function __construct(string $uri, array $options = [])
     {
         $this->options = array_merge(self::$default_options, $options);
         $this->socket_uri = $uri;
+        $this->setLogger($this->options['logger']);
     }
 
     public function __destruct()
     {
-        if ($this->isConnected()) {
+        if ($this->isConnected() && get_resource_type($this->socket) !== 'persistent stream') {
             fclose($this->socket);
         }
         $this->socket = null;
@@ -48,13 +53,13 @@ class Client extends Base
     /**
      * Perform WebSocket handshake
      */
-    protected function connect()
+    protected function connect(): void
     {
         $url_parts = parse_url($this->socket_uri);
         if (empty($url_parts) || empty($url_parts['scheme']) || empty($url_parts['host'])) {
-            throw new BadUriException(
-                "Invalid url '$this->socket_uri' provided."
-            );
+            $error = "Invalid url '{$this->socket_uri}' provided.";
+            $this->logger->error($error);
+            throw new BadUriException($error);
         }
         $scheme    = $url_parts['scheme'];
         $host      = $url_parts['host'];
@@ -73,10 +78,10 @@ class Client extends Base
             $path_with_query .= '#' . $fragment;
         }
 
-        if (!in_array($scheme, array('ws', 'wss'))) {
-            throw new BadUriException(
-                "Url should have scheme ws or wss, not '$scheme' from URI '$this->socket_uri' ."
-            );
+        if (!in_array($scheme, ['ws', 'wss'])) {
+            $error = "Url should have scheme ws or wss, not '{$scheme}' from URI '{$this->socket_uri}'.";
+            $this->logger->error($error);
+            throw new BadUriException($error);
         }
 
         $host_uri = ($scheme === 'wss' ? 'ssl' : 'tcp') . '://' . $host;
@@ -87,96 +92,112 @@ class Client extends Base
             if (@get_resource_type($this->options['context']) === 'stream-context') {
                 $context = $this->options['context'];
             } else {
-                throw new \InvalidArgumentException(
-                    "Stream context in \$options['context'] isn't a valid context"
-                );
+                $error = "Stream context in \$options['context'] isn't a valid context.";
+                $this->logger->error($error);
+                throw new \InvalidArgumentException($error);
             }
         } else {
             $context = stream_context_create();
         }
 
-        // Open the socket.  @ is there to supress warning that we will catch in check below instead.
-        $this->socket = @stream_socket_client(
-            $host_uri . ':' . $port,
+        $persistent = $this->options['persistent'] === true;
+        $flags = STREAM_CLIENT_CONNECT;
+        $flags = $persistent ? $flags | STREAM_CLIENT_PERSISTENT : $flags;
+
+        $error = $errno = $errstr = null;
+        set_error_handler(function (int $severity, string $message, string $file, int $line) use (&$error) {
+            $this->logger->warning($message, ['severity' => $severity]);
+            $error = $message;
+        }, E_ALL);
+
+        // Open the socket.
+        $this->socket = stream_socket_client(
+            "{$host_uri}:{$port}",
             $errno,
             $errstr,
             $this->options['timeout'],
-            STREAM_CLIENT_CONNECT,
+            $flags,
             $context
         );
 
+        restore_error_handler();
+
         if (!$this->isConnected()) {
-            throw new ConnectionException(
-                "Could not open socket to \"$host:$port\": $errstr ($errno)."
-            );
+            $error = "Could not open socket to \"{$host}:{$port}\": {$errstr} ({$errno}) {$error}.";
+            $this->logger->error($error);
+            throw new ConnectionException($error);
         }
 
-        // Set timeout on the stream as well.
-        stream_set_timeout($this->socket, $this->options['timeout']);
+        $address = "{$scheme}://{$host}{$path_with_query}";
 
-        // Generate the WebSocket key.
-        $key = self::generateKey();
+        if (!$persistent || ftell($this->socket) == 0) {
+            // Set timeout on the stream as well.
+            stream_set_timeout($this->socket, $this->options['timeout']);
 
-        // Default headers
-        $headers = array(
-            'Host'                  => $host . ":" . $port,
-            'User-Agent'            => 'websocket-client-php',
-            'Connection'            => 'Upgrade',
-            'Upgrade'               => 'websocket',
-            'Sec-WebSocket-Key'     => $key,
-            'Sec-WebSocket-Version' => '13',
-        );
+            // Generate the WebSocket key.
+            $key = self::generateKey();
 
-        // Handle basic authentication.
-        if ($user || $pass) {
-            $headers['authorization'] = 'Basic ' . base64_encode($user . ':' . $pass) . "\r\n";
+            // Default headers
+            $headers = [
+                'Host'                  => $host . ":" . $port,
+                'User-Agent'            => 'websocket-client-php',
+                'Connection'            => 'Upgrade',
+                'Upgrade'               => 'websocket',
+                'Sec-WebSocket-Key'     => $key,
+                'Sec-WebSocket-Version' => '13',
+            ];
+
+            // Handle basic authentication.
+            if ($user || $pass) {
+                $headers['authorization'] = 'Basic ' . base64_encode($user . ':' . $pass);
+            }
+
+            // Deprecated way of adding origin (use headers instead).
+            if (isset($this->options['origin'])) {
+                $headers['origin'] = $this->options['origin'];
+            }
+
+            // Add and override with headers from options.
+            if (isset($this->options['headers'])) {
+                $headers = array_merge($headers, $this->options['headers']);
+            }
+
+            $header = "GET " . $path_with_query . " HTTP/1.1\r\n" . implode(
+                "\r\n",
+                array_map(
+                    function ($key, $value) {
+                        return "$key: $value";
+                    },
+                    array_keys($headers),
+                    $headers
+                )
+            ) . "\r\n\r\n";
+
+            // Send headers.
+            $this->write($header);
+
+            // Get server response header (terminated with double CR+LF).
+            $response = stream_get_line($this->socket, 1024, "\r\n\r\n");
+
+            // Validate response.
+            if (!preg_match('#Sec-WebSocket-Accept:\s(.*)$#mUi', $response, $matches)) {
+                $error = "Connection to '{$address}' failed: Server sent invalid upgrade response: {$response}";
+                $this->logger->error($error);
+                throw new ConnectionException($error);
+            }
+
+            $keyAccept = trim($matches[1]);
+            $expectedResonse
+                = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+
+            if ($keyAccept !== $expectedResonse) {
+                $error = 'Server sent bad upgrade response.';
+                $this->logger->error($error);
+                throw new ConnectionException($error);
+            }
         }
 
-        // Deprecated way of adding origin (use headers instead).
-        if (isset($this->options['origin'])) {
-            $headers['origin'] = $this->options['origin'];
-        }
-
-        // Add and override with headers from options.
-        if (isset($this->options['headers'])) {
-            $headers = array_merge($headers, $this->options['headers']);
-        }
-
-        $header = "GET " . $path_with_query . " HTTP/1.1\r\n" . implode(
-            "\r\n",
-            array_map(
-                function ($key, $value) {
-                    return "$key: $value";
-                },
-                array_keys($headers),
-                $headers
-            )
-        ) . "\r\n\r\n";
-
-        // Send headers.
-        $this->write($header);
-
-        // Get server response header (terminated with double CR+LF).
-        $response = stream_get_line($this->socket, 1024, "\r\n\r\n");
-
-        /// @todo Handle version switching
-
-        // Validate response.
-        if (!preg_match('#Sec-WebSocket-Accept:\s(.*)$#mUi', $response, $matches)) {
-            $address = $scheme . '://' . $host . $path_with_query;
-            throw new ConnectionException(
-                "Connection to '{$address}' failed: Server sent invalid upgrade response:\n"
-                . $response
-            );
-        }
-
-        $keyAccept = trim($matches[1]);
-        $expectedResonse
-            = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
-
-        if ($keyAccept !== $expectedResonse) {
-            throw new ConnectionException('Server sent bad upgrade response.');
-        }
+        $this->logger->info("Client connected to {$address}");
     }
 
     /**
@@ -184,13 +205,11 @@ class Client extends Base
      *
      * @return string Random string
      */
-    protected static function generateKey()
+    protected static function generateKey(): string
     {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"$&/()=[]{}0123456789';
         $key = '';
-        $chars_length = strlen($chars);
         for ($i = 0; $i < 16; $i++) {
-            $key .= $chars[mt_rand(0, $chars_length - 1)];
+            $key .= chr(rand(33, 126));
         }
         return base64_encode($key);
     }

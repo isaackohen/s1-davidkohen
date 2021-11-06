@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Requests\GiantRequest;
+use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+
+/**
+ * Class GiantCrudController
+ * @package App\Http\Controllers\Admin
+ * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
+ */
+class GiantCrudController extends CrudController
+{
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
+    /**
+     * Configure the CrudPanel object. Apply settings to all operations.
+     * 
+     * @return void
+     */
+    public function setup()
+    {
+        CRUD::setModel(\App\Models\Giant::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/giant');
+        CRUD::setEntityNameStrings('giant', 'giants');
+    }
+
+    /**
+     * Define what happens when the List operation is loaded.
+     * 
+     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+     * @return void
+     */
+    protected function setupListOperation()
+    {
+        CRUD::column('bigInteger');
+        CRUD::column('binary');
+        CRUD::column('boolean');
+        CRUD::column('char');
+        CRUD::column('dateTimeTz');
+        CRUD::column('dateTime');
+        CRUD::column('date');
+        CRUD::column('decimal');
+        CRUD::column('double');
+        CRUD::column('enum');
+        CRUD::column('float');
+        CRUD::column('foreignId');
+        CRUD::column('geometryCollection');
+        CRUD::column('geometry');
+        CRUD::column('integer');
+        CRUD::column('ipAddress');
+        CRUD::column('json');
+        CRUD::column('jsonb');
+        CRUD::column('lineString');
+        CRUD::column('longText');
+        CRUD::column('macAddress');
+        CRUD::column('mediumInteger');
+        CRUD::column('mediumText');
+        CRUD::column('morphs');
+        CRUD::column('multiLineString');
+        CRUD::column('multiPoint');
+        CRUD::column('multiPolygon');
+        CRUD::column('point');
+        CRUD::column('polygon');
+        CRUD::column('rememberToken');
+        CRUD::column('smallInteger');
+        CRUD::column('string');
+        CRUD::column('text');
+        CRUD::column('timeTz');
+        CRUD::column('time');
+        CRUD::column('timestamp');
+        CRUD::column('timestampTz');
+        CRUD::column('tinyInteger');
+        CRUD::column('unsignedBigInteger');
+        CRUD::column('unsignedDecimal');
+        CRUD::column('unsignedInteger');
+        CRUD::column('unsignedMediumInteger');
+        CRUD::column('unsignedSmallInteger');
+        CRUD::column('unsignedTinyInteger');
+        CRUD::column('uuidMorphs');
+        CRUD::column('uuid');
+        CRUD::column('year');
+
+        /**
+         * Columns can be defined using the fluent syntax or array syntax:
+         * - CRUD::column('price')->type('number');
+         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
+         */
+    }
+
+    /**
+     * Define what happens when the Create operation is loaded.
+     * 
+     * @see https://backpackforlaravel.com/docs/crud-operation-create
+     * @return void
+     */
+    protected function setupCreateOperation()
+    {
+        CRUD::setValidation(GiantRequest::class);
+
+        CRUD::field('bigInteger');
+        CRUD::field('binary');
+        CRUD::field('boolean');
+        CRUD::field('char');
+        CRUD::field('dateTimeTz');
+        CRUD::field('dateTime');
+        CRUD::field('date');
+        CRUD::field('decimal');
+        CRUD::field('double');
+        CRUD::field('enum');
+        CRUD::field('float');
+        CRUD::field('foreignId');
+        CRUD::field('geometryCollection');
+        CRUD::field('geometry');
+        CRUD::field('integer');
+        CRUD::field('ipAddress');
+        CRUD::field('json');
+        CRUD::field('jsonb');
+        CRUD::field('lineString');
+        CRUD::field('longText');
+        CRUD::field('macAddress');
+        CRUD::field('mediumInteger');
+        CRUD::field('mediumText');
+        CRUD::field('morphs');
+        CRUD::field('multiLineString');
+        CRUD::field('multiPoint');
+        CRUD::field('multiPolygon');
+        CRUD::field('point');
+        CRUD::field('polygon');
+        CRUD::field('rememberToken');
+        CRUD::field('smallInteger');
+        CRUD::field('string');
+        CRUD::field('text');
+        CRUD::field('timeTz');
+        CRUD::field('time');
+        CRUD::field('timestamp');
+        CRUD::field('timestampTz');
+        CRUD::field('tinyInteger');
+        CRUD::field('unsignedBigInteger');
+        CRUD::field('unsignedDecimal');
+        CRUD::field('unsignedInteger');
+        CRUD::field('unsignedMediumInteger');
+        CRUD::field('unsignedSmallInteger');
+        CRUD::field('unsignedTinyInteger');
+        CRUD::field('uuidMorphs');
+        CRUD::field('uuid');
+        CRUD::field('year');
+
+        /**
+         * Fields can be defined using the fluent syntax or array syntax:
+         * - CRUD::field('price')->type('number');
+         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
+         */
+    }
+
+    /**
+     * Define what happens when the Update operation is loaded.
+     * 
+     * @see https://backpackforlaravel.com/docs/crud-operation-update
+     * @return void
+     */
+    protected function setupUpdateOperation()
+    {
+        $this->setupCreateOperation();
+    }
+}

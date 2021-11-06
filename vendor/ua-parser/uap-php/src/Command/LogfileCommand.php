@@ -52,14 +52,14 @@ class LogfileCommand extends Command
                 'i',
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
                 'Include glob expressions for log files in the log directory',
-                array('*.log', '*.log*.gz', '*.log*.bz2')
+                ['*.log', '*.log*.gz', '*.log*.bz2']
             )
             ->addOption(
                 'exclude',
                 'e',
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
                 'Exclude glob expressions for log files in the log directory',
-                array('*error*')
+                ['*error*']
             );
     }
 
@@ -70,8 +70,7 @@ class LogfileCommand extends Command
         }
 
         $parser = Parser::create();
-        $undefinedClients = array();
-        /** @var $file SplFileInfo */
+        $undefinedClients = [];
         foreach ($this->getFiles($input) as $file) {
 
             $path = $this->getPath($file);
@@ -85,8 +84,9 @@ class LogfileCommand extends Command
 
             $firstLine = reset($lines);
 
-            $reader = AbstractReader::factory($firstLine);
-            if (!$reader) {
+            try {
+                $reader = AbstractReader::factory($firstLine);
+            } catch (ReaderException $e) {
                 $output->writeln(sprintf('Could not find reader for file "%s"', $file->getPathname()));
                 $output->writeln('');
                 continue;
@@ -111,7 +111,7 @@ class LogfileCommand extends Command
                 $result = $this->getResult($client);
                 if ($result !== '.') {
                     $undefinedClients[] = json_encode(
-                        array($client->toString(), $userAgentString),
+                        [$client->toString(), $userAgentString],
                         JSON_UNESCAPED_SLASHES
                     );
                 }
@@ -124,8 +124,10 @@ class LogfileCommand extends Command
 
         $undefinedClients = $this->filter($undefinedClients);
 
-        $fs = new Filesystem();
-        $fs->dumpFile($input->getArgument('output'), implode(PHP_EOL, $undefinedClients));
+
+        $outputFile = $input->getArgument('output');
+        assert(is_string($outputFile));
+        (new Filesystem())->dumpFile($outputFile, implode(PHP_EOL, $undefinedClients));
 
         return 0;
     }
@@ -133,7 +135,7 @@ class LogfileCommand extends Command
     private function outputProgress(OutputInterface $output, string $result, int $count, int $totalCount, bool $end = false): int
     {
         if (($count % 70) === 0 || $end) {
-            $formatString = '%s  %'.strlen($totalCount).'d / %-'.strlen($totalCount).'d (%3d%%)';
+            $formatString = '%s  %'.strlen((string)$totalCount).'d / %-'.strlen((string)$totalCount).'d (%3d%%)';
             $result = $end ? str_repeat(' ', 70 - ($count % 70)) : $result;
             $output->writeln(sprintf($formatString, $result, $count, $totalCount, $count / $totalCount * 100));
         } else {
@@ -164,20 +166,21 @@ class LogfileCommand extends Command
         return '.';
     }
 
-    private function getFiles(InputInterface $input): Finder
+    /** @psalm-return array<array-key, SplFileInfo>|iterable */
+    private function getFiles(InputInterface $input): iterable
     {
         $finder = Finder::create();
 
-        if ($input->getOption('log-file')) {
-            $file = $input->getOption('log-file');
-            $finder->append(Finder::create()->in(dirname($file))->name(basename($file)));
+        $logFile = $input->getOption('log-file');
+        if (is_string($logFile)) {
+            $finder->append(Finder::create()->in(dirname($logFile))->name(basename($logFile)));
         }
 
-        if ($input->getOption('log-dir')) {
-            $dirFinder = Finder::create()
-                ->in($input->getOption('log-dir'));
-            array_map(array($dirFinder, 'name'), $input->getOption('include'));
-            array_map(array($dirFinder, 'notName'), $input->getOption('exclude'));
+        $logDir = $input->getOption('log-dir');
+        if (is_string($logDir)) {
+            $dirFinder = Finder::create()->in($logDir);
+            array_map([$dirFinder, 'name'], array_map('strval', (array)$input->getOption('include')));
+            array_map([$dirFinder, 'notName'], array_map('strval', (array)$input->getOption('exclude')));
 
             $finder->append($dirFinder);
         }

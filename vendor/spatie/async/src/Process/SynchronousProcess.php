@@ -42,6 +42,10 @@ class SynchronousProcess implements Runnable
     {
         $startTime = microtime(true);
 
+        if ($this->task instanceof Task) {
+            $this->task->configure();
+        }
+
         try {
             $this->output = $this->task instanceof Task
                 ? $this->task->run()
@@ -53,7 +57,7 @@ class SynchronousProcess implements Runnable
         }
     }
 
-    public function stop()
+    public function stop($timeout = 0): void
     {
     }
 

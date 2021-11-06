@@ -4,6 +4,8 @@ namespace Test\Unit;
 
 use Test\TestCase;
 use Web3p\EthereumTx\Transaction;
+use Web3p\EthereumTx\EIP2930Transaction;
+use Web3p\EthereumTx\EIP1559Transaction;
 
 class TransactionTest extends TestCase
 {
@@ -149,6 +151,18 @@ class TransactionTest extends TestCase
             'data' => '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675'
         ]);
         $this->assertEquals('f892018609184e72a0008276c094d46e8dd67c5d32be8058bb8eb970870f07244567849184e72aa9d46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f07244567523a0a48d3ce9c68bb49825aea5335bd07432823e858e8a504767d08290c28aafddf8a0416c7abc3a67080db0ad07c42de82db4e05518f99595119677398c68d431ab37', $transaction->sign($this->testPrivateKey));
+
+        // test different private keys
+        $tests = [
+            'fake private key', '0xd0459987fdde1f41e524fddbf4b646cd9d3bea7fd7d63feead3f5dfce6174a3d', 'd0459987fdde1f41e524fddbf4b646cd9d3bea7fd7d63feead3f5dfce6174a3d', 'd0459987fdde1f41e524fddbf4b646cd9d3bea7fd7d63feead3f5dfce6174a'
+        ];
+        for ($i=0; $i<count($tests); $i++) {
+            try {
+                $transaction->sign($tests[$i]);
+            } catch (\InvalidArgumentException $e) {
+                $this->assertEquals('Private key should be hex encoded string', $e->getMessage());
+            }
+        }
     }
 
     /**
@@ -317,5 +331,75 @@ class TransactionTest extends TestCase
         for ($i=1; $i<count($signedTransactions); $i++) {
             $this->assertEquals($signedTransactions[0], $signedTransactions[$i]);
         }
+    }
+
+    /**
+     * testIssue26
+     * default $txData should be empty array
+     * 
+     * @return void
+     */
+    public function testIssue26()
+    {
+        $tests = [
+            null, [], [null]
+        ];
+        for ($i=0; $i<count($tests); $i++) {
+            $transaction = new Transaction($tests[$i]);
+            $this->assertEquals($transaction->txData, []);
+        }
+    }
+
+    /**
+     * testEIP2930
+     * see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2930.md
+     * 
+     * @return void
+     */
+    public function testEIP2930()
+    {
+        $transaction = new EIP2930Transaction([
+            'nonce' => '0x15',
+            'to' => '0x3535353535353535353535353535353535353535',
+            'gas' => '0x5208',
+            'gasPrice' => '0x4a817c800',
+            'value' => '0x0',
+            'chainId' => 4,
+            'accessList' => [
+            ],
+            'data' => ''
+        ]);
+        $this->assertEquals('01f86604158504a817c8008252089435353535353535353535353535353535353535358080c001a09753969d39f6a5109095d5082d67fc99a05fd66a339ba80934504ff79474e77aa07a907eb764b72b3088a331e7b97c2bad5fd43f1d574ddc80edeb022476454adb', $transaction->sign('0x4646464646464646464646464646464646464646464646464646464646464646'));
+
+        $transaction = new EIP2930Transaction('0x01f86604158504a817c8008252089435353535353535353535353535353535353535358080c001a09753969d39f6a5109095d5082d67fc99a05fd66a339ba80934504ff79474e77aa07a907eb764b72b3088a331e7b97c2bad5fd43f1d574ddc80edeb022476454adb');
+        $this->assertEquals('01f86604158504a817c8008252089435353535353535353535353535353535353535358080c001a09753969d39f6a5109095d5082d67fc99a05fd66a339ba80934504ff79474e77aa07a907eb764b72b3088a331e7b97c2bad5fd43f1d574ddc80edeb022476454adb', $transaction->serialize());
+        $this->assertEquals('01f86604158504a817c8008252089435353535353535353535353535353535353535358080c001a09753969d39f6a5109095d5082d67fc99a05fd66a339ba80934504ff79474e77aa07a907eb764b72b3088a331e7b97c2bad5fd43f1d574ddc80edeb022476454adb', $transaction->sign('0x4646464646464646464646464646464646464646464646464646464646464646'));
+    }
+
+    /**
+     * testEIP1559
+     * see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md
+     * 
+     * @return void
+     */
+    public function testEIP1559()
+    {
+        $transaction = new EIP1559Transaction([
+            'nonce' => '0x15',
+            'to' => '0x3535353535353535353535353535353535353535',
+            'gas' => '0x5208',
+            'maxPriorityFeePerGas' => '0x4a817c800',
+            'maxFeePerGas' => '0x4a817c800',
+            'value' => '0x0',
+            'chainId' => 4,
+            'accessList' => [
+            ],
+            'data' => ''
+        ]);
+        $this->assertEquals('02f86c04158504a817c8008504a817c8008252089435353535353535353535353535353535353535358080c080a03fd48c8a173e9669c33cb5271f03b1af4f030dc8315be8ec9442b7fbdde893c8a010af381dab1df3e7012a3c8421d65a810859a5dd9d58991ad7c07f12d0c651c7', $transaction->sign('0x4646464646464646464646464646464646464646464646464646464646464646'));
+
+        $transaction = new EIP1559Transaction('0x02f86c04158504a817c8008504a817c8008252089435353535353535353535353535353535353535358080c080a03fd48c8a173e9669c33cb5271f03b1af4f030dc8315be8ec9442b7fbdde893c8a010af381dab1df3e7012a3c8421d65a810859a5dd9d58991ad7c07f12d0c651c7');
+        $this->assertEquals('02f86c04158504a817c8008504a817c8008252089435353535353535353535353535353535353535358080c080a03fd48c8a173e9669c33cb5271f03b1af4f030dc8315be8ec9442b7fbdde893c8a010af381dab1df3e7012a3c8421d65a810859a5dd9d58991ad7c07f12d0c651c7', $transaction->serialize());
+        $this->assertEquals('02f86c04158504a817c8008504a817c8008252089435353535353535353535353535353535353535358080c080a03fd48c8a173e9669c33cb5271f03b1af4f030dc8315be8ec9442b7fbdde893c8a010af381dab1df3e7012a3c8421d65a810859a5dd9d58991ad7c07f12d0c651c7', $transaction->sign('0x4646464646464646464646464646464646464646464646464646464646464646'));
     }
 }

@@ -3,6 +3,7 @@
 namespace MongoDB\Tests\SpecTests;
 
 use stdClass;
+
 use function basename;
 use function file_get_contents;
 use function glob;
@@ -22,7 +23,7 @@ class RetryableWritesSpecTest extends FunctionalTestCase
      * @param array    $runOn Top-level "runOn" array with server requirements
      * @param array    $data  Top-level "data" array to initialize collection
      */
-    public function testRetryableWrites(stdClass $test, array $runOn = null, array $data)
+    public function testRetryableWrites(stdClass $test, ?array $runOn = null, array $data): void
     {
         if ($this->isShardedCluster() && ! $this->isShardedClusterUsingReplicasets()) {
             $this->markTestSkipped('Transaction numbers are only allowed on a replica set member or mongos (PHPC-1415)');
@@ -58,8 +59,8 @@ class RetryableWritesSpecTest extends FunctionalTestCase
         foreach (glob(__DIR__ . '/retryable-writes/*.json') as $filename) {
             $json = $this->decodeJson(file_get_contents($filename));
             $group = basename($filename, '.json');
-            $runOn = isset($json->runOn) ? $json->runOn : null;
-            $data = isset($json->data) ? $json->data : [];
+            $runOn = $json->runOn ?? null;
+            $data = $json->data ?? [];
 
             foreach ($json->tests as $test) {
                 $name = $group . ': ' . $test->description;

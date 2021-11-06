@@ -1,6 +1,205 @@
 # Changelog
 
-All notable changes to `ignition` will be documented in this file
+All notable changes to `ignition` will be documented in this fil
+
+## 2.16.0 - 2021-10-28
+
+- improve recording data from jobs (#416)
+
+## 2.15.0 - 2021-10-11
+
+- improve output of flare:test
+
+## 2.14.1 - 2021-10-08
+
+- update base URL for Flare
+
+## 2.14.0 - 2021-10-01
+
+- add support for VScode WSL + SSH remote (#420)
+
+## 2.13.1 - 2021-09-13
+
+- fix namespace of `SentReports` in facade
+
+## 2.13.0 - 2021-09-13
+
+- add tracking uuid (#418)
+
+## 2.12.1 - 2021-09-08
+
+- add support for VS Codium editor (#417)
+
+## 2.12.0 - 2021-08-24
+
+- add support for collecting information about jobs (#412)
+
+## 2.11.4 - 2021-08-16
+
+- use npm ci instead of install (#411)
+
+## 2.11.3 - 2021-08-16
+
+- fix issues with circular dependencies in model route parameters (#408)
+- remove notice about dirty git state in context
+- wrap `AddGitInformation` middleware in try-catch
+
+## 2.11.2 - 2021-07-20
+
+- fix issues introduced in 2.11.1 (#403)
+
+## 2.11.1 - 2021-07-20
+
+- fix sending queued reports on Laravel Vapor queues (#398)
+
+## 2.11.0 - 2021-07-12
+
+- prepare Laravel 9 support
+- remove filp/whoops dependency
+- update front-end dependencies
+
+## 2.10.2 - 2021-06-11
+
+- fix typo in config/flare.php (#395)
+
+## 2.10.1 - 2021-06-03
+
+- fix memory leaks in Octane (#393)
+
+## 2.10.0 - 2021-06-03
+
+- add a solution for lazy loading violations (#392)
+
+## 2.9.0 - 2021-05-05
+
+- add Xdebug format links for editor (#383)
+
+## 2.8.4 - 2021-04-29
+
+- avoid making call to Flare when no API key is specified
+
+## 2.8.3 - 2021-04-09
+
+- support Octane (#379)
+
+## 2.8.2 - 2021-04-08
+
+- censor passwords by default (#377)
+
+## 2.8.1 - 2021-04-08
+
+- add `censor_request_body_fields` default config option
+
+## 2.8.0 - 2021-04-08
+
+- add `censor_request_body_fields` config option
+
+## 2.7.0 - 2021-03-30
+
+- adds a debug warning when having debug enabled on a non-local environment (#366)
+
+## 2.6.1 - 2021-03-30
+
+- Disable executing solutions on non-local environments or from non-local IP addresses (#364)
+
+## 2.6.0 - 2021-03-24
+
+- add extra output to test command when executing verbosely
+
+## 2.5.14 - 2021-03-03
+
+- fix ignition not working when there is no argv
+
+## 2.5.13 - 2021-02-16
+
+- remove custom grouping
+
+## 2.5.12 - 2021-02-15
+
+- fix wrong config usage (#354)
+
+## 2.5.11 - 2021-02-05
+
+- fix memory leaks caused by log and query recorder (#344)
+
+## 2.5.10 - 2021-02-02
+
+- fix tinker logs not being sent to Flare
+
+## 2.5.9 - 2021-01-26
+
+- fix logged context not being sent to Flare
+
+## 2.5.8 - 2020-12-29
+
+- fix double `$` on PHP 8 (#338)
+
+## 2.5.7 - 2020-12-29
+
+- fix for breaking change in highlight.js (fixes 2.5.5)
+
+## 2.5.6 - 2020-12-29
+
+- revert to compiled js of 2.5.3
+
+## 2.5.5 - 2020-12-29
+
+- added compiled js of previous release
+
+## 2.5.4 - 2020-12-29
+
+- added support for Nova text editor (#343)
+
+## 2.5.3 - 2020-12-08
+
+- Use Livewire compatible compiler engine when using Livewire (#340)
+
+## 2.5.2 - 2020-11-14
+
+- fix `MakeViewVariableOptionalSolution` to disallow stream wrappers and files that do not end in ".blade.php" (#334)
+
+## 2.5.1 - 2020-11-13
+
+- add support for LiveWire component urls
+
+## 2.5.0 - 2020-10-27
+
+- add PHP 8.0-dev support
+- remove unnecessary `scrivo/highlight.php` dependency
+
+## 2.4.2 - 2021-03-08
+
+- fix `MakeViewVariableOptionalSolution` to disallow stream wrappers and files that do not end in .blade.php (#356)
+
+## 2.4.1 - 2020-10-14
+
+- fix copy casing
+
+## 2.4.0 - 2020-10-14
+
+- add livewire component discovery solution
+
+## 2.3.8 - 2020-10-02
+
+- Address Missing Mix Manifest Error (#317)
+
+## 2.3.7 - 2020-09-06
+
+- add loading state on share button (#309)
+- compatibility fix for L8
+
+## 2.3.6 - 2020-08-10
+
+- possible security vulnerability: bump elliptic version (#300)
+- possible XSS vulnerability: escape characters in stacktrace and exception title
+
+## 2.3.5 - 2020-08-01
+
+- catch exception in detectLineNumber for not existing blade files (#299)
+
+## 2.3.4 - 2020-07-27
+
+- fix an error that would throw a blank page when using third party extensions
 
 ## 2.3.3 -2020-07-14
 

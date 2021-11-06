@@ -5,17 +5,21 @@
  * Note that this test is performed by mocking socket/stream calls.
  */
 
+declare(strict_types=1);
+
 namespace WebSocket;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ClientTest extends TestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         error_reporting(-1);
     }
 
-    public function testClientMasked()
+    public function testClientMasked(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -36,17 +40,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->close();
         $this->assertFalse($client->isConnected());
         $this->assertEquals(1000, $client->getCloseStatus());
-        $this->assertEquals('close', $client->getLastOpcode());
-
-        $client->close();
-        $this->assertFalse($client->isConnected());
-        $this->assertEquals(1000, $client->getCloseStatus());
-        $this->assertEquals('close', $client->getLastOpcode());
 
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testDestruct()
+    public function testDestruct(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -56,7 +54,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         MockSocket::initialize('client.destruct', $this);
     }
 
-    public function testClienExtendedUrl()
+    public function testClienExtendedUrl(): void
     {
         MockSocket::initialize('client.connect-extended', $this);
         $client = new Client('ws://localhost:8000/my/mock/path?my_query=yes#my_fragment');
@@ -64,7 +62,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testClientWithTimeout()
+    public function testClientWithTimeout(): void
     {
         MockSocket::initialize('client.connect-timeout', $this);
         $client = new Client('ws://localhost:8000/my/mock/path', ['timeout' => 300]);
@@ -72,7 +70,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testClientWithContext()
+    public function testClientWithContext(): void
     {
         MockSocket::initialize('client.connect-context', $this);
         $client = new Client('ws://localhost:8000/my/mock/path', ['context' => '@mock-stream-context']);
@@ -80,7 +78,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testClientAuthed()
+    public function testClientAuthed(): void
     {
         MockSocket::initialize('client.connect-authed', $this);
         $client = new Client('wss://usename:password@localhost:8000/my/mock/path');
@@ -88,7 +86,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testWithHeaders()
+    public function testWithHeaders(): void
     {
         MockSocket::initialize('client.connect-headers', $this);
         $client = new Client('ws://localhost:8000/my/mock/path', [
@@ -99,7 +97,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testPayload128()
+    public function testPayload128(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -115,7 +113,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testPayload65536()
+    public function testPayload65536(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -133,7 +131,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(65540, $client->getFragmentSize());
     }
 
-    public function testMultiFragment()
+    public function testMultiFragment(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -149,7 +147,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(8, $client->getFragmentSize());
     }
 
-    public function testPingPong()
+    public function testPingPong(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -158,22 +156,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         MockSocket::initialize('ping-pong', $this);
         $client->send('Server ping', 'ping');
-        $message = $client->receive();
-        $this->assertEquals('Server ping', $message);
-        $this->assertEquals('pong', $client->getLastOpcode());
-
         $client->send('', 'ping');
         $message = $client->receive();
-        $this->assertEquals('', $message);
-        $this->assertEquals('pong', $client->getLastOpcode());
-
-        $message = $client->receive();
-        $this->assertEquals('Client ping', $message);
+        $this->assertEquals('Receiving a message', $message);
+        $this->assertEquals('text', $client->getLastOpcode());
         $this->assertTrue(MockSocket::isEmpty());
-        $this->assertEquals('ping', $client->getLastOpcode());
     }
 
-    public function testRemoteClose()
+    public function testRemoteClose(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -183,15 +173,15 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         MockSocket::initialize('close-remote', $this);
 
         $message = $client->receive();
-        $this->assertEquals('', $message);
+        $this->assertNull($message);
 
         $this->assertFalse($client->isConnected());
         $this->assertEquals(17260, $client->getCloseStatus());
-        $this->assertEquals('close', $client->getLastOpcode());
+        $this->assertNull($client->getLastOpcode());
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testSetTimeout()
+    public function testSetTimeout(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -204,7 +194,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    public function testReconnect()
+    public function testReconnect(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
@@ -217,7 +207,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->close();
         $this->assertFalse($client->isConnected());
         $this->assertEquals(1000, $client->getCloseStatus());
-        $this->assertEquals('close', $client->getLastOpcode());
+        $this->assertNull($client->getLastOpcode());
         $this->assertTrue(MockSocket::isEmpty());
 
         MockSocket::initialize('client.reconnect', $this);
@@ -226,156 +216,234 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(MockSocket::isEmpty());
     }
 
-    /**
-     * @expectedException        WebSocket\BadUriException
-     * @expectedExceptionMessage Url should have scheme ws or wss
-     */
-    public function testBadScheme()
+    public function testPersistentConnection(): void
+    {
+        MockSocket::initialize('client.connect-persistent', $this);
+        $client = new Client('ws://localhost:8000/my/mock/path', ['persistent' => true]);
+        $client->send('Connect');
+        $client->disconnect();
+        $this->assertFalse($client->isConnected());
+        $this->assertTrue(MockSocket::isEmpty());
+    }
+
+    public function testBadScheme(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('bad://localhost:8000/my/mock/path');
+        $this->expectException('WebSocket\BadUriException');
+        $this->expectExceptionMessage('Url should have scheme ws or wss');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        WebSocket\BadUriException
-     * @expectedExceptionMessage Invalid url 'this is not an url' provided.
-     */
-    public function testBadUrl()
+    public function testBadUrl(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('this is not an url');
+        $this->expectException('WebSocket\BadUriException');
+        $this->expectExceptionMessage('Invalid url \'this is not an url\' provided.');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Stream context in $options['context'] isn't a valid context
-     */
-    public function testBadStreamContext()
+    public function testBadStreamContext(): void
     {
         MockSocket::initialize('client.connect-bad-context', $this);
         $client = new Client('ws://localhost:8000/my/mock/path', ['context' => 'BAD']);
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Stream context in $options[\'context\'] isn\'t a valid context');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    0
-     * @expectedExceptionMessage Could not open socket to "localhost:8000"
-     */
-    public function testFailedConnection()
+    public function testFailedConnection(): void
     {
         MockSocket::initialize('client.connect-failed', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not open socket to "localhost:8000"');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    0
-     * @expectedExceptionMessage Connection to 'ws://localhost/my/mock/path' failed
-     */
-    public function testInvalidUpgrade()
+    public function testFailedConnectionWithError(): void
+    {
+        MockSocket::initialize('client.connect-error', $this);
+        $client = new Client('ws://localhost:8000/my/mock/path');
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Could not open socket to "localhost:8000"');
+        $client->send('Connect');
+    }
+
+    public function testInvalidUpgrade(): void
     {
         MockSocket::initialize('client.connect-invalid-upgrade', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Connection to \'ws://localhost/my/mock/path\' failed');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    0
-     * @expectedExceptionMessage Server sent bad upgrade response
-     */
-    public function testInvalidKey()
+    public function testInvalidKey(): void
     {
         MockSocket::initialize('client.connect-invalid-key', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(0);
+        $this->expectExceptionMessage('Server sent bad upgrade response');
         $client->send('Connect');
     }
 
-    /**
-     * @expectedException        WebSocket\BadOpcodeException
-     * @expectedExceptionMessage Bad opcode 'bad'.  Try 'text' or 'binary'.
-     */
-    public function testSendBadOpcode()
+    public function testSendBadOpcode(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
 
         MockSocket::initialize('send-bad-opcode', $this);
+        $this->expectException('WebSocket\BadOpcodeException');
+        $this->expectExceptionMessage('Bad opcode \'bad\'.  Try \'text\' or \'binary\'.');
         $client->send('Bad Opcode', 'bad');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    1026
-     * @expectedExceptionMessage Bad opcode in websocket frame: 12
-     */
-    public function testRecieveBadOpcode()
+    public function testRecieveBadOpcode(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
         MockSocket::initialize('receive-bad-opcode', $this);
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(1026);
+        $this->expectExceptionMessage('Bad opcode in websocket frame: 12');
         $message = $client->receive();
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    1025
-     * @expectedExceptionMessage Could only write 18 out of 22 bytes.
-     */
-    public function testBrokenWrite()
+    public function testBrokenWrite(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
         MockSocket::initialize('send-broken-write', $this);
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(1025);
+        $this->expectExceptionMessage('Could only write 18 out of 22 bytes.');
         $client->send('Failing to write');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    1024
-     * @expectedExceptionMessage Failed to write 22 bytes.
-     */
-    public function testFailedWrite()
+    public function testFailedWrite(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
         MockSocket::initialize('send-failed-write', $this);
+        $this->expectException('WebSocket\TimeoutException');
+        $this->expectExceptionCode(1024);
+        $this->expectExceptionMessage('Failed to write 22 bytes.');
         $client->send('Failing to write');
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    1025
-     * @expectedExceptionMessage Broken frame, read 0 of stated 2 bytes.
-     */
-    public function testBrokenRead()
+    public function testBrokenRead(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
         MockSocket::initialize('receive-broken-read', $this);
+        $this->expectException('WebSocket\ConnectionException');
+        $this->expectExceptionCode(1025);
+        $this->expectExceptionMessage('Broken frame, read 0 of stated 2 bytes.');
         $client->receive();
     }
 
-    /**
-     * @expectedException        WebSocket\ConnectionException
-     * @expectedExceptionCode    1024
-     * @expectedExceptionMessage Empty read; connection dead?
-     */
-    public function testEmptyRead()
+    public function testReadTimeout(): void
+    {
+        MockSocket::initialize('client.connect', $this);
+        $client = new Client('ws://localhost:8000/my/mock/path');
+        $client->send('Connect');
+        MockSocket::initialize('receive-client-timeout', $this);
+        $this->expectException('WebSocket\TimeoutException');
+        $this->expectExceptionCode(1024);
+        $this->expectExceptionMessage('Client read timeout');
+        $client->receive();
+    }
+
+    public function testEmptyRead(): void
     {
         MockSocket::initialize('client.connect', $this);
         $client = new Client('ws://localhost:8000/my/mock/path');
         $client->send('Connect');
         MockSocket::initialize('receive-empty-read', $this);
+        $this->expectException('WebSocket\TimeoutException');
+        $this->expectExceptionCode(1024);
+        $this->expectExceptionMessage('Empty read; connection dead?');
         $client->receive();
+    }
+
+    public function testFrameFragmentation(): void
+    {
+        MockSocket::initialize('client.connect', $this);
+        $client = new Client(
+            'ws://localhost:8000/my/mock/path',
+            ['filter' => ['text', 'binary', 'pong', 'close']]
+        );
+        $client->send('Connect');
+        MockSocket::initialize('receive-fragmentation', $this);
+        $message = $client->receive();
+        $this->assertEquals('Server ping', $message);
+        $this->assertEquals('pong', $client->getLastOpcode());
+        $message = $client->receive();
+        $this->assertEquals('Multi fragment test', $message);
+        $this->assertEquals('text', $client->getLastOpcode());
+        $this->assertTrue(MockSocket::isEmpty());
+        MockSocket::initialize('close-remote', $this);
+        $message = $client->receive();
+        $this->assertEquals('Closing', $message);
+        $this->assertTrue(MockSocket::isEmpty());
+        $this->assertFalse($client->isConnected());
+        $this->assertEquals(17260, $client->getCloseStatus());
+        $this->assertEquals('close', $client->getLastOpcode());
+    }
+
+    public function testMessageFragmentation(): void
+    {
+        MockSocket::initialize('client.connect', $this);
+        $client = new Client(
+            'ws://localhost:8000/my/mock/path',
+            ['filter' => ['text', 'binary', 'pong', 'close'], 'return_obj' => true]
+        );
+        $client->send('Connect');
+        MockSocket::initialize('receive-fragmentation', $this);
+        $message = $client->receive();
+        $this->assertInstanceOf('WebSocket\Message\Message', $message);
+        $this->assertInstanceOf('WebSocket\Message\Pong', $message);
+        $this->assertEquals('Server ping', $message->getContent());
+        $this->assertEquals('pong', $message->getOpcode());
+        $message = $client->receive();
+        $this->assertInstanceOf('WebSocket\Message\Message', $message);
+        $this->assertInstanceOf('WebSocket\Message\Text', $message);
+        $this->assertEquals('Multi fragment test', $message->getContent());
+        $this->assertEquals('text', $message->getOpcode());
+        $this->assertTrue(MockSocket::isEmpty());
+        MockSocket::initialize('close-remote', $this);
+        $message = $client->receive();
+        $this->assertInstanceOf('WebSocket\Message\Message', $message);
+        $this->assertInstanceOf('WebSocket\Message\Close', $message);
+        $this->assertEquals('Closing', $message->getContent());
+        $this->assertEquals('close', $message->getOpcode());
+    }
+
+    public function testConvenicanceMethods(): void
+    {
+        MockSocket::initialize('client.connect', $this);
+        $client = new Client('ws://localhost:8000/my/mock/path');
+        $this->assertNull($client->getName());
+        $this->assertNull($client->getPier());
+        $this->assertEquals('WebSocket\Client(closed)', "{$client}");
+        $client->text('Connect');
+        MockSocket::initialize('send-convenicance', $this);
+        $client->binary(base64_encode('Binary content'));
+        $client->ping();
+        $client->pong();
+        $this->assertEquals('127.0.0.1:12345', $client->getName());
+        $this->assertEquals('127.0.0.1:8000', $client->getPier());
+        $this->assertEquals('WebSocket\Client(127.0.0.1:12345)', "{$client}");
     }
 }

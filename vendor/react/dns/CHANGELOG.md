@@ -1,5 +1,72 @@
 # Changelog
 
+## 1.8.0 (2021-07-11)
+
+A major new feature release, see [**release announcement**](https://clue.engineering/2021/announcing-reactphp-default-loop).
+
+*   Feature: Simplify usage by supporting new [default loop](https://reactphp.org/event-loop/#loop).
+    (#182 by @clue)
+
+    ```php
+    // old (still supported)
+    $factory = new React\Dns\Resolver\Factory();
+    $resolver = $factory->create($config, $loop);
+
+    // new (using default loop)
+    $factory = new React\Dns\Resolver\Factory();
+    $resolver = $factory->create($config);
+    ```
+
+## 1.7.0 (2021-06-25)
+
+*   Feature: Update DNS `Factory` to accept complete `Config` object.
+    Add new `FallbackExecutor` and use fallback DNS servers when `Config` lists multiple servers.
+    (#179 and #180 by @clue)
+
+    ```php
+    // old (still supported)
+    $config = React\Dns\Config\Config::loadSystemConfigBlocking();
+    $server = $config->nameservers ? reset($config->nameservers) : '8.8.8.8';
+    $resolver = $factory->create($server, $loop);
+
+    // new
+    $config = React\Dns\Config\Config::loadSystemConfigBlocking();
+    if (!$config->nameservers) {
+        $config->nameservers[] = '8.8.8.8';
+    }
+    $resolver = $factory->create($config, $loop);
+    ```
+
+## 1.6.0 (2021-06-21)
+
+*   Feature: Add support for legacy `SPF` record type.
+    (#178 by @akondas and @clue)
+
+*   Fix: Fix integer overflow for TCP/IP chunk size on 32 bit platforms.
+    (#177 by @clue)
+
+## 1.5.0 (2021-03-05)
+
+*   Feature: Improve error reporting when query fails, include domain and query type and DNS server address where applicable.
+    (#174 by @clue)
+
+*   Feature: Improve error handling when sending data to DNS server fails (macOS).
+    (#171 and #172 by @clue)
+
+*   Fix: Improve DNS response parser to limit recursion for compressed labels.
+    (#169 by @clue)
+
+*   Improve test suite, use GitHub actions for continuous integration (CI).
+    (#170 by @SimonFrings)
+
+## 1.4.0 (2020-09-18)
+
+*   Feature: Support upcoming PHP 8.
+    (#168 by @clue)
+
+*   Improve test suite and update to PHPUnit 9.3.
+    (#164 by @clue, #165 and #166 by @SimonFrings and #167 by @WyriHaximus)
+
 ## 1.3.0 (2020-07-10)
 
 *   Feature: Forward compatibility with react/promise v3.

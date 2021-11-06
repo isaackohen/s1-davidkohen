@@ -20,13 +20,14 @@ Installation directions for Composer may be found in its
 
 ## Testing
 
-The library's test suite uses [PHPUnit](https://phpunit.de/), which should be
-installed as a development dependency by Composer.
+The library's test suite uses [PHPUnit](https://phpunit.de/), which is installed
+through the [PHPUnit Bridge](https://symfony.com/phpunit-bridge) dependency by
+Composer.
 
 The test suite may be executed with:
 
 ```
-$ vendor/bin/phpunit
+$ vendor/bin/simple-phpunit
 ```
 
 The `phpunit.xml.dist` file is used as the default configuration file for the
@@ -35,19 +36,19 @@ test suite. In addition to various PHPUnit options, it defines required
 this configuration by creating your own `phpunit.xml` file based on the
 `phpunit.xml.dist` file we provide.
 
+By default, the `simple-phpunit` binary chooses the correct PHPUnit version for
+the PHP version you are running. To run tests against a specific PHPUnit version,
+use the `SYMFONY_PHPUNIT_VERSION` environment variable:
+
+```
+$ SYMFONY_PHPUNIT_VERSION=7.5 vendor/bin/simple-phpunit
+```
+
 ## Checking coding standards
 
 The library's code is checked using [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer),
-which is installed as a development dependency by Composer. Due to the PHP
-requirement, the base version of the coding standard is not installed and needs
-to be added manually if you plan to contributing code:
-
-```
-$ composer require --dev doctrine/coding-standard=^6.0
-```
-
-Once the coding standard has been installed, you can check the code for style
-errors:
+which is installed as a development dependency by Composer. To check the code
+for style errors, run the `phpcs` binary:
 
 
 ```
@@ -146,7 +147,7 @@ The following template should be used for creating GitHub release notes via
 [this form](https://github.com/mongodb/mongo-php-library/releases/new).
 
 ```
-The PHP team is happy to announce that version X.Y.Z of the MongoDB PHP library is now available. This library is a high-level abstraction for the [`mongodb`](http://php.net/mongodb) extension.
+The PHP team is happy to announce that version X.Y.Z of the MongoDB PHP library is now available.
 
 **Release Highlights**
 
@@ -159,11 +160,6 @@ $JIRA_URL
 
 Documentation for this library may be found at:
 https://docs.mongodb.com/php-library/
-
-**Feedback**
-
-If you encounter any bugs or issues with this library, please report them via this form:
-https://jira.mongodb.org/secure/CreateIssue.jspa?pid=12483&issuetype=1
 
 **Installation**
 
@@ -189,8 +185,27 @@ Thanks for our community contributors for this release:
  * [$CONTRIBUTOR_NAME](https://github.com/$GITHUB_USERNAME)
 ```
 
-Release announcements should also be sent to the `mongodb-user@googlegroups.com`
-and `mongodb-announce@googlegroups.com` mailing lists.
+Release announcements should also be sent to the [MongoDB Product & Driver Announcements](https://community.mongodb.com/tags/c/community/release-notes/35/php-driver).
 
 Consider announcing each release on Twitter. Significant releases should also be
 announced via [@MongoDB](http://twitter.com/mongodb) as well.
+
+### Documentation Updates for New Major and Minor Versions
+
+New major and minor releases will also require documentation updates to other
+projects:
+
+ * Create a DOCSP ticket to add the new version to PHP's server and language
+   [compatibility tables](https://docs.mongodb.com/drivers/php/#compatibility)
+   in the driver docs portal. See
+   [mongodb/docs-ecosystem#642](https://github.com/mongodb/docs-ecosystem/pull/642)
+   for an example.
+
+ * Create a DOCSP ticket to update the "current" and "upcoming" navigation links
+   in the library's [documentation](https://docs.mongodb.com/php-library/). This
+   will require updating
+   [mongodb/docs-php-library](https://github.com/mongodb/docs-php-library).
+
+These tasks can be initiated prior to tagging a new release to ensure that the
+updated content becomes accessible soon after the release is published.
+

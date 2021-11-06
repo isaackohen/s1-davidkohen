@@ -2,10 +2,12 @@
 
 namespace App;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Support\Facades\Cache;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class Settings extends Model {
+    use CrudTrait;
 
     protected $connection = 'mongodb';
     protected $collection = 'settings';

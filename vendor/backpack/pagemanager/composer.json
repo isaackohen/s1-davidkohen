@@ -1,0 +1,62 @@
+{
+    "name": "backpack/pagemanager",
+    "type": "library",
+    "description": "Create admin panels for presentation websites on Laravel, using page templates and Backpack\\CRUD.",
+    "keywords": [
+        "backpack",
+        "crud",
+        "wordpress",
+        "cms",
+        "content management system",
+        "presentation pages",
+        "presentation website",
+        "manage pages",
+        "administer pages",
+        "pagemanager",
+        "admin panel"
+    ],
+    "homepage": "https://github.com/laravel-backpack/PageManager",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Cristian Tabacitu",
+            "email": "tabacitu@backpackforlaravel.com",
+            "homepage": "https://backpackforlaravel.com",
+            "role": "Architect & Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "backpack/crud": "^4.1.0",
+        "cviebrock/eloquent-sluggable": "^8.0||^7.0||^6.0||4.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "^9.0||^7.0",
+        "scrutinizer/ocular": "~1.1",
+        "squizlabs/php_codesniffer": "~2.3 || ~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Backpack\\PageManager\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Backpack\\PageManager\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --testdox"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Backpack\\PageManager\\PageManagerServiceProvider"
+            ]
+        }
+    }
+}

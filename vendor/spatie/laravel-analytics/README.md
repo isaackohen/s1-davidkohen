@@ -1,10 +1,11 @@
+<p align="center"><img src="/art/socialcard.png" alt="Social Card of Laravel Analytics"></p>
+
 #  Retrieve data from Google Analytics
 
 [![Latest Version](https://img.shields.io/github/release/spatie/laravel-analytics.svg?style=flat-square)](https://github.com/spatie/laravel-analytics/releases)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 ![Test Status](https://img.shields.io/github/workflow/status/spatie/laravel-analytics/run-tests?label=tests&style=flat-square)
-[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/laravel-analytics.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/laravel-analytics)
-[![StyleCI](https://styleci.io/repos/32067087/shield)](https://styleci.io/repos/32067087)
+![Check & fix styling](https://github.com/spatie/laravel-analytics/workflows/Check%20&%20fix%20styling/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-analytics.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-analytics)
 
 Using this package you can easily retrieve data from Google Analytics.
@@ -26,9 +27,7 @@ Most methods will return an `\Illuminate\Support\Collection` object containing t
 
 ## Support us
 
-Learn how to create a package like this one, by watching our premium video course:
-
-[![Laravel Package training](https://spatie.be/github/package-training.jpg)](https://laravelpackage.training)
+[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-analytics.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-analytics)
 
 We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
 
@@ -62,7 +61,7 @@ return [
 
     /*
      * Path to the client secret json file. Take a look at the README of this package
-     * to learn how to get this file. You can also pass the credentials as an array 
+     * to learn how to get this file. You can also pass the credentials as an array
      * instead of a file path.
      */
     'service_account_credentials_json' => storage_path('app/analytics/service-account-credentials.json'),
@@ -133,7 +132,7 @@ You'll need the `View ID` displayed there.
 When the installation is done you can easily retrieve Analytics data. Nearly all methods will return an `Illuminate\Support\Collection`-instance.
 
 
-Here are a few examples using periods 
+Here are a few examples using periods
 ```php
 //retrieve visitors and pageview data for the current day and the last seven days
 $analyticsData = Analytics::fetchVisitorsAndPageViews(Period::days(7));
@@ -141,7 +140,7 @@ $analyticsData = Analytics::fetchVisitorsAndPageViews(Period::days(7));
 //retrieve visitors and pageviews since the 6 months ago
 $analyticsData = Analytics::fetchVisitorsAndPageViews(Period::months(6));
 
-//retrieve sessions and pageviews with yearMonth dimension since 1 year ago 
+//retrieve sessions and pageviews with yearMonth dimension since 1 year ago
 $analyticsData = Analytics::performQuery(
     Period::years(1),
     'ga:sessions',
@@ -251,6 +250,8 @@ If you discover any security related issues, please email freek@spatie.be instea
 
 - [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)
+
+And a special thanks to [Caneco](https://twitter.com/caneco) for the logo ✨
 
 ## License
 

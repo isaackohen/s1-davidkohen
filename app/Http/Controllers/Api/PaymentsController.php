@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Events\Deposit;
 use Illuminate\Support\Facades\Log;
 use App\Currency\Aggregator\Aggregator;
+use App\TransactionStatistics;
 
 class PaymentsController
 {
@@ -118,6 +119,9 @@ class PaymentsController
 			$user->balance(Currency::find($currency))->add($request->get('actually_paid')); 
 			event(new Deposit($user, Currency::find($currency), floatval($request->get('actually_paid'))));
 		}
+ 		$depositAmount = Currency::find($currency)->convertTokenToUSD(floatval($request->get('actually_paid')));
+ 		TransactionStatistics::statsUpdate($user->_id, 'deposit_total', $depositAmount);
+
 
         return response('Ok', 200)  
             ->header('Content-Type', 'text/plain'); 
@@ -151,6 +155,8 @@ class PaymentsController
 				$user->balance(Currency::find($currency))->add($request->get('amount')); 
 				event(new Deposit($user, Currency::find($currency), floatval($request->get('amount'))));
 			}
+ 			$depositAmount = Currency::find($currency)->convertTokenToUSD(floatval($request->get('amount')));
+ 			TransactionStatistics::statsUpdate($user->_id, 'deposit_total', $depositAmount);
 
 			header("Content-Type: application/json");
 			$response = ["ok" => true];

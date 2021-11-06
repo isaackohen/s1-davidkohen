@@ -1,0 +1,5 @@
+models:
+  Seeder:
+    id
+    timestamps
+seeders: Seeder

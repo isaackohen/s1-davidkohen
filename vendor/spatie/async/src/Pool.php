@@ -39,7 +39,7 @@ class Pool implements ArrayAccess
 
     protected $stopped = false;
 
-    protected $binary = 'php';
+    protected $binary = PHP_BINARY;
 
     public function __construct()
     {
@@ -63,7 +63,15 @@ class Pool implements ArrayAccess
         return
             function_exists('pcntl_async_signals')
             && function_exists('posix_kill')
+            && function_exists('proc_open')
             && ! self::$forceSynchronous;
+    }
+
+    public function forceSynchronous(): self
+    {
+        self::$forceSynchronous = true;
+
+        return $this;
     }
 
     public function concurrency(int $concurrency): self
@@ -207,11 +215,12 @@ class Pool implements ArrayAccess
     {
         unset($this->inProgress[$process->getPid()]);
 
-        $this->notify();
+        $process->stop();
 
         $process->triggerTimeout();
-
         $this->timeouts[$process->getPid()] = $process;
+
+        $this->notify();
     }
 
     public function markAsFailed(Runnable $process)

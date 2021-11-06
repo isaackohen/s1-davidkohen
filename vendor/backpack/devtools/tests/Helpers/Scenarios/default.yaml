@@ -1,0 +1,4 @@
+models:
+  Testing:
+    id
+    timestamps

@@ -1,0 +1,8 @@
+models:
+  ColumnEnum:
+    id
+    options_a: enum:a,b,c
+    options_b: enum:a,b,c
+    options_c: enum:a,b,c
+    options_d: set:a,b,c
+    timestamps

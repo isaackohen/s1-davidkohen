@@ -2,19 +2,19 @@ import VueRouter from 'vue-router';
 
 const routes = [
     { path: '*', component: require('./components/views/PageNotFound.vue').default },
-    { path: '/admin', component: require('./components/views/Dashboard.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/promo', component: require('./components/views/Promo.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/settings', component: require('./components/views/Settings.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/notifications', component: require('./components/views/Notifications.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/users', component: require('./components/views/Users.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/user/:id', component: require('./components/views/User.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/wallet', component: require('./components/views/Wallet.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/wallet_ignored', component: require('./components/views/WalletIgnored.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/modules', component: require('./components/views/Modules.vue').default, meta: { requiresAccess: 'admin' } },  
-    { path: '/admin/externalgames', component: require('./components/views/ExternalGames.vue').default, meta: { requiresAccess: 'admin' } },  
-    { path: '/admin/currency', component: require('./components/views/Currency.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/activity', component: require('./components/views/Activity.vue').default, meta: { requiresAccess: 'admin' } },
-    { path: '/admin/bot', component: require('./components/views/Bot.vue').default, meta: { requiresAccess: 'admin' } }
+    { path: '/admin2', component: require('./components/views/Dashboard.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/promo', component: require('./components/views/Promo.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/settings', component: require('./components/views/Settings.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/notifications', component: require('./components/views/Notifications.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/users', component: require('./components/views/Users.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/user/:id', component: require('./components/views/User.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/wallet', component: require('./components/views/Wallet.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/wallet_ignored', component: require('./components/views/WalletIgnored.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/modules', component: require('./components/views/Modules.vue').default, meta: { requiresAccess: 'admin' } },  
+    { path: '/admin2/externalgames', component: require('./components/views/ExternalGames.vue').default, meta: { requiresAccess: 'admin' } },  
+    { path: '/admin2/currency', component: require('./components/views/Currency.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/activity', component: require('./components/views/Activity.vue').default, meta: { requiresAccess: 'admin' } },
+    { path: '/admin2/bot', component: require('./components/views/Bot.vue').default, meta: { requiresAccess: 'admin' } }
 ];
 
 const router = new VueRouter({

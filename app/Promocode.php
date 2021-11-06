@@ -2,9 +2,11 @@
 
 namespace App;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class Promocode extends Model {
+    use CrudTrait;
 
     protected $connection = 'mongodb';
     protected $collection = 'promocodes';

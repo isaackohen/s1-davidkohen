@@ -1,0 +1,4 @@
+models:
+  ColumnNoTimestamp:
+    id
+    timestamps: false

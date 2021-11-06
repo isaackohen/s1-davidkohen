@@ -2,6 +2,23 @@
 
 All notable changes to `async` will be documented in this file
 
+## 1.5.2 - 2020-11-20
+
+- Configure task in synchronous process
+- Add Pool::forceSynchronous function
+
+## 1.5.1 - 2020-11-20
+
+- Support for PHP 8
+
+## 1.5.0 - 2020-09-18
+
+- Add fallback to SerializableException to handle "complex" exceptions (#119)
+
+## 1.4.1 - 2020-08-19
+
+- Properly stop process on timeout (#105)
+
 ## 1.4.0 - 2020-04-15
 
 - Make binary configurable (#111 and #112)

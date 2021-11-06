@@ -54,7 +54,7 @@ class MindepositUpdate extends Command {
 				try {
 					$curlcurrency = curl_init();
 					curl_setopt_array($curlcurrency, array(
-					  CURLOPT_URL => 'https://api.nowpayments.io/v1/min-amount?currency_from='.$currency->nowpayments().'',
+					  CURLOPT_URL => 'https://api.nowpayments.io/v1/min-amount?currency_from='.$currency->nowpayments(),
 					  CURLOPT_RETURNTRANSFER => true,
 					  CURLOPT_ENCODING => '',
 					  CURLOPT_MAXREDIRS => 10,

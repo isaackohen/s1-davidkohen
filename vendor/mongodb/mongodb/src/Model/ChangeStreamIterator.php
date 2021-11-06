@@ -24,9 +24,11 @@ use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSubscriber;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
+use MongoDB\Driver\Server;
 use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\ResumeTokenException;
 use MongoDB\Exception\UnexpectedValueException;
+
 use function count;
 use function is_array;
 use function is_integer;
@@ -63,6 +65,9 @@ class ChangeStreamIterator extends IteratorIterator implements CommandSubscriber
     /** @var array|object|null */
     private $resumeToken;
 
+    /** @var Server */
+    private $server;
+
     /**
      * @internal
      * @param Cursor            $cursor
@@ -90,6 +95,7 @@ class ChangeStreamIterator extends IteratorIterator implements CommandSubscriber
         $this->isRewindNop = ($firstBatchSize === 0);
         $this->postBatchResumeToken = $postBatchResumeToken;
         $this->resumeToken = $initialResumeToken;
+        $this->server = $cursor->getServer();
     }
 
     /** @internal */
@@ -150,6 +156,14 @@ class ChangeStreamIterator extends IteratorIterator implements CommandSubscriber
     public function getResumeToken()
     {
         return $this->resumeToken;
+    }
+
+    /**
+     * Returns the server the cursor is running on.
+     */
+    public function getServer(): Server
+    {
+        return $this->server;
     }
 
     /**
@@ -230,16 +244,18 @@ class ChangeStreamIterator extends IteratorIterator implements CommandSubscriber
         }
 
         $resumeToken = is_array($document)
-            ? (isset($document['_id']) ? $document['_id'] : null)
-            : (isset($document->_id) ? $document->_id : null);
+            ? ($document['_id'] ?? null)
+            : ($document->_id ?? null);
 
         if (! isset($resumeToken)) {
             $this->isValid = false;
+
             throw ResumeTokenException::notFound();
         }
 
         if (! is_array($resumeToken) && ! is_object($resumeToken)) {
             $this->isValid = false;
+
             throw ResumeTokenException::invalidType($resumeToken);
         }
 

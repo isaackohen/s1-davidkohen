@@ -1,0 +1,76 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use App\Models\Giant;
+use App\Models\User;
+
+class GiantFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Giant::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'bigInteger' => $this->faker->numberBetween(-100000, 100000),
+            'binary' => $this->faker->sha256,
+            'boolean' => $this->faker->boolean,
+            'char' => $this->faker->randomLetter,
+            'dateTimeTz' => $this->faker->dateTime(),
+            'dateTime' => $this->faker->dateTime(),
+            'date' => $this->faker->date(),
+            'decimal' => $this->faker->randomFloat(2, 0, 99.99),
+            'double' => $this->faker->randomFloat(2, 0, 99.99),
+            'enum' => $this->faker->randomElement(["first","second","third"]),
+            'float' => $this->faker->randomFloat(2, 0, 99.99),
+            'foreignId' => User::factory(),
+            'geometryCollection' => $this->faker->word,
+            'geometry' => $this->faker->word,
+            'integer' => $this->faker->numberBetween(-10000, 10000),
+            'ipAddress' => $this->faker->ipv4,
+            'json' => '{}',
+            'jsonb' => '{}',
+            'lineString' => $this->faker->word,
+            'longText' => $this->faker->text,
+            'macAddress' => $this->faker->macAddress,
+            'mediumInteger' => $this->faker->numberBetween(-10000, 10000),
+            'mediumText' => $this->faker->text,
+            'morphs' => $this->faker->word,
+            'multiLineString' => $this->faker->word,
+            'multiPoint' => $this->faker->word,
+            'multiPolygon' => $this->faker->word,
+            'point' => $this->faker->word,
+            'polygon' => $this->faker->word,
+            'rememberToken' => $this->faker->word,
+            'smallInteger' => $this->faker->numberBetween(-1000, 1000),
+            'string' => $this->faker->regexify('[A-Za-z0-9]{255}'),
+            'text' => $this->faker->text,
+            'timeTz' => $this->faker->time(),
+            'time' => $this->faker->time(),
+            'timestamp' => $this->faker->dateTime(),
+            'timestampTz' => $this->faker->dateTime(),
+            'tinyInteger' => $this->faker->numberBetween(-8, 8),
+            'unsignedBigInteger' => $this->faker->randomNumber(),
+            'unsignedDecimal' => $this->faker->randomNumber(),
+            'unsignedInteger' => $this->faker->randomNumber(),
+            'unsignedMediumInteger' => $this->faker->randomNumber(),
+            'unsignedSmallInteger' => $this->faker->randomNumber(),
+            'unsignedTinyInteger' => $this->faker->randomDigitNotNull,
+            'uuidMorphs' => $this->faker->word,
+            'uuid' => $this->faker->uuid,
+            'year' => $this->faker->year(),
+        ];
+    }
+}

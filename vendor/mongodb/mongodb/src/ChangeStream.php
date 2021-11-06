@@ -24,6 +24,7 @@ use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Exception\ResumeTokenException;
 use MongoDB\Model\ChangeStreamIterator;
+
 use function call_user_func;
 use function in_array;
 
@@ -40,14 +41,34 @@ class ChangeStream implements Iterator
      * @deprecated 1.4
      * @todo Remove this in 2.0 (see: PHPLIB-360)
      */
-    const CURSOR_NOT_FOUND = 43;
+    public const CURSOR_NOT_FOUND = 43;
 
-    /** @var array */
-    private static $nonResumableErrorCodes = [
-        136, // CappedPositionLost
-        237, // CursorKilled
-        11601, // Interrupted
+    /** @var int */
+    private static $cursorNotFound = 43;
+
+    /** @var int[] */
+    private static $resumableErrorCodes = [
+        6, // HostUnreachable
+        7, // HostNotFound
+        89, // NetworkTimeout
+        91, // ShutdownInProgress
+        189, // PrimarySteppedDown
+        262, // ExceededTimeLimit
+        9001, // SocketException
+        10107, // NotPrimary
+        11600, // InterruptedAtShutdown
+        11602, // InterruptedDueToReplStateChange
+        13435, // NotPrimaryNoSecondaryOk
+        13436, // NotPrimaryOrSecondary
+        63, // StaleShardVersion
+        150, // StaleEpoch
+        13388, // StaleConfig
+        234, // RetryChangeStream
+        133, // FailedToSatisfyReadPreference
     ];
+
+    /** @var int */
+    private static $wireVersionForResumableChangeStreamError = 9;
 
     /** @var callable */
     private $resumeCallable;
@@ -180,15 +201,15 @@ class ChangeStream implements Iterator
             return false;
         }
 
-        if ($exception->hasErrorLabel('NonResumableChangeStreamError')) {
-            return false;
+        if ($exception->getCode() === self::$cursorNotFound) {
+            return true;
         }
 
-        if (in_array($exception->getCode(), self::$nonResumableErrorCodes)) {
-            return false;
+        if (server_supports_feature($this->iterator->getServer(), self::$wireVersionForResumableChangeStreamError)) {
+            return $exception->hasErrorLabel('ResumableChangeStreamError');
         }
 
-        return true;
+        return in_array($exception->getCode(), self::$resumableErrorCodes);
     }
 
     /**

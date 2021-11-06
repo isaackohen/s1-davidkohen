@@ -1,0 +1,19 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Giant;
+use Illuminate\Database\Seeder;
+
+class GiantSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        Giant::factory()->count(5)->create();
+    }
+}

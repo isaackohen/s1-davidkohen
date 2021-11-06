@@ -30,6 +30,7 @@ use MongoDB\Exception\UnexpectedValueException;
 use MongoDB\Exception\UnsupportedException;
 use stdClass;
 use Traversable;
+
 use function current;
 use function is_array;
 use function is_bool;
@@ -48,7 +49,7 @@ use function sprintf;
  * @see \MongoDB\Collection::aggregate()
  * @see http://docs.mongodb.org/manual/reference/command/aggregate/
  */
-class Aggregate implements Executable
+class Aggregate implements Executable, Explainable
 {
     /** @var integer */
     private static $wireVersionForCollation = 5;
@@ -106,6 +107,14 @@ class Aggregate implements Executable
      *  * hint (string|document): The index to use. Specify either the index
      *    name as a string or the index key pattern as a document. If specified,
      *    then the query system will only consider plans using the hinted index.
+     *
+     *  * let (document): Map of parameter names and values. Values must be
+     *    constant or closed expressions that do not reference document fields.
+     *    Parameters can then be accessed as variables in an aggregate
+     *    expression context (e.g. "$$var").
+     *
+     *    This is not supported for server versions < 5.0 and will result in an
+     *    exception at execution time if used.
      *
      *  * maxTimeMS (integer): The maximum amount of time to allow the query to
      *    run.
@@ -196,6 +205,10 @@ class Aggregate implements Executable
             throw InvalidArgumentException::invalidType('"hint" option', $options['hint'], 'string or array or object');
         }
 
+        if (isset($options['let']) && ! is_array($options['let']) && ! is_object($options['let'])) {
+            throw InvalidArgumentException::invalidType('"let" option', $options['let'], ['array', 'object']);
+        }
+
         if (isset($options['maxAwaitTimeMS']) && ! is_integer($options['maxAwaitTimeMS'])) {
             throw InvalidArgumentException::invalidType('"maxAwaitTimeMS" option', $options['maxAwaitTimeMS'], 'integer');
         }
@@ -279,15 +292,19 @@ class Aggregate implements Executable
             if (isset($this->options['readConcern'])) {
                 throw UnsupportedException::readConcernNotSupportedInTransaction();
             }
+
             if (isset($this->options['writeConcern'])) {
                 throw UnsupportedException::writeConcernNotSupportedInTransaction();
             }
         }
 
         $hasExplain = ! empty($this->options['explain']);
-        $hasWriteStage = is_last_pipeline_operator_write($this->pipeline);
+        $hasWriteStage = $this->hasWriteStage();
 
-        $command = $this->createCommand($server, $hasWriteStage);
+        $command = new Command(
+            $this->createCommandDocument($server, $hasWriteStage),
+            $this->createCommandOptions()
+        );
         $options = $this->createOptions($hasWriteStage, $hasExplain);
 
         $cursor = $hasWriteStage && ! $hasExplain
@@ -316,23 +333,28 @@ class Aggregate implements Executable
     }
 
     /**
-     * Create the aggregate command.
+     * Returns the command document for this operation.
      *
-     * @param Server  $server
-     * @param boolean $hasWriteStage
-     * @return Command
+     * @see Explainable::getCommandDocument()
+     * @param Server $server
+     * @return array
      */
-    private function createCommand(Server $server, $hasWriteStage)
+    public function getCommandDocument(Server $server)
+    {
+        return $this->createCommandDocument($server, $this->hasWriteStage());
+    }
+
+    private function createCommandDocument(Server $server, bool $hasWriteStage): array
     {
         $cmd = [
-            'aggregate' => isset($this->collectionName) ? $this->collectionName : 1,
+            'aggregate' => $this->collectionName ?? 1,
             'pipeline' => $this->pipeline,
         ];
-        $cmdOptions = [];
 
         $cmd['allowDiskUse'] = $this->options['allowDiskUse'];
 
-        if (! empty($this->options['bypassDocumentValidation']) &&
+        if (
+            ! empty($this->options['bypassDocumentValidation']) &&
             server_supports_feature($server, self::$wireVersionForDocumentLevelValidation)
         ) {
             $cmd['bypassDocumentValidation'] = $this->options['bypassDocumentValidation'];
@@ -344,16 +366,14 @@ class Aggregate implements Executable
             }
         }
 
-        if (isset($this->options['collation'])) {
-            $cmd['collation'] = (object) $this->options['collation'];
+        foreach (['collation', 'let'] as $option) {
+            if (isset($this->options[$option])) {
+                $cmd[$option] = (object) $this->options[$option];
+            }
         }
 
         if (isset($this->options['hint'])) {
             $cmd['hint'] = is_array($this->options['hint']) ? (object) $this->options['hint'] : $this->options['hint'];
-        }
-
-        if (isset($this->options['maxAwaitTimeMS'])) {
-            $cmdOptions['maxAwaitTimeMS'] = $this->options['maxAwaitTimeMS'];
         }
 
         if ($this->options['useCursor']) {
@@ -365,7 +385,18 @@ class Aggregate implements Executable
                 : new stdClass();
         }
 
-        return new Command($cmd, $cmdOptions);
+        return $cmd;
+    }
+
+    private function createCommandOptions(): array
+    {
+        $cmdOptions = [];
+
+        if (isset($this->options['maxAwaitTimeMS'])) {
+            $cmdOptions['maxAwaitTimeMS'] = $this->options['maxAwaitTimeMS'];
+        }
+
+        return $cmdOptions;
     }
 
     /**
@@ -398,5 +429,10 @@ class Aggregate implements Executable
         }
 
         return $options;
+    }
+
+    private function hasWriteStage(): bool
+    {
+        return is_last_pipeline_operator_write($this->pipeline);
     }
 }

@@ -23,15 +23,7 @@
 
         <link rel="icon" href="{{ asset('/favicon.svg') }}">
         <link rel="manifest" href="/manifest.json">
-		
-		<script async src="https://www.googletagmanager.com/gtag/js?id={{ \App\Settings::where('name', 'gtag_key')->first()->value }}"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
 
-		  gtag('config', '{{ \App\Settings::where('name', 'gtag_key')->first()->value }}');
-		</script>
 		
         <script type="text/javascript">
             window.Layout = {

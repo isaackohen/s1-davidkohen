@@ -25,15 +25,15 @@ class Fetcher
             $this->streamContext = $streamContext;
         } else {
             $this->streamContext = stream_context_create(
-                array(
-                    'ssl' => array(
+                [
+                    'ssl' => [
                         'verify_peer' => true,
                         'verify_depth' => 10,
                         'cafile' => CaBundle::getSystemCaRootBundlePath(),
                         static::getPeerNameKey() => 'www.github.com',
                         'disable_compression' => true,
-                    )
-                )
+                    ]
+                ]
             );
         }
     }
@@ -41,12 +41,12 @@ class Fetcher
     public function fetch()
     {
         $level = error_reporting(0);
-        $result = file_get_contents($this->resourceUri, null, $this->streamContext);
+        $result = file_get_contents($this->resourceUri, false, $this->streamContext);
         error_reporting($level);
 
         if ($result === false) {
             $error = error_get_last();
-            throw FetcherException::httpError($this->resourceUri, $error['message']);
+            throw FetcherException::httpError($this->resourceUri, $error['message'] ?? 'Undefined error');
         }
 
         return $result;

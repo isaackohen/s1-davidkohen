@@ -56,6 +56,7 @@ class RouteCollection implements \IteratorAggregate, \Countable
      *
      * @return \ArrayIterator|Route[] An \ArrayIterator object for iterating over routes
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->all());
@@ -66,6 +67,7 @@ class RouteCollection implements \IteratorAggregate, \Countable
      *
      * @return int The number of routes
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return \count($this->routes);
@@ -76,7 +78,7 @@ class RouteCollection implements \IteratorAggregate, \Countable
      */
     public function add(string $name, Route $route/*, int $priority = 0*/)
     {
-        if (\func_num_args() < 3 && __CLASS__ !== static::class && __CLASS__ !== (new \ReflectionMethod($this, __FUNCTION__))->getDeclaringClass()->getName() && !$this instanceof \PHPUnit\Framework\MockObject\MockObject && !$this instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
+        if (\func_num_args() < 3 && __CLASS__ !== static::class && __CLASS__ !== (new \ReflectionMethod($this, __FUNCTION__))->getDeclaringClass()->getName() && !$this instanceof \PHPUnit\Framework\MockObject\MockObject && !$this instanceof \Prophecy\Prophecy\ProphecySubjectInterface && !$this instanceof \Mockery\MockInterface) {
             trigger_deprecation('symfony/routing', '5.1', 'The "%s()" method will have a new "int $priority = 0" argument in version 6.0, not defining it is deprecated.', __METHOD__);
         }
 
@@ -114,7 +116,7 @@ class RouteCollection implements \IteratorAggregate, \Countable
      */
     public function get(string $name)
     {
-        return isset($this->routes[$name]) ? $this->routes[$name] : null;
+        return $this->routes[$name] ?? null;
     }
 
     /**

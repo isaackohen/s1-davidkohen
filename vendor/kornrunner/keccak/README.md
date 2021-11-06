@@ -1,4 +1,4 @@
-# php-keccak [![Build Status](https://travis-ci.org/kornrunner/php-keccak.svg?branch=master)](https://travis-ci.org/kornrunner/php-keccak)  [![Coverage Status](https://coveralls.io/repos/github/kornrunner/php-keccak/badge.svg?branch=master)](https://coveralls.io/github/kornrunner/php-keccak?branch=master)
+# php-keccak [![Build Status](https://travis-ci.org/kornrunner/php-keccak.svg?branch=master)](https://travis-ci.org/kornrunner/php-keccak) [![Build status](https://ci.appveyor.com/api/projects/status/48isd8g6gov29wba/branch/master?svg=true)](https://ci.appveyor.com/project/kornrunner/php-keccak/branch/master) [![Coverage Status](https://coveralls.io/repos/github/kornrunner/php-keccak/badge.svg?branch=master)](https://coveralls.io/github/kornrunner/php-keccak?branch=master) [![Latest Stable Version](https://poser.pugx.org/kornrunner/keccak/v/stable)](https://packagist.org/packages/kornrunner/keccak)
 Pure PHP implementation of Keccak (SHA-3)
 
 ## Usage
@@ -27,4 +27,6 @@ Keccak::shake('', 256, 512);
 // 46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762fd75dc4ddd8c0f200cb05019d67b592f6fc821c49479ab48640292eacb3b7c4be
 ```
 
-ETH: 0x9c7b7a00972121fb843af7af74526d7eb585b171
+[![Ethereum](https://user-images.githubusercontent.com/725986/61891022-0d0c7f00-af09-11e9-829f-096c039bbbfa.png) 0x9c7b7a00972121fb843af7af74526d7eb585b171][Ethereum]
+
+[Ethereum]: https://etherscan.io/address/0x9c7b7a00972121fb843af7af74526d7eb585b171 "Donate with Ethereum"

@@ -75,7 +75,7 @@ abstract class Currency {
      */
     protected function randomBotBet(float $min, float $max) {
         try {
-            $diff = 150000000;
+            $diff = 100000000;
             return min(mt_rand($min * $diff, $max * $diff) / $diff, mt_rand($min * $diff, $max * $diff) / $diff);
         } catch (\Exception $e) {
             return $this->randomBotBet(1, 100);
@@ -263,8 +263,8 @@ abstract class Currency {
 							5 => floatval(Settings::get('vip_gold_usd'))
 						]
 				],
-				'vipClosest' => Currency::find(Settings::get('bonus_currency'))->name(),
-				'vipClosestId' => Currency::find(Settings::get('bonus_currency'))->id(),
+				'vipClosest' => Currency::find('np_eth')->name(),
+				'vipClosestId' => Currency::find('np_eth')->id(),
 				'vipClosestWager' => auth('sanctum')->guest() ? 0 : (Statistics::where('user', auth('sanctum')->user()->_id)->first()->data['usd_wager'] ?? 0)
 			]);
 		}

@@ -25,6 +25,7 @@ if(!function_exists('createUser')) {
             'name_history' => [['time' => Carbon::now(), 'name' => $login]],
             'register_ip' => User::getIp(),
             'login_ip' => User::getIp(),
+            'freespins' => 0,
             'register_multiaccount_hash' => request()->hasCookie('s') ? request()->cookie('s') : null,
             'login_multiaccount_hash' => request()->hasCookie('s') ? request()->cookie('s') : null
         ], $additionalData));

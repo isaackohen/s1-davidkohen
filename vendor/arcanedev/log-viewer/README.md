@@ -68,6 +68,7 @@ Feel free to check out the [releases](https://github.com/ARCANEDEV/LogViewer/rel
 | `pt-BR` | Brazilian Portuguese  |
 | `ro`    | Romanian              |
 | `ru`    | Russian               |
+| `si`    | Sinhalese             |
 | `sv`    | Swedish               |
 | `th`    | Thai                  |
 | `tr`    | Turkish               |

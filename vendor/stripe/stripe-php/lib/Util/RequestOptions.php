@@ -93,7 +93,7 @@ class RequestOptions
     public static function parse($options, $strict = false)
     {
         if ($options instanceof self) {
-            return $options;
+            return clone $options;
         }
 
         if (null === $options) {
@@ -161,7 +161,7 @@ class RequestOptions
         $redactedLast = \strlen($last) > 4
             ? (\str_repeat('*', \strlen($last) - 4) . \substr($last, -4))
             : $last;
-        \array_push($pieces, $redactedLast);
+        $pieces[] = $redactedLast;
 
         return \implode('_', $pieces);
     }

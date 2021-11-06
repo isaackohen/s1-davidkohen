@@ -1,0 +1,83 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateGiantsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::disableForeignKeyConstraints();
+
+        Schema::create('giants', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('bigInteger')->nullable();
+            $table->binary('binary')->nullable();
+            $table->boolean('boolean')->nullable()->default(1);
+            $table->char('char', 1)->nullable()->default('A');
+            $table->dateTimeTz('dateTimeTz')->nullable();
+            $table->dateTime('dateTime')->nullable()->default('1970-01-01 00.00.00');
+            $table->date('date')->nullable()->default('1970-01-01');
+            $table->decimal('decimal', 4, 2)->nullable()->default(0.5);
+            $table->double('double', 4, 2)->nullable();
+            $table->enum('enum', ["first","second","third"])->nullable()->default('first');
+            $table->float('float', 4, 2)->nullable();
+            $table->foreignId('foreignId')->nullable()->constrained('users');
+            $table->geometryCollection('geometryCollection')->nullable();
+            $table->geometry('geometry')->nullable();
+            $table->integer('integer')->nullable()->default(100);
+            $table->ipAddress('ipAddress')->nullable()->default('192.168.0.1');
+            $table->json('json')->nullable();
+            $table->jsonb('jsonb')->nullable();
+            $table->lineString('lineString')->nullable();
+            $table->longText('longText')->nullable();
+            $table->macAddress('macAddress')->nullable()->default('00-00-00-00-00-00');
+            $table->mediumInteger('mediumInteger')->nullable();
+            $table->mediumText('mediumText')->nullable();
+            $table->string('morphs')->nullable();
+            $table->multiLineString('multiLineString')->nullable();
+            $table->multiPoint('multiPoint')->nullable();
+            $table->multiPolygon('multiPolygon')->nullable();
+            $table->point('point')->nullable();
+            $table->polygon('polygon')->nullable();
+            $table->string('rememberToken')->nullable();
+            $table->smallInteger('smallInteger')->nullable();
+            $table->string('string', 255)->nullable()->default('sample \"text\"');
+            $table->text('text')->nullable();
+            $table->timeTz('timeTz')->nullable();
+            $table->time('time')->nullable();
+            $table->timestamp('timestamp')->nullable();
+            $table->timestampTz('timestampTz')->nullable();
+            $table->tinyInteger('tinyInteger')->nullable();
+            $table->unsignedBigInteger('unsignedBigInteger')->nullable();
+            $table->unsignedDecimal('unsignedDecimal', 4, 2)->nullable();
+            $table->unsignedInteger('unsignedInteger')->nullable();
+            $table->unsignedMediumInteger('unsignedMediumInteger')->nullable();
+            $table->unsignedSmallInteger('unsignedSmallInteger')->nullable();
+            $table->unsignedTinyInteger('unsignedTinyInteger')->nullable();
+            $table->string('uuidMorphs')->nullable();
+            $table->uuid('uuid')->nullable();
+            $table->year('year')->nullable()->default('1970');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::enableForeignKeyConstraints();
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('giants');
+    }
+}

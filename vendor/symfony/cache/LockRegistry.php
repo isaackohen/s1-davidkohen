@@ -27,7 +27,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 final class LockRegistry
 {
     private static $openedFiles = [];
-    private static $lockedFiles = [];
+    private static $lockedFiles;
 
     /**
      * The number of items in this list controls the max number of concurrent processes.
@@ -45,6 +45,7 @@ final class LockRegistry
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'FilesystemTagAwareAdapter.php',
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'MemcachedAdapter.php',
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'NullAdapter.php',
+        __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'ParameterNormalizer.php',
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'PdoAdapter.php',
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'PhpArrayAdapter.php',
         __DIR__.\DIRECTORY_SEPARATOR.'Adapter'.\DIRECTORY_SEPARATOR.'PhpFilesAdapter.php',
@@ -70,7 +71,7 @@ final class LockRegistry
 
         foreach (self::$openedFiles as $file) {
             if ($file) {
-                flock($file, LOCK_UN);
+                flock($file, \LOCK_UN);
                 fclose($file);
             }
         }
@@ -81,7 +82,12 @@ final class LockRegistry
 
     public static function compute(callable $callback, ItemInterface $item, bool &$save, CacheInterface $pool, \Closure $setMetadata = null, LoggerInterface $logger = null)
     {
-        $key = self::$files ? crc32($item->getKey()) % \count(self::$files) : -1;
+        if ('\\' === \DIRECTORY_SEPARATOR && null === self::$lockedFiles) {
+            // disable locking on Windows by default
+            self::$files = self::$lockedFiles = [];
+        }
+
+        $key = self::$files ? abs(crc32($item->getKey())) % \count(self::$files) : -1;
 
         if ($key < 0 || (self::$lockedFiles[$key] ?? false) || !$lock = self::open($key)) {
             return $callback($item, $save);
@@ -90,7 +96,7 @@ final class LockRegistry
         while (true) {
             try {
                 // race to get the lock in non-blocking mode
-                $locked = flock($lock, LOCK_EX | LOCK_NB, $wouldBlock);
+                $locked = flock($lock, \LOCK_EX | \LOCK_NB, $wouldBlock);
 
                 if ($locked || !$wouldBlock) {
                     $logger && $logger->info(sprintf('Lock %s, now computing item "{key}"', $locked ? 'acquired' : 'not supported'), ['key' => $item->getKey()]);
@@ -111,9 +117,9 @@ final class LockRegistry
                 }
                 // if we failed the race, retry locking in blocking mode to wait for the winner
                 $logger && $logger->info('Item "{key}" is locked, waiting for it to be released', ['key' => $item->getKey()]);
-                flock($lock, LOCK_SH);
+                flock($lock, \LOCK_SH);
             } finally {
-                flock($lock, LOCK_UN);
+                flock($lock, \LOCK_UN);
                 unset(self::$lockedFiles[$key]);
             }
             static $signalingException, $signalingCallback;

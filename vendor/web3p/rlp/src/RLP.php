@@ -13,17 +13,58 @@ namespace Web3p\RLP;
 
 use InvalidArgumentException;
 use RuntimeException;
-use Web3p\RLP\Buffer;
 use Web3p\RLP\Types\Str;
 use Web3p\RLP\Types\Numeric;
 
+/**
+ * It's a instance for ethereum recursive length encoding.
+ * 
+ * RLP encode:
+ * 
+ * ```php
+ * use Web3p\RLP\RLP;
+
+ * $rlp = new RLP;
+ * // c483646f67
+ * $encoded = $rlp->encode(['dog']);
+ * 
+ * // 83646f67
+ * $encoded = $rlp->encode('dog');
+ * ```
+ * 
+ * RLP decode:
+ * 
+ * ```php
+ * use Web3p\RLP\RLP;
+ * use Web3p\RLP\Types\Str;
+ * 
+ * $rlp = new RLP;
+ * $encoded = $rlp->encode(['dog']);
+ * 
+ * // only accept 0x prefixed hex string
+ * $decoded = $rlp->decode('0x' . $encoded);
+ * 
+ * // show 646f67
+ * echo $decoded[0];
+ * 
+ * // show dog
+ * echo hex2bin($decoded[0]);
+ * 
+ * // or you can
+ * echo Str::decodeHex($decoded[0]);
+ * ```
+ * 
+ * @author Peter Lai <alk03073135@gmail.com>
+ * @link https://www.web3p.xyz
+ * @filesource https://github.com/web3p/rlp
+ */
 class RLP
 {
     /**
-     * encode
+     * Return RLP encoded of the given inputs.
      *
-     * @param mixed $inputs array of data
-     * @return string
+     * @param mixed $inputs mixed type of data you want to RLP encode
+     * @return string RLP encoded hex string of inputs
      */
     public function encode($inputs)
     {
@@ -38,18 +79,18 @@ class RLP
         $input = $this->encodeInput($inputs);
         $length = mb_strlen($input) / 2;
 
-        if ($length === 1 && hexdec(mb_substr($input, 0, 2)) < 128) {
+        // first byte < 0x80
+        if ($length === 1 && hexdec(mb_substr($input, 0, 2)) < 0x80) {
             return $input;
         }
         return $this->encodeLength($length, 128) . $input;
     }
 
     /**
-     * decode
-     * Maybe use bignumber future.
+     * Return RLP decoded of the given hex encoded data.
      *
-     * @param string $input
-     * @return array
+     * @param string $input hex encoded data
+     * @return array decoded data
      */
     public function decode(string $input)
     {
@@ -65,25 +106,26 @@ class RLP
     }
 
     /**
-     * decodeData
+     * Main function of RLP decode.
      *
-     * @param string $input
-     * @return array
+     * @param string $input hex encoded data
+     * @return array decoded data
      */
     protected function decodeData(string $input)
     {
-        $firstByte = hexdec(mb_substr($input, 0, 2));
+        $firstByte = mb_substr($input, 0, 2);
+        $firstByteDec = hexdec($firstByte);
 
-        if ($firstByte <= 0x7f) {
+        if ($firstByteDec <= 0x7f) {
             return [
-                'data' => dechex($firstByte),
+                'data' => $firstByte,
                 'remainder' => mb_substr($input, 2)
             ];
-        } elseif ($firstByte <= 0xb7) {
-            $length = $firstByte - 0x7f;
+        } elseif ($firstByteDec <= 0xb7) {
+            $length = $firstByteDec - 0x7f;
             $data = '';
 
-            if ($firstByte !== 0x80) {
+            if ($firstByteDec !== 0x80) {
                 $data = mb_substr($input, 2, ($length - 1) * 2);
             }
             $firstByteData = hexdec(mb_substr($data, 0, 2));
@@ -94,15 +136,15 @@ class RLP
                 'data' => $data,
                 'remainder' => mb_substr($input, $length * 2)
             ];
-        } elseif ($firstByte <= 0xbf) {
-            $llength = $firstByte - 0xb6;
+        } elseif ($firstByteDec <= 0xbf) {
+            $llength = $firstByteDec - 0xb6;
             $hexLength = mb_substr($input, 2, ($llength - 1) * 2);
 
             if ($hexLength === '00') {
                 throw new RuntimeException('Invalid RLP.');
             }
             $length = hexdec($hexLength);
-            $data = mb_substr($input, $llength * 2, ($length + $llength - 1) * 2);
+            $data = mb_substr($input, $llength * 2, $length * 2);
 
             if (mb_strlen($data) < $length * 2) {
                 throw new RuntimeException('Invalid RLP.');
@@ -111,8 +153,8 @@ class RLP
                 'data' => $data,
                 'remainder' => mb_substr($input, ($length + $llength) * 2)
             ];
-        } elseif ($firstByte <= 0xf7) {
-            $length = $firstByte - 0xbf;
+        } elseif ($firstByteDec <= 0xf7) {
+            $length = $firstByteDec - 0xbf;
             $innerRemainder = mb_substr($input, 2, ($length - 1) * 2);
             $decoded = [];
 
@@ -126,7 +168,7 @@ class RLP
                 'remainder' => mb_substr($input, $length * 2)
             ];
         } else {
-            $llength = $firstByte - 0xf6;
+            $llength = $firstByteDec - 0xf6;
             $hexLength = mb_substr($input, 2, ($llength - 1) * 2);
             $decoded = [];
 
@@ -158,11 +200,11 @@ class RLP
     }
 
     /**
-     * encodeLength
+     * Return RLP encoded the length of data.
      * 
-     * @param int $length
-     * @param int $offset
-     * @return string
+     * @param int $length length of data
+     * @param int $offset offset of data
+     * @return string hex encoded of the length 
      */
     protected function encodeLength(int $length, int $offset)
     {
@@ -175,38 +217,37 @@ class RLP
     }
 
     /**
-     * intToHex
+     * Return hex of the given integer.
      * 
-     * @param int $value
-     * @return string
+     * @param int $input integer
+     * @return string hex encoded of the input
      */
-    protected function intToHex(int $value)
+    protected function intToHex(int $input)
     {
-        $hex = dechex($value);
+        $hex = dechex($input);
 
         return $this->padToEven($hex);
     }
 
     /**
-     * padToEven
+     * Pad hex encoded data to even length (add 0).
      * 
-     * @param string $value
-     * @return string
+     * @param string $input hex encoded string
+     * @return string hex encoded string
      */
-    protected function padToEven(string $value)
+    protected function padToEven(string $input)
     {
-        if ((strlen($value) % 2) !== 0 ) {
-            $value = '0' . $value;
+        if ((strlen($input) % 2) !== 0 ) {
+            $input = '0' . $input;
         }
-        return $value;
+        return $input;
     }
 
     /**
-     * encodeInput
-     * Encode input to hex string.
+     * Main encode function to transform data to hex encoded string.
      *
-     * @param mixed $input
-     * @return string
+     * @param mixed $input data
+     * @return string hex encoded string
      */
     protected function encodeInput($input)
     {

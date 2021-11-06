@@ -13,6 +13,8 @@ use UAParser\Result\Client;
 
 class Parser extends AbstractParser
 {
+    use ParserFactoryMethods;
+
     /** @var DeviceParser */
     private $deviceParser;
 
@@ -32,7 +34,7 @@ class Parser extends AbstractParser
     }
 
     /** Sets up some standard variables as well as starts the user agent parsing process */
-    public function parse(string $userAgent, array $jsParseBits = array()): Client
+    public function parse(string $userAgent, array $jsParseBits = []): Client
     {
         $client = new Client($userAgent);
 

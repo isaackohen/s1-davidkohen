@@ -1,0 +1,4 @@
+models:
+  CompositeName:
+    id
+    timestamps

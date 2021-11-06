@@ -58,6 +58,7 @@ use MongoDB\Operation\UpdateMany;
 use MongoDB\Operation\UpdateOne;
 use MongoDB\Operation\Watch;
 use Traversable;
+
 use function array_diff_key;
 use function array_intersect_key;
 use function current;
@@ -162,10 +163,10 @@ class Collection
         $this->manager = $manager;
         $this->databaseName = (string) $databaseName;
         $this->collectionName = (string) $collectionName;
-        $this->readConcern = isset($options['readConcern']) ? $options['readConcern'] : $this->manager->getReadConcern();
-        $this->readPreference = isset($options['readPreference']) ? $options['readPreference'] : $this->manager->getReadPreference();
-        $this->typeMap = isset($options['typeMap']) ? $options['typeMap'] : self::$defaultTypeMap;
-        $this->writeConcern = isset($options['writeConcern']) ? $options['writeConcern'] : $this->manager->getWriteConcern();
+        $this->readConcern = $options['readConcern'] ?? $this->manager->getReadConcern();
+        $this->readPreference = $options['readPreference'] ?? $this->manager->getReadPreference();
+        $this->typeMap = $options['typeMap'] ?? self::$defaultTypeMap;
+        $this->writeConcern = $options['writeConcern'] ?? $this->manager->getWriteConcern();
     }
 
     /**
@@ -234,7 +235,8 @@ class Collection
          *
          * A read concern is also not compatible with transactions.
          */
-        if (! isset($options['readConcern']) &&
+        if (
+            ! isset($options['readConcern']) &&
             server_supports_feature($server, self::$wireVersionForReadConcern) &&
             ! is_in_transaction($options) &&
             ( ! $hasWriteStage || server_supports_feature($server, self::$wireVersionForReadConcernWithWriteStage))
@@ -246,10 +248,12 @@ class Collection
             $options['typeMap'] = $this->typeMap;
         }
 
-        if ($hasWriteStage &&
+        if (
+            $hasWriteStage &&
             ! isset($options['writeConcern']) &&
             server_supports_feature($server, self::$wireVersionForWritableCommandWriteConcern) &&
-            ! is_in_transaction($options)) {
+            ! is_in_transaction($options)
+        ) {
             $options['writeConcern'] = $this->writeConcern;
         }
 
@@ -356,7 +360,7 @@ class Collection
      */
     public function createIndex($key, array $options = [])
     {
-        $commandOptionKeys = ['maxTimeMS' => 1, 'session' => 1, 'writeConcern' => 1];
+        $commandOptionKeys = ['commitQuorum' => 1, 'maxTimeMS' => 1, 'session' => 1, 'writeConcern' => 1];
         $indexOptions = array_diff_key($options, $commandOptionKeys);
         $commandOptions = array_intersect_key($options, $commandOptionKeys);
 

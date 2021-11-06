@@ -1,0 +1,7 @@
+models:
+  ColumnForeign:
+    id
+    user_id: id foreign:users.id
+    article_id: id foreign:articles.id
+    tag_id: id foreign:tags.id
+    timestamps

@@ -17,6 +17,7 @@
 
 namespace MongoDB;
 
+use Iterator;
 use MongoDB\Driver\Cursor;
 use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use MongoDB\Driver\Manager;
@@ -35,10 +36,12 @@ use MongoDB\Operation\CreateCollection;
 use MongoDB\Operation\DatabaseCommand;
 use MongoDB\Operation\DropCollection;
 use MongoDB\Operation\DropDatabase;
+use MongoDB\Operation\ListCollectionNames;
 use MongoDB\Operation\ListCollections;
 use MongoDB\Operation\ModifyCollection;
 use MongoDB\Operation\Watch;
 use Traversable;
+
 use function is_array;
 use function strlen;
 
@@ -129,10 +132,10 @@ class Database
 
         $this->manager = $manager;
         $this->databaseName = (string) $databaseName;
-        $this->readConcern = isset($options['readConcern']) ? $options['readConcern'] : $this->manager->getReadConcern();
-        $this->readPreference = isset($options['readPreference']) ? $options['readPreference'] : $this->manager->getReadPreference();
-        $this->typeMap = isset($options['typeMap']) ? $options['typeMap'] : self::$defaultTypeMap;
-        $this->writeConcern = isset($options['writeConcern']) ? $options['writeConcern'] : $this->manager->getWriteConcern();
+        $this->readConcern = $options['readConcern'] ?? $this->manager->getReadConcern();
+        $this->readPreference = $options['readPreference'] ?? $this->manager->getReadPreference();
+        $this->typeMap = $options['typeMap'] ?? self::$defaultTypeMap;
+        $this->writeConcern = $options['writeConcern'] ?? $this->manager->getWriteConcern();
     }
 
     /**
@@ -213,7 +216,8 @@ class Database
          *
          * A read concern is also not compatible with transactions.
          */
-        if (! isset($options['readConcern']) &&
+        if (
+            ! isset($options['readConcern']) &&
             server_supports_feature($server, self::$wireVersionForReadConcern) &&
             ! is_in_transaction($options) &&
             ( ! $hasWriteStage || server_supports_feature($server, self::$wireVersionForReadConcernWithWriteStage))
@@ -225,10 +229,12 @@ class Database
             $options['typeMap'] = $this->typeMap;
         }
 
-        if ($hasWriteStage &&
+        if (
+            $hasWriteStage &&
             ! isset($options['writeConcern']) &&
             server_supports_feature($server, self::$wireVersionForWritableCommandWriteConcern) &&
-            ! is_in_transaction($options)) {
+            ! is_in_transaction($options)
+        ) {
             $options['writeConcern'] = $this->writeConcern;
         }
 
@@ -402,6 +408,21 @@ class Database
     public function getWriteConcern()
     {
         return $this->writeConcern;
+    }
+
+    /**
+     * Returns the names of all collections in this database
+     *
+     * @see ListCollectionNames::__construct() for supported options
+     * @throws InvalidArgumentException for parameter/option parsing errors
+     * @throws DriverRuntimeException for other driver errors (e.g. connection errors)
+     */
+    public function listCollectionNames(array $options = []): Iterator
+    {
+        $operation = new ListCollectionNames($this->databaseName, $options);
+        $server = select_server($this->manager, $options);
+
+        return $operation->execute($server);
     }
 
     /**

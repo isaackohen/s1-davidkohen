@@ -1,0 +1,1 @@
+<a href="{{ url('admin/providers/updateProviders') }} " class="btn btn-xs btn-primary"><i class="fa fa-ban"></i>Update Provider List</a>

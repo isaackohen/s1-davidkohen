@@ -1,0 +1,6 @@
+models:
+  RelationsWithCustomName:
+    id
+    timestamps
+    created_by: id foreign:users.id
+    updated_by: id foreign:users.id

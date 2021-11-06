@@ -64,14 +64,14 @@ class PhpFileLoader extends FileLoader
      */
     public function supports($resource, string $type = null)
     {
-        return \is_string($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION) && (!$type || 'php' === $type);
+        return \is_string($resource) && 'php' === pathinfo($resource, \PATHINFO_EXTENSION) && (!$type || 'php' === $type);
     }
 
     protected function callConfigurator(callable $result, string $path, string $file): RouteCollection
     {
         $collection = new RouteCollection();
 
-        $result(new RoutingConfigurator($collection, $this, $path, $file));
+        $result(new RoutingConfigurator($collection, $this, $path, $file, $this->env));
 
         return $collection;
     }

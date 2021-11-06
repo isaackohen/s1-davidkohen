@@ -19,7 +19,15 @@
                         <div class="group">
                             <a href="javascript:void(0)" @click="openTerms('privacy_policy')">{{ $t('footer.privacy_policy') }}</a>
                             <router-link to="/partner">{{ $t('footer.affiliates') }}</router-link>
+
                         </div>
+                        <div v-if="!isGuest" class="group">
+                            <router-link :to="`/profile/${user.user._id}`">{{ $t('general.head.profile') }}</router-link>
+                            <a @click="openVipModal">{{ $t('general.profile.vip') }}</a>
+                            <a href="javascript:void(0)" @click="logout">{{ $t('general.head.logout') }}</a>
+                        </div>
+
+
                     </div>
                     <div class="info">
                         <div class="title">{{ $t('footer.accepted_currencies') }}</div>
@@ -46,6 +54,7 @@
 <script>
     import { mapGetters } from 'vuex';
     import TermsModal from "../modals/TermsModal";
+    import VipModal from '../modals/VipModal';
 
     export default {
         computed: {
@@ -54,6 +63,14 @@
         methods: {
             openTerms(type) {
                 TermsModal.methods.open(type);
+            },
+            logout() {
+                this.$store.dispatch('logout');
+                this.$router.push('/');
+            },
+                    openVipModal() {
+                if(this.isGuest) return AuthModal.methods.open('auth');
+                VipModal.methods.open();
             }
         }
     }

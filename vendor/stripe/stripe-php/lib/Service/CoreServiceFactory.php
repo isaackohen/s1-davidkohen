@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe\Service;
 
 /**
@@ -24,6 +26,7 @@ namespace Stripe\Service;
  * @property ExchangeRateService $exchangeRates
  * @property FileLinkService $fileLinks
  * @property FileService $files
+ * @property Identity\IdentityServiceFactory $identity
  * @property InvoiceItemService $invoiceItems
  * @property InvoiceService $invoices
  * @property Issuing\IssuingServiceFactory $issuing
@@ -37,10 +40,13 @@ namespace Stripe\Service;
  * @property PlanService $plans
  * @property PriceService $prices
  * @property ProductService $products
+ * @property PromotionCodeService $promotionCodes
+ * @property QuoteService $quotes
  * @property Radar\RadarServiceFactory $radar
  * @property RefundService $refunds
  * @property Reporting\ReportingServiceFactory $reporting
  * @property ReviewService $reviews
+ * @property SetupAttemptService $setupAttempts
  * @property SetupIntentService $setupIntents
  * @property Sigma\SigmaServiceFactory $sigma
  * @property SkuService $skus
@@ -48,6 +54,7 @@ namespace Stripe\Service;
  * @property SubscriptionItemService $subscriptionItems
  * @property SubscriptionService $subscriptions
  * @property SubscriptionScheduleService $subscriptionSchedules
+ * @property TaxCodeService $taxCodes
  * @property TaxRateService $taxRates
  * @property Terminal\TerminalServiceFactory $terminal
  * @property TokenService $tokens
@@ -80,6 +87,7 @@ class CoreServiceFactory extends \Stripe\Service\AbstractServiceFactory
         'exchangeRates' => ExchangeRateService::class,
         'fileLinks' => FileLinkService::class,
         'files' => FileService::class,
+        'identity' => Identity\IdentityServiceFactory::class,
         'invoiceItems' => InvoiceItemService::class,
         'invoices' => InvoiceService::class,
         'issuing' => Issuing\IssuingServiceFactory::class,
@@ -93,10 +101,13 @@ class CoreServiceFactory extends \Stripe\Service\AbstractServiceFactory
         'plans' => PlanService::class,
         'prices' => PriceService::class,
         'products' => ProductService::class,
+        'promotionCodes' => PromotionCodeService::class,
+        'quotes' => QuoteService::class,
         'radar' => Radar\RadarServiceFactory::class,
         'refunds' => RefundService::class,
         'reporting' => Reporting\ReportingServiceFactory::class,
         'reviews' => ReviewService::class,
+        'setupAttempts' => SetupAttemptService::class,
         'setupIntents' => SetupIntentService::class,
         'sigma' => Sigma\SigmaServiceFactory::class,
         'skus' => SkuService::class,
@@ -104,6 +115,7 @@ class CoreServiceFactory extends \Stripe\Service\AbstractServiceFactory
         'subscriptionItems' => SubscriptionItemService::class,
         'subscriptions' => SubscriptionService::class,
         'subscriptionSchedules' => SubscriptionScheduleService::class,
+        'taxCodes' => TaxCodeService::class,
         'taxRates' => TaxRateService::class,
         'terminal' => Terminal\TerminalServiceFactory::class,
         'tokens' => TokenService::class,

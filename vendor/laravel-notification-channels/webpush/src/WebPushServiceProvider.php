@@ -30,10 +30,9 @@ class WebPushServiceProvider extends ServiceProvider
         $this->app->when(WebPushChannel::class)
             ->needs(WebPush::class)
             ->give(function () {
-                $webPush = new WebPush($this->webPushConfig());
-                $webPush->setReuseVAPIDHeaders(true);
-
-                return $webPush;
+                return (new WebPush(
+                    $this->webPushAuth(), [], 30, config('webpush.client_options', [])
+                ))->setReuseVAPIDHeaders(true);
             });
 
         $this->app->when(WebPushChannel::class)
@@ -46,9 +45,11 @@ class WebPushServiceProvider extends ServiceProvider
     }
 
     /**
+     * Ge the authentication details.
+     *
      * @return array
      */
-    protected function webPushConfig()
+    protected function webPushAuth()
     {
         $config = [];
         $webpush = config('webpush');

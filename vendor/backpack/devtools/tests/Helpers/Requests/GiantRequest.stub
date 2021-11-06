@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Http\Requests\Request;
+use Illuminate\Foundation\Http\FormRequest;
+
+class GiantRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        // only allow updates if the user is logged in
+        return backpack_auth()->check();
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'bigInteger' => 'nullable|integer',
+            'binary' => 'nullable',
+            'boolean' => 'nullable',
+            'char' => 'nullable|string',
+            'dateTimeTz' => 'nullable',
+            'dateTime' => 'nullable',
+            'date' => 'nullable|date',
+            'decimal' => 'nullable|numeric',
+            'double' => 'nullable|numeric',
+            'enum' => 'nullable|in:',
+            'float' => 'nullable|numeric',
+            'foreignId' => 'nullable',
+            'geometryCollection' => 'nullable',
+            'geometry' => 'nullable',
+            'integer' => 'nullable|integer',
+            'ipAddress' => 'nullable',
+            'json' => 'nullable|json',
+            'jsonb' => 'nullable',
+            'lineString' => 'nullable',
+            'longText' => 'nullable|string',
+            'macAddress' => 'nullable',
+            'mediumInteger' => 'nullable|integer',
+            'mediumText' => 'nullable',
+            'morphs' => 'nullable',
+            'multiLineString' => 'nullable',
+            'multiPoint' => 'nullable',
+            'multiPolygon' => 'nullable',
+            'point' => 'nullable',
+            'polygon' => 'nullable',
+            'rememberToken' => 'nullable',
+            'smallInteger' => 'nullable|integer',
+            'string' => 'nullable|string',
+            'text' => 'nullable|string',
+            'timeTz' => 'nullable',
+            'time' => 'nullable',
+            'timestamp' => 'nullable',
+            'timestampTz' => 'nullable',
+            'tinyInteger' => 'nullable|integer',
+            'unsignedBigInteger' => 'nullable|integer|gt:0',
+            'unsignedDecimal' => 'nullable|numeric|gt:0',
+            'unsignedInteger' => 'nullable|integer|gt:0',
+            'unsignedMediumInteger' => 'nullable|integer|gt:0',
+            'unsignedSmallInteger' => 'nullable|integer|gt:0',
+            'unsignedTinyInteger' => 'nullable|integer|gt:0',
+            'uuidMorphs' => 'nullable',
+            'uuid' => 'nullable',
+            'year' => 'nullable',
+        ];
+    }
+
+    /**
+     * Get the validation attributes that apply to the request.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            //
+        ];
+    }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            //
+        ];
+    }
+}

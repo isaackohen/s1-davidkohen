@@ -41,7 +41,7 @@ class WebPushChannel
         /** @var \Illuminate\Database\Eloquent\Collection $subscriptions */
         $subscriptions = $notifiable->routeNotificationFor('WebPush', $notification);
 
-        if (empty($subscriptions)) {
+        if ($subscriptions->isEmpty()) {
             return;
         }
 
@@ -52,12 +52,12 @@ class WebPushChannel
 
         /** @var \NotificationChannels\WebPush\PushSubscription $subscription */
         foreach ($subscriptions as $subscription) {
-            $this->webPush->sendNotification(new Subscription(
+            $this->webPush->queueNotification(new Subscription(
                 $subscription->endpoint,
                 $subscription->public_key,
                 $subscription->auth_token,
                 $subscription->content_encoding
-            ), $payload, false, $options);
+            ), $payload, $options);
         }
 
         $reports = $this->webPush->flush();

@@ -1,0 +1,56 @@
+models:
+  Giant:
+    id
+    bigInteger: bigInteger nullable
+    binary: binary nullable
+    boolean: boolean nullable default:'1'
+    char: char:1 nullable default:'A'
+    dateTimeTz: dateTimeTz nullable
+    dateTime: dateTime nullable default:'1970-01-01 00.00.00'
+    date: date nullable default:'1970-01-01'
+    decimal: decimal:4,2 nullable default:'0.5'
+    double: double:4,2 nullable
+    enum: enum:first,second,third nullable default:'first'
+    float: float:4,2 nullable
+    foreignId: id foreign:users.id nullable
+    geometryCollection: geometryCollection nullable
+    geometry: geometry nullable
+    integer: integer nullable default:'100'
+    ipAddress: ipAddress nullable default:'192.168.0.1'
+    json: json nullable
+    jsonb: jsonb nullable
+    lineString: lineString nullable
+    longText: longText nullable
+    macAddress: macAddress nullable default:'00-00-00-00-00-00'
+    mediumInteger: mediumInteger nullable
+    mediumText: mediumText nullable
+    morphs: taggable nullable
+    multiLineString: multiLineString nullable
+    multiPoint: multiPoint nullable
+    multiPolygon: multiPolygon nullable
+    point: point nullable
+    polygon: polygon nullable
+    rememberToken: 100 nullable
+    smallInteger: smallInteger nullable
+    string: string:255 nullable default:'sample "text"'
+    text: text nullable
+    timeTz: timeTz nullable
+    time: time nullable
+    timestamp: timestamp nullable
+    timestampTz: timestampTz nullable
+    tinyInteger: tinyInteger nullable
+    unsignedBigInteger: unsignedBigInteger nullable
+    unsignedDecimal: unsignedDecimal:4,2 nullable
+    unsignedInteger: unsignedInteger nullable
+    unsignedMediumInteger: unsignedMediumInteger nullable
+    unsignedSmallInteger: unsignedSmallInteger nullable
+    unsignedTinyInteger: unsignedTinyInteger nullable
+    uuidMorphs: taggable,36 nullable
+    uuid: uuid nullable
+    year: year nullable default:'1970'
+    timestamps
+    softDeletes
+    relationships:
+      BelongsTo: \App\User
+      BelongsToMany: \App\Tag
+seeders: Giant

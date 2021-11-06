@@ -7,6 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class Statistics extends Model
 {
+    use \Backpack\CRUD\app\Models\Traits\CrudTrait;
 	
 	protected $connection = 'mongodb';
 	protected $collection = 'user_statistics';
@@ -41,11 +42,13 @@ class Statistics extends Model
 			$data = array_fill_keys($keys, '0');
 		}
 		if (!array_key_exists($var_bets, $data)) {
-			$keys = array($var_bets, $var_wins, $var_loss, $var_wagered, $var_profit);
+			$keys = array('games_played', 'usd_wins', $var_bets, $var_wins, $var_loss, $var_wagered, $var_profit);
 			$newData = array_fill_keys($keys, '0');
 			$data = array_merge($data, $newData);
 		}
 		$data['usd_wager'] += $wager * Currency::find($currency)->tokenPrice();
+		$data['usd_wins'] += $profit * Currency::find($currency)->tokenPrice() ?? 0;
+		$data['games_played'] += 1;
 		$data[$var_bets] += 1;
 		$data[$var_wins] += $profit > 0 ? ($multiplier < 1 ? 0 : 1) : 0;
 		$data[$var_loss] += $profit > 0 ? ($multiplier < 1 ? 1 : 0) : 1;

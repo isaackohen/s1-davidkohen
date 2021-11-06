@@ -11,6 +11,8 @@ use App\Transaction;
 use App\Utils\APIResponse;
 use App\Currency\Currency;
 use Illuminate\Http\Request;
+use App\TransactionStatistics;
+
 
 class BonusController
 {
@@ -28,7 +30,7 @@ class BonusController
         if(auth('sanctum')->user()->vipLevel() < 3 || ($promocode->vip ?? false) == false) {
             if (auth('sanctum')->user()->promocode_limit_reset == null || auth('sanctum')->user()->promocode_limit_reset->isPast()) {
                 auth('sanctum')->user()->update([
-                    'promocode_limit_reset' => Carbon::now()->addHours(auth('sanctum')->user()->vipLevel() >= 5 ? 6 : 12)->format('Y-m-d H:i:s'),
+                    'promocode_limit_reset' => Carbon::now()->addHours(auth('sanctum')->user()->vipLevel() >= 5 ? 11 : 12)->format('Y-m-d H:i:s'),
                     'promocode_limit' => 0
                 ]);
             }
@@ -50,7 +52,11 @@ class BonusController
             'used' => $used
         ]);
 
-        auth('sanctum')->user()->balance(Currency::find($promocode->currency))->add($promocode->sum, Transaction::builder()->message('Promocode')->get());
+        $currency = Currency::find($promocode->currency);
+        $amount = $currency->convertUSDToToken($promocode->sum);
+        auth('sanctum')->user()->balance(Currency::find($promocode->currency))->add($amount, Transaction::builder()->message('Promocode')->get());
+        TransactionStatistics::statsUpdate(auth('sanctum')->user()->_id, 'promocode', $promocode->sum);
+
         return APIResponse::success();
 	}
 	
@@ -63,6 +69,7 @@ class BonusController
 	
 	public function partnerBonus(Request $request) 
 	{
+        return APIResponse::reject(1, 'Not enough referrals');
         if(count(auth('sanctum')->user()->referral_wager_obtainer ?? []) < 10 || count(auth('sanctum')->user()->referral_wager_obtained ?? []) < ((auth('sanctum')->user()->referral_bonus_obtained ?? 0) + 1) * 10) return APIResponse::reject(1, 'Not enough referrals');
 		
 		$currency = Currency::find(Settings::get('bonus_currency'));
@@ -103,17 +110,17 @@ class BonusController
 		$currency = Currency::find(Settings::get('bonus_currency'));
 		
         $slices = [
-            [40, $currency->convertUSDToToken(Settings::get('wheel_bonus_1'))],
-            [30, $currency->convertUSDToToken(Settings::get('wheel_bonus_2'))],
-            [21, $currency->convertUSDToToken(Settings::get('wheel_bonus_3'))],
-            [15, $currency->convertUSDToToken(Settings::get('wheel_bonus_4'))],
-            [15, $currency->convertUSDToToken(Settings::get('wheel_bonus_5'))],
-            [7, $currency->convertUSDToToken(Settings::get('wheel_bonus_6'))],
-            [0.80, $currency->convertUSDToToken(Settings::get('wheel_bonus_7'))],
-            [0.50, $currency->convertUSDToToken(Settings::get('wheel_bonus_8'))],
-            [0.35, $currency->convertUSDToToken(Settings::get('wheel_bonus_9'))],
-            [0.20, $currency->convertUSDToToken(Settings::get('wheel_bonus_10'))],
-            [0.05, $currency->convertUSDToToken(Settings::get('wheel_bonus_11'))]
+            [40, $currency->convertUSDToToken(Settings::get('wheel_bonus_1', 1.00))],
+            [30, $currency->convertUSDToToken(Settings::get('wheel_bonus_2', 1.10))],
+            [21, $currency->convertUSDToToken(Settings::get('wheel_bonus_3', 0.5))],
+            [15, $currency->convertUSDToToken(Settings::get('wheel_bonus_4', 0.5))],
+            [15, $currency->convertUSDToToken(Settings::get('wheel_bonus_5', 0.6))],
+            [7, $currency->convertUSDToToken(Settings::get('wheel_bonus_6', 0.8))],
+            [0.80, $currency->convertUSDToToken(Settings::get('wheel_bonus_7', 0.95))],
+            [0.50, $currency->convertUSDToToken(Settings::get('wheel_bonus_8', 1.5))],
+            [0.35, $currency->convertUSDToToken(Settings::get('wheel_bonus_9', 1.4))],
+            [0.20, $currency->convertUSDToToken(Settings::get('wheel_bonus_10', 1.2))],
+            [0.05, $currency->convertUSDToToken(Settings::get('wheel_bonus_11', 1.1))]
         ];
 
         $slice = 0;
@@ -124,13 +131,16 @@ class BonusController
                 break;
             }
         }
+        $currency = Currency::find(Settings::get('bonus_currency'));
+        $amount = $currency->convertTokenToUSD($slices[$slice][1]);
+        TransactionStatistics::statsUpdate(auth('sanctum')->user()->_id, 'faucet', $amount);
 
         auth('sanctum')->user()->balance(Currency::find(Settings::get('bonus_currency')))->add($slices[$slice][1], Transaction::builder()->message('Faucet')->get());
-        auth('sanctum')->user()->update(['bonus_claim' => Carbon::now()->addMinutes(20)]);
+        auth('sanctum')->user()->update(['bonus_claim' => Carbon::now()->addHours(24)]);
 
         return APIResponse::success([
             'slice' => $slice,
-            'next' => Carbon::now()->addMinutes(20)->timestamp
+            'next' => Carbon::now()->addHours(24)->timestamp
         ]);
 	}
 	
@@ -185,6 +195,10 @@ class BonusController
         auth('sanctum')->user()->update([
             'weekly_bonus_obtained' => true
         ]);
+        $currency = Currency::find(Settings::get('bonus_currency'));
+        $amount = $currency->convertUSDToToken(((auth('sanctum')->user()->weekly_bonus ?? 0) / 100) * auth('sanctum')->user()->vipBonus());
+        TransactionStatistics::statsUpdate(auth('sanctum')->user()->_id, 'weeklybonus', $amount);
+
         return APIResponse::success();
 	}
 	
@@ -249,6 +263,7 @@ class BonusController
         if(auth()->user()->balance($currencyFrom)->get() < $amount) return APIResponse::reject(1, 'Invalid amount');
         auth()->user()->balance($currencyFrom)->subtract($amount, Transaction::builder()->message('Exchange Bonus Substracted')->get());
         auth()->user()->balance($currencyTo)->add($currencyTo->convertUSDToToken($currencyFrom->convertTokenToUSD($amount)), Transaction::builder()->message('Exchange Bonus Added')->get());
+        TransactionStatistics::statsUpdate(auth('sanctum')->user()->_id, 'depositbonus', $amount);
         return APIResponse::success();
 	}
 	

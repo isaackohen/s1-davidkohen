@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Modules;
 use App\Settings;
 use Carbon\Carbon;
@@ -12,6 +13,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use App\Games\Kernel\Module\General\HouseEdgeModule;
 
 class Gameslist extends Model {
+    use CrudTrait;
 
     protected $connection = 'mongodb';
     protected $collection = 'gameslist';

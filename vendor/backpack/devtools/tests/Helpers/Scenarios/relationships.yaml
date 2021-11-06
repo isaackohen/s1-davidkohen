@@ -1,0 +1,12 @@
+models:
+  Relationship:
+    id
+    timestamps
+    relationships:
+      BelongsTo: \App\User
+      BelongsToMany: \App\User
+      HasMany: \App\User
+      HasOne: \App\User
+      MorphMany: \App\User
+      MorphOne: \App\User
+      MorphTo: \App\User

@@ -1,0 +1,11 @@
+models:
+  Modifier:
+    id
+    nullable_string: string nullable
+    nullable_integer: integer nullable
+    default_0: integer default:'0'
+    default_100: integer default:'100'
+    default_string: string default:'default value'
+    comment: string comment:'This is a comment'
+    collation: string collation:'utf8_general_ci'
+    timestamps

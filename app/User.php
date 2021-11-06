@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Settings;
 use App\Statistics;
 use App\Currency\Currency;
@@ -18,6 +19,7 @@ use RobThree\Auth\TwoFactorAuth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends \Jenssegers\Mongodb\Auth\User {
+    use CrudTrait;
 
     use Notifiable, HasPushSubscriptions, HasApiTokens;
 
@@ -75,7 +77,10 @@ class User extends \Jenssegers\Mongodb\Auth\User {
 		'wallet_cg_busd', 'wallet_cg_bnb', 'wallet_cg_pirate', 'wallet_bonus', 'bonus_goal', 		
         'wallet_trx_private_key' 
     ];
-
+public function openGoogle($crud = false)
+{
+    return '<a class="btn btn-sm btn-link" target="_blank" href="http://google.com?q='.urlencode($this->name).'" data-toggle="tooltip" title="Just a demo custom button."><i class="fa fa-search"></i> User Stats</a>';
+}
     /**
      * Some of the attributes should be hidden even for account owners.
      * @var array

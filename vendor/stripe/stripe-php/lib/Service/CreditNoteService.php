@@ -1,5 +1,7 @@
 <?php
 
+// File generated from our OpenAPI spec
+
 namespace Stripe\Service;
 
 class CreditNoteService extends \Stripe\Service\AbstractService
@@ -96,11 +98,11 @@ class CreditNoteService extends \Stripe\Service\AbstractService
      *
      * @throws \Stripe\Exception\ApiErrorException if the request fails
      *
-     * @return \Stripe\CreditNote
+     * @return \Stripe\Collection
      */
     public function previewLines($params = null, $opts = null)
     {
-        return $this->request('get', '/v1/credit_notes/preview/lines', $params, $opts);
+        return $this->requestCollection('get', '/v1/credit_notes/preview/lines', $params, $opts);
     }
 
     /**
