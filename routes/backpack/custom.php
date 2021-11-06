@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ProvidersCrudController;
+use Illuminate\Support\Facades\Route;
+
 // --------------------------
 // Custom Backpack Routes
 // --------------------------
@@ -18,9 +21,9 @@ Route::prefix(config('backpack.base.route_prefix', 'admin'))->middleware(array_m
     Route::crud('promocode', 'PromocodeCrudController');
     Route::crud('currency', 'CurrencyCrudController');
     Route::crud('gameslist', 'GameslistCrudController');
-    Route::get('providers/{id}/disableProvider', 'ProvidersCrudController@disableGames');
-    Route::get('providers/{id}/enableProvider', 'ProvidersCrudController@enableProvider');
-    Route::get('providers/updateProviders', 'ProvidersCrudController@updateProviderList');
+    Route::get('providers/{id}/disableProvider', [ProvidersCrudController::class, 'disableGames']);
+    Route::get('providers/{id}/enableProvider', [ProvidersCrudController::class, 'enableProvider']);
+    Route::get('providers/updateProviders', [ProvidersCrudController::class, 'updateProviderList']);
 
     Route::crud('settings', 'SettingsCrudController');
 }); // this should be the absolute last line of this file

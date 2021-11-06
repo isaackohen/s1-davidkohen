@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -20,5 +21,5 @@ Route::get('/what-is-my-ip', function(){
 
 */
 
-Route::get('/avatar/{hash}', 'MainController@avatar');
-Route::get('/{vue_capture?}', 'MainController@main')->where('vue_capture', '[\\/\\w\\:.-]*');
+Route::get('/avatar/{hash}', [MainController::class, 'avatar']);
+Route::get('/{vue_capture?}', [MainController::class, 'main'])->where('vue_capture', '[\\/\\w\\:.-]*');
