@@ -107,7 +107,7 @@ class PromocodeCrudController extends CrudController
         $this->crud->addField([
             'name'        => 'currency', // the name of the db column
             'label'       => 'Currency', // the input label
-            'model'     => "App\Currency", // foreign key model
+            'model'     => \App\Currency::class, // foreign key model
             'type'        => 'select2',
 
       'options'   => (function ($query) {
