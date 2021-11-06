@@ -13,17 +13,17 @@ Route::prefix(config('backpack.base.route_prefix', 'admin'))->middleware(array_m
     'middleware' => array_merge(
         (array) config('backpack.base.web_middleware', 'web'),
         (array) config('backpack.base.middleware_key', 'admin')
-    ),], function () { // custom admin routes
-    Route::crud('statistics', 'StatisticsCrudController');
-    Route::crud('user', 'UserCrudController');
-    Route::crud('admin-activity', 'AdminActivityCrudController');
-    Route::crud('providers', 'ProvidersCrudController');
-    Route::crud('promocode', 'PromocodeCrudController');
-    Route::crud('currency', 'CurrencyCrudController');
-    Route::crud('gameslist', 'GameslistCrudController');
-    Route::get('providers/{id}/disableProvider', [ProvidersCrudController::class, 'disableGames']);
-    Route::get('providers/{id}/enableProvider', [ProvidersCrudController::class, 'enableProvider']);
-    Route::get('providers/updateProviders', [ProvidersCrudController::class, 'updateProviderList']);
+    ), ], function () { // custom admin routes
+        Route::crud('statistics', 'StatisticsCrudController');
+        Route::crud('user', 'UserCrudController');
+        Route::crud('admin-activity', 'AdminActivityCrudController');
+        Route::crud('providers', 'ProvidersCrudController');
+        Route::crud('promocode', 'PromocodeCrudController');
+        Route::crud('currency', 'CurrencyCrudController');
+        Route::crud('gameslist', 'GameslistCrudController');
+        Route::get('providers/{id}/disableProvider', [ProvidersCrudController::class, 'disableGames']);
+        Route::get('providers/{id}/enableProvider', [ProvidersCrudController::class, 'enableProvider']);
+        Route::get('providers/updateProviders', [ProvidersCrudController::class, 'updateProviderList']);
 
-    Route::crud('settings', 'SettingsCrudController');
-}); // this should be the absolute last line of this file
+        Route::crud('settings', 'SettingsCrudController');
+    }); // this should be the absolute last line of this file

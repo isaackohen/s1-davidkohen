@@ -1,5 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\CurrenciesController;
+use App\Http\Controllers\Admin\GamesController;
+use App\Http\Controllers\Admin\MainController;
+use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\NotificationsController;
+use App\Http\Controllers\Admin\PromocodeController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\CurrenciesController;
 use App\Http\Controllers\GamesController;
 use App\Http\Controllers\MainController;
@@ -10,16 +19,6 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Admin\CurrenciesController;
-use App\Http\Controllers\Admin\GamesController;
-use App\Http\Controllers\Admin\MainController;
-use App\Http\Controllers\Admin\ModuleController;
-use App\Http\Controllers\Admin\NotificationsController;
-use App\Http\Controllers\Admin\PromocodeController;
-use App\Http\Controllers\Admin\SettingsController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\WalletController;
 
 Route::get('/{vue_capture?}', [MainController::class, 'main'])->where('vue_capture', '[\\/\\w\\:.-]*');
 

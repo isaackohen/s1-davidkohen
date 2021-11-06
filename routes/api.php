@@ -1,5 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\BonusController;
+use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\ExternalController;
+use App\Http\Controllers\Api\GameController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PaymentsController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DataController;
@@ -10,16 +19,6 @@ use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Api\BonusController;
-use App\Http\Controllers\Api\ChatController;
-use App\Http\Controllers\Api\DataController;
-use App\Http\Controllers\Api\ExternalController;
-use App\Http\Controllers\Api\GameController;
-use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\PaymentsController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\WalletController;
 
 Route::prefix('callback')->group(function () {
     Route::post('/nowpayments/withdrawals', [PaymentsController::class, 'withdrawalsNowpaymentsCallback']);
