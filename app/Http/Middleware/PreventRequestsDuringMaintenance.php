@@ -7,7 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Exceptions\MaintenanceModeException;
 use Symfony\Component\HttpFoundation\IpUtils;
 
-class CheckForMaintenanceMode
+class PreventRequestsDuringMaintenance
 {
     /**
      * The URIs that should be reachable while maintenance mode is enabled.
