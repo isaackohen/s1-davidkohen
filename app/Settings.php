@@ -6,7 +6,8 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Support\Facades\Cache;
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class Settings extends Model {
+class Settings extends Model
+{
     use CrudTrait;
 
     protected $connection = 'mongodb';
@@ -18,7 +19,7 @@ class Settings extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'value', 'cat', 'internal', 'hidden'
+        'name', 'description', 'value', 'cat', 'internal', 'hidden',
     ];
 
     /**
@@ -28,31 +29,39 @@ class Settings extends Model {
      */
     protected $hidden = [];
 
-    public static function get(string $key, string $default = '', bool $hidden = false) {
-        if(Cache::has('settings:'.$key)) return Cache::get('settings:'.$key);
+    public static function get(string $key, string $default = '', bool $hidden = false)
+    {
+        if (Cache::has('settings:'.$key)) {
+            return Cache::get('settings:'.$key);
+        }
 
-        $value = Settings::where('name', $key)->first();
-        if(!$value) {
-            Settings::create([
+        $value = self::where('name', $key)->first();
+        if (! $value) {
+            self::create([
                 'name' => $key,
                 'value' => $default,
                 'hidden' => $hidden,
-                'internal' => false
+                'internal' => false,
             ]);
+
             return $default;
         }
 
         Cache::put('settings:'.$key, $value->value);
+
         return $value->value;
     }
 
-    public static function set($key, $value) {
+    public static function set($key, $value)
+    {
         Cache::forget('settings:'.$key);
 
-        $setting = Settings::where('name', $key);
+        $setting = self::where('name', $key);
 
-        if(!$setting->first()) Settings::create(['name' => $key, 'value' => $value, 'internal' => false, 'hidden' => false]);
-        else $setting->update(['value' => $value]);
+        if (! $setting->first()) {
+            self::create(['name' => $key, 'value' => $value, 'internal' => false, 'hidden' => false]);
+        } else {
+            $setting->update(['value' => $value]);
+        }
     }
-
 }

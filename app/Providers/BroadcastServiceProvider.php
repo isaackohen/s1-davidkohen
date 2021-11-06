@@ -14,11 +14,12 @@ class BroadcastServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot() {
-        Route::post('/broadcasting/auth', function() {
+    public function boot()
+    {
+        Route::post('/broadcasting/auth', function () {
             $user = auth('sanctum')->guest() ? new GenericUser(['_id' => microtime()]) : auth('sanctum')->user();
 
-            request()->setUserResolver(function() use ($user) {
+            request()->setUserResolver(function () use ($user) {
                 return $user;
             });
 

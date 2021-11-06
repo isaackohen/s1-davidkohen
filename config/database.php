@@ -55,7 +55,7 @@ return [
                 // see https://www.php.net/manual/en/mongodb-driver-manager.construct.php under "Uri Options" for a list of complete parameters that you can use
 
                 'database' => env('DB_ADMIN_DATABASE', 'admin'), // required with Mongo 3+
-            ]
+            ],
         ],
 
         'mysql' => [
@@ -147,7 +147,7 @@ return [
             'password' => env('REDIS_PASSWORD', null),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
-            'read_write_timeout' => 0
+            'read_write_timeout' => 0,
         ],
 
         'cache' => [

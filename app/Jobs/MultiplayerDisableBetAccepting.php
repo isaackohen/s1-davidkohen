@@ -16,8 +16,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class MultiplayerDisableBetAccepting implements ShouldQueue {
-
+class MultiplayerDisableBetAccepting implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Game $game;
@@ -27,7 +27,8 @@ class MultiplayerDisableBetAccepting implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct(Game $game) {
+    public function __construct(Game $game)
+    {
         $this->game = $game;
     }
 
@@ -36,9 +37,9 @@ class MultiplayerDisableBetAccepting implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
         $state = new MultiplayerGameStateBuilder($this->game);
         $state->betting(false);
     }
-
 }

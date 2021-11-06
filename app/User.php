@@ -2,25 +2,25 @@
 
 namespace App;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use App\Settings;
-use App\Statistics;
 use App\Currency\Currency;
 use App\Events\BalanceModification;
 use App\Notifications\DatabaseNotification;
+use App\Settings;
+use App\Statistics;
 use App\Token\NewAccessToken;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use MongoDB\BSON\Decimal128;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 use RobThree\Auth\TwoFactorAuth;
-use Laravel\Sanctum\HasApiTokens;
 
-class User extends \Jenssegers\Mongodb\Auth\User {
+class User extends \Jenssegers\Mongodb\Auth\User
+{
     use CrudTrait;
-
     use Notifiable, HasPushSubscriptions, HasApiTokens;
 
     protected $connection = 'mongodb';
@@ -48,8 +48,8 @@ class User extends \Jenssegers\Mongodb\Auth\User {
         'wallet_native_btc', 'wallet_native_ltc', 'wallet_native_eth', 'wallet_native_doge', 'wallet_native_bch', 'wallet_native_trx',
         'wallet_bg_btc', 'wallet_bg_bch', 'wallet_bg_trx', 'wallet_bg_eos', 'wallet_bg_eth', 'wallet_bg_ltc',
         'wallet_bg_algo', 'wallet_bg_btg', 'wallet_bg_celo', 'wallet_bg_dash', 'wallet_bg_eos', 'wallet_bg_xrp', 'wallet_bg_xlm',
-        'wallet_bg_xtz', 'wallet_bg_wbtc', 'wallet_bg_zec', 'wallet_np_btc', 'wallet_np_eth', 'wallet_np_ltc', 'wallet_np_doge', 'wallet_np_bch', 'wallet_np_trx', 
-        'wallet_trx_private_key', 'first_deposit_bonus', 'wallet_bonus', 'bonus_goal'
+        'wallet_bg_xtz', 'wallet_bg_wbtc', 'wallet_bg_zec', 'wallet_np_btc', 'wallet_np_eth', 'wallet_np_ltc', 'wallet_np_doge', 'wallet_np_bch', 'wallet_np_trx',
+        'wallet_trx_private_key', 'first_deposit_bonus', 'wallet_bonus', 'bonus_goal',
     ];
 
     /**
@@ -66,7 +66,7 @@ class User extends \Jenssegers\Mongodb\Auth\User {
         'vk', 'fb', 'google', 'steam',
 
         'btc', 'ltc', 'eth', 'doge', 'bch', 'trx', 'algo', 'btg', 'celo', 'dash', 'eos', 'xrp', 'xlm', 'xtz', 'wbtc', 'zec',
-		'busd', 'bnb', 'pirate',
+        'busd', 'bnb', 'pirate',
         'demo_btc', 'demo_ltc', 'demo_eth', 'demo_doge', 'demo_bch', 'demo_trx', 'demo_algo', 'demo_btg', 'demo_celo', 'demo_dash',
         'demo_eos', 'demo_xrp', 'demo_xlm', 'demo_xtz', 'demo_wbtc', 'demo_zec', 'bonus',
 
@@ -74,19 +74,21 @@ class User extends \Jenssegers\Mongodb\Auth\User {
         'wallet_bg_btc', 'wallet_bg_bch', 'wallet_bg_trx', 'wallet_bg_eos', 'wallet_bg_eth', 'wallet_bg_ltc',
         'wallet_bg_algo', 'wallet_bg_btg', 'wallet_bg_celo', 'wallet_bg_dash', 'wallet_bg_eos', 'wallet_bg_xrp', 'wallet_bg_xlm',
         'wallet_bg_xtz', 'wallet_bg_wbtc', 'wallet_bg_zec', 'wallet_np_btc', 'wallet_np_eth', 'wallet_np_ltc', 'wallet_np_doge', 'wallet_np_bch', 'wallet_np_trx',
-		'wallet_cg_busd', 'wallet_cg_bnb', 'wallet_cg_pirate', 'wallet_bonus', 'bonus_goal', 		
-        'wallet_trx_private_key' 
+        'wallet_cg_busd', 'wallet_cg_bnb', 'wallet_cg_pirate', 'wallet_bonus', 'bonus_goal',
+        'wallet_trx_private_key',
     ];
-public function openGoogle($crud = false)
-{
-    return '<a class="btn btn-sm btn-link" target="_blank" href="http://google.com?q='.urlencode($this->name).'" data-toggle="tooltip" title="Just a demo custom button."><i class="fa fa-search"></i> User Stats</a>';
-}
+
+    public function openGoogle($crud = false)
+    {
+        return '<a class="btn btn-sm btn-link" target="_blank" href="http://google.com?q='.urlencode($this->name).'" data-toggle="tooltip" title="Just a demo custom button."><i class="fa fa-search"></i> User Stats</a>';
+    }
+
     /**
      * Some of the attributes should be hidden even for account owners.
      * @var array
      */
     public $alwaysHidden = [
-        'register_multiaccount_hash', 'login_multiaccount_hash', 'register_ip', 'login_ip', 'wallet_trx_private_key', 'password', 'remember_token'
+        'register_multiaccount_hash', 'login_multiaccount_hash', 'register_ip', 'login_ip', 'wallet_trx_private_key', 'password', 'remember_token',
     ];
 
     /**
@@ -104,119 +106,156 @@ public function openGoogle($crud = false)
         'ignore' => 'json',
         'name_history' => 'json',
         'referral_wager_obtained' => 'json',
-        'favoriteGames' => 'json'
+        'favoriteGames' => 'json',
     ];
 
-    public static function getIp() {
-        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
-            if (array_key_exists($key, $_SERVER) === true){
-                foreach (explode(',', $_SERVER[$key]) as $ip){
+    public static function getIp()
+    {
+        foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'] as $key) {
+            if (array_key_exists($key, $_SERVER) === true) {
+                foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip);
-                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) return $ip;
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
+                        return $ip;
+                    }
                 }
             }
         }
+
         return request()->ip();
     }
 
-    public function isDismissed(GlobalNotification $globalNotification) {
+    public function isDismissed(GlobalNotification $globalNotification)
+    {
         return in_array($globalNotification->_id, $this->dismissed_global_notifications ?? []);
     }
 
-    public function dismiss(GlobalNotification $globalNotification) {
+    public function dismiss(GlobalNotification $globalNotification)
+    {
         $array = $this->$globalNotification->dismissed_global_notifications ?? [];
         array_push($array, $globalNotification->_id);
         $this->update([
-            'dismissed_global_notifications' => $array
+            'dismissed_global_notifications' => $array,
         ]);
     }
 
-    public function notifications() {
+    public function notifications()
+    {
         return $this->morphMany(DatabaseNotification::class, 'notifiable')->orderBy('created_at', 'desc');
     }
 
-    public function balance(Currency $currency): UserBalance {
+    public function balance(Currency $currency): UserBalance
+    {
         return new UserBalance($this, $currency);
     }
 
-    public function clientCurrency(): Currency {
+    public function clientCurrency(): Currency
+    {
         return Currency::find($_COOKIE['currency'] ?? Currency::all()[0]->id()) ?? Currency::all()[0];
     }
 
-    public function depositWallet(Currency $currency) {
+    public function depositWallet(Currency $currency)
+    {
         $wallet = $this->makeVisible('wallet_'.$currency->id())->toArray()['wallet_'.$currency->id()] ?? null;
-        if($wallet == null) {
-			$wallet = $currency->newWalletAddress();
-			if($wallet !== 'Error') $this->update([
-				'wallet_'.$currency->id() => $wallet
-			]);
+        if ($wallet == null) {
+            $wallet = $currency->newWalletAddress();
+            if ($wallet !== 'Error') {
+                $this->update([
+                'wallet_'.$currency->id() => $wallet,
+            ]);
+            }
         }
+
         return $wallet;
     }
 
-    public function total(Currency $currency) {
-		$statistics = Statistics::where('user', $this->_id)->first();
+    public function total(Currency $currency)
+    {
+        $statistics = Statistics::where('user', $this->_id)->first();
+
         return $statistics->data['usd_wager'] ?? 0;
     }
 
-    public function games() {
-		$statistics = Statistics::where('user', $id)->first();
-		$games = 0;
-		foreach (Currency::all() as $currency) {
-			$var1 = 'bets_'.$currency->id();
-			$games += $statistics->data[$var1] ?? 0;
-		}
+    public function games()
+    {
+        $statistics = Statistics::where('user', $id)->first();
+        $games = 0;
+        foreach (Currency::all() as $currency) {
+            $var1 = 'bets_'.$currency->id();
+            $games += $statistics->data[$var1] ?? 0;
+        }
+
         return $games;
     }
 
-    public function getInvestmentProfit(Currency $currency, bool $sub, bool $stopAtZero = true) {
+    public function getInvestmentProfit(Currency $currency, bool $sub, bool $stopAtZero = true)
+    {
         $profit = 0;
-        foreach (Investment::where('user', $this->_id)->where('status', 0)->where('currency', $currency->id())->get() as $investment)
+        foreach (Investment::where('user', $this->_id)->where('status', 0)->where('currency', $currency->id())->get() as $investment) {
             $profit += $investment->getProfit() - ($sub ? $investment->amount : 0);
+        }
+
         return $stopAtZero == false ? $profit : ($profit < 0 ? 0 : $profit);
     }
 
-    public function vipLevel(): int {
+    public function vipLevel(): int
+    {
         return $this->vipData();
     }
 
-    private function vipData(): int {
-        if(Cache::has('vip:'.$this->_id.':level')) return intval(Cache::get('vip:'.$this->_id.':level'));
-		$statistics = Statistics::where('user', $this->_id)->first();
+    private function vipData(): int
+    {
+        if (Cache::has('vip:'.$this->_id.':level')) {
+            return intval(Cache::get('vip:'.$this->_id.':level'));
+        }
+        $statistics = Statistics::where('user', $this->_id)->first();
         $vipLevel = 0;
-		$level = 0;
-		$w = $statistics->data['usd_wager'] ?? 0;
-		if($w >= floatval(Settings::get('vip_gold_usd'))) $level = 5;
-		else if($w >= floatval(Settings::get('vip_diamond_usd'))) $level = 4;
-		else if($w >= floatval(Settings::get('vip_sapphire_usd'))) $level = 3;
-		else if($w >= floatval(Settings::get('vip_emerald_usd'))) $level = 2;
-		else if($w >= floatval(Settings::get('vip_ruby_usd'))) $level = 1;
+        $level = 0;
+        $w = $statistics->data['usd_wager'] ?? 0;
+        if ($w >= floatval(Settings::get('vip_gold_usd'))) {
+            $level = 5;
+        } elseif ($w >= floatval(Settings::get('vip_diamond_usd'))) {
+            $level = 4;
+        } elseif ($w >= floatval(Settings::get('vip_sapphire_usd'))) {
+            $level = 3;
+        } elseif ($w >= floatval(Settings::get('vip_emerald_usd'))) {
+            $level = 2;
+        } elseif ($w >= floatval(Settings::get('vip_ruby_usd'))) {
+            $level = 1;
+        }
 
-		if($level > $vipLevel) {
-			$vipLevel = $level;
-		}
+        if ($level > $vipLevel) {
+            $vipLevel = $level;
+        }
         Cache::put('vip:'.$this->_id.':level', $vipLevel, now()->addMinutes(5));
+
         return $vipLevel;
     }
 
-    public function vipBonus(): float {
+    public function vipBonus(): float
+    {
         return floatval(Settings::get('weekly_bonus_usd') / Currency::find(Settings::get('bonus_currency'))->tokenPrice()) * (($this->vipLevel() / 10) + 1);
     }
 
-    public function tfa(): TwoFactorAuth {
+    public function tfa(): TwoFactorAuth
+    {
         return new TwoFactorAuth('casino.managment/'.$this->name);
     }
 
-    public function validate2FA(bool $persist): bool {
+    public function validate2FA(bool $persist): bool
+    {
         $token = $persist ? ($this->tfa_persistent_key ?? null) : ($this->tfa_onetime_key ?? null);
-        return ($this->tfa_enabled ?? false) === false || ($token != null && !$token->isPast());
+
+        return ($this->tfa_enabled ?? false) === false || ($token != null && ! $token->isPast());
     }
 
-    public function reset2FAOneTimeToken() {
+    public function reset2FAOneTimeToken()
+    {
         $this->update(['tfa_onetime_key' => null]);
     }
 
-    public function createToken(array $abilities = ['*']) {
+    public function createToken(array $abilities = ['*'])
+    {
         $token = $this->tokens()->create([
             'name' => $this->_id,
             'token' => hash('sha256', $plainTextToken = Str::random(80)),
@@ -225,11 +264,10 @@ public function openGoogle($crud = false)
 
         return new NewAccessToken($token, $token->id.'|'.$plainTextToken);
     }
-
 }
 
-class UserBalance {
-
+class UserBalance
+{
     private User $user;
     private Currency $currency;
     private bool $quiet = false;
@@ -237,36 +275,47 @@ class UserBalance {
 
     private float $minValue = 0.00000000;
 
-    public function __construct(User $user, Currency $currency) {
+    public function __construct(User $user, Currency $currency)
+    {
         $this->user = $user;
         $this->currency = $currency;
     }
 
-    public function quiet() {
+    public function quiet()
+    {
         $this->quiet = true;
+
         return $this;
     }
 
-    public function demo($set = true) {
+    public function demo($set = true)
+    {
         $this->demo = $set;
+
         return $this;
     }
 
-    public function get(): float {
+    public function get(): float
+    {
         $value = floatval(($this->user->{$this->getColumn()} ?? new Decimal128($this->minValue))->jsonSerialize()['$numberDecimal']);
+
         return $value < 0 ? 0 : floatval(number_format($value, $this->currency->walletId() === 'rub' ? 2 : 8, '.', ''));
     }
 
-    private function getColumn() {
+    private function getColumn()
+    {
         return $this->demo ? 'demo_'.$this->currency->walletId() : $this->currency->walletId();
     }
 
-    public function add(float $amount, array $transaction = null, $txid = null) {
+    public function add(float $amount, array $transaction = null, $txid = null)
+    {
         $this->user->update([
-            $this->getColumn() => new Decimal128(strval($this->get() + $amount))
+            $this->getColumn() => new Decimal128(strval($this->get() + $amount)),
         ]);
 
-        if($this->quiet == false) event(new BalanceModification($this->user, $this->currency, 'add', $this->demo, $amount, 0));
+        if ($this->quiet == false) {
+            event(new BalanceModification($this->user, $this->currency, 'add', $this->demo, $amount, 0));
+        }
         Transaction::create([
             'user' => $this->user->_id,
             'demo' => $this->demo,
@@ -276,18 +325,23 @@ class UserBalance {
             'amount' => $amount,
             'quiet' => $this->quiet,
             'data' => $transaction ?? [],
-            'meta' => $transaction['meta'] ?? []
+            'meta' => $transaction['meta'] ?? [],
         ]);
     }
 
-    public function subtract(float $amount, array $transaction = null) {
+    public function subtract(float $amount, array $transaction = null)
+    {
         $value = $this->get() - $amount;
-        if($value < 0) $value = 0;
+        if ($value < 0) {
+            $value = 0;
+        }
         $this->user->update([
-            $this->getColumn() => new Decimal128(strval($value))
+            $this->getColumn() => new Decimal128(strval($value)),
         ]);
 
-        if($this->quiet == false) event(new BalanceModification($this->user, $this->currency, 'subtract', $this->demo, $amount, 0));
+        if ($this->quiet == false) {
+            event(new BalanceModification($this->user, $this->currency, 'subtract', $this->demo, $amount, 0));
+        }
         Transaction::create([
             'user' => $this->user->_id,
             'demo' => $this->demo,
@@ -297,8 +351,7 @@ class UserBalance {
             'amount' => -$amount,
             'quiet' => $this->quiet,
             'data' => $transaction ?? [],
-            'meta' => $transaction['meta'] ?? []
+            'meta' => $transaction['meta'] ?? [],
         ]);
     }
-
 }

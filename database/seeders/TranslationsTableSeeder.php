@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use TCG\Voyager\Models\Category;
 use TCG\Voyager\Models\DataType;
@@ -221,7 +223,7 @@ class TranslationsTableSeeder extends Seeder
             'locale' => $lang,
         ]));
 
-        if (!$_t->exists) {
+        if (! $_t->exists) {
             $_t->fill(array_merge(
                 $keys,
                 ['value' => $value]

@@ -16,11 +16,14 @@ use Illuminate\Support\Facades\Broadcast;
 /**
  * Common channel for live bets/chat/etc. Doesn't require authorization.
  */
-Broadcast::channel('Everyone', function() {
+Broadcast::channel('Everyone', function () {
     return true;
 });
 
 Broadcast::channel('App.User.{id}', function ($user, $id) {
-    if($id === 'Guest') return true;
+    if ($id === 'Guest') {
+        return true;
+    }
+
     return auth('sanctum')->guest() ? false : $user->_id === $id;
 });

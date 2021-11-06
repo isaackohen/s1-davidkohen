@@ -17,9 +17,9 @@ class LastUserActivity
      */
     public function handle($request, Closure $next)
     {
-        if(!auth('sanctum')->guest()) {
+        if (! auth('sanctum')->guest()) {
             auth('sanctum')->user()->update([
-                'latest_activity' => now()
+                'latest_activity' => now(),
             ]);
         }
 

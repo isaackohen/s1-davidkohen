@@ -1,4 +1,6 @@
-<?php namespace App\Games;
+<?php
+
+namespace App\Games;
 
 use App\Events\MultiplayerTimerStart;
 use App\Games\Kernel\Data;
@@ -15,54 +17,64 @@ use App\Jobs\MultiplayerUpdateData;
 use App\Jobs\MultiplayerUpdateTimestamp;
 use Illuminate\Support\Facades\Log;
 
-class Slide extends MultiplayerGame {
-
-    function metadata(): Metadata {
+class Slide extends MultiplayerGame
+{
+    public function metadata(): Metadata
+    {
         return new class extends Metadata {
-            function id(): string {
-                return "slide";
+            public function id(): string
+            {
+                return 'slide';
             }
 
-            function name(): string {
-                return "Slide";
+            public function name(): string
+            {
+                return 'Slide';
             }
 
-            function icon(): string {
-                return "fas fa-rectangle-portrait";
+            public function icon(): string
+            {
+                return 'fas fa-rectangle-portrait';
             }
 
-            public function category(): array {
+            public function category(): array
+            {
                 return [GameCategory::$originals];
             }
         };
     }
 
-    protected function getPlayerData(\App\Game $game): array {
+    protected function getPlayerData(\App\Game $game): array
+    {
         return ['target' => $this->userData($game)['data']['target']];
     }
 
-    public function nextGame() {
+    public function nextGame()
+    {
         $this->state()->resetPlayers();
         $this->state()->clientSeed(ProvablyFair::generateServerSeed());
         $this->state()->serverSeed(ProvablyFair::generateServerSeed());
         $this->state()->nonce(now()->timestamp);
         $this->state()->timestamp(now()->timestamp);
 
-
         $slides = [];
         $index = mt_rand(0, 20);
         $result = (new ProvablyFair($this, $this->server_seed()))->result()->result()[0];
 
-        for($i = 0; $i < 25 - $index; $i++) array_push($slides, (new ProvablyFair($this, $this->server_seed().'_'.$i))->result()->result()[0]);
+        for ($i = 0; $i < 25 - $index; $i++) {
+            array_push($slides, (new ProvablyFair($this, $this->server_seed().'_'.$i))->result()->result()[0]);
+        }
         array_push($slides, $result);
-        for($i = 25 - $index; $i < 25; $i++) array_push($slides, (new ProvablyFair($this, $this->server_seed().'_'.$i))->result()->result()[0]);
+        for ($i = 25 - $index; $i < 25; $i++) {
+            array_push($slides, (new ProvablyFair($this, $this->server_seed().'_'.$i))->result()->result()[0]);
+        }
 
         $this->state()->betting(true);
 
         $data = [
             'slides' => $slides,
             'index' => 25 - $index,
-            '_result' => $result
+            '_result' => $result,
         ];
 
         dispatch((new MultiplayerDisableBetAccepting($this))->delay(now()->addSeconds(6)));
@@ -74,36 +86,42 @@ class Slide extends MultiplayerGame {
         dispatch((new MultiplayerFinishAndSetupNextGame($this, $data, now()->addSeconds(12)))->delay(6));
     }
 
-    public function onDispatchedFinish() {
+    public function onDispatchedFinish()
+    {
         $current = (new ProvablyFair($this, $this->server_seed()))->result()->result()[0];
 
         $this->state()->history([
             'server_seed' => $this->server_seed(),
             'client_seed' => $this->client_seed(),
             'nonce' => $this->nonce(),
-            'multiplier' => $current
+            'multiplier' => $current,
         ]);
 
-        foreach($this->getActiveGames() as $game) {
+        foreach ($this->getActiveGames() as $game) {
             $target = $this->userData($game)['data']['target'];
             $multiplier = 0;
 
-            if($target < $current) $multiplier = $target;
+            if ($target < $current) {
+                $multiplier = $target;
+            }
 
             $this->win($game, $multiplier, 6000);
         }
     }
 
-    public function startChain() {
+    public function startChain()
+    {
         dispatch(new MultiplayerFinishAndSetupNextGame($this, [
-            'slides' => [], 'index' => 0
+            'slides' => [], 'index' => 0,
         ], now()));
     }
 
-    function result(ProvablyFairResult $result): array {
-        $max_multiplier = 1000; $house_edge = HouseEdgeModule::get($this, 0.99);
+    public function result(ProvablyFairResult $result): array
+    {
+        $max_multiplier = 1000;
+        $house_edge = HouseEdgeModule::get($this, 0.99);
         $float_point = $max_multiplier / ($result->extractFloat() * $max_multiplier) * $house_edge;
+
         return [floor($float_point * 100) / 100];
     }
-
 }

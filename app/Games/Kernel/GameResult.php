@@ -1,7 +1,8 @@
-<?php namespace App\Games\Kernel;
+<?php
 
-interface GameResult {
+namespace App\Games\Kernel;
 
-    function toArray(Data $data): array;
-
+interface GameResult
+{
+    public function toArray(Data $data): array;
 }

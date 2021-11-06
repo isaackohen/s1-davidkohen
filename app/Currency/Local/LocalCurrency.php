@@ -1,56 +1,68 @@
-<?php namespace App\Currency\Local;
+<?php
+
+namespace App\Currency\Local;
 
 use App\Currency\Currency;
 
 /**
  * Not a cryptocurrency, used alongside with a Aggregator to process payments
- * @package App\Currency\Local
  */
-abstract class LocalCurrency extends Currency {
-
-     function style(): string {
+abstract class LocalCurrency extends Currency
+{
+    public function style(): string
+    {
         return 'lightgray';
-     }
+    }
 
-     function newWalletAddress(): string {
-         return 'Unsupported operation';
-     }
+    public function newWalletAddress(): string
+    {
+        return 'Unsupported operation';
+    }
 
-     function isRunning(): bool {
+    public function isRunning(): bool
+    {
         return true;
-     }
+    }
 
-     function process(string $wallet = null) {
-     }
+    public function process(string $wallet = null)
+    {
+    }
 
-     function send(string $from, string $to, float $sum) {
-     }
-	 
-	function depositmethod(): string {
+    public function send(string $from, string $to, float $sum)
+    {
+    }
+
+    public function depositmethod(): string
+    {
         return 'local';
     }
 
-    function withdrawmethod(): string {
+    public function withdrawmethod(): string
+    {
         return 'local';
     }
-	
-	public function nowpayments() {
-		return null;
-	}
 
-     function setupWallet() {
-     }
+    public function nowpayments()
+    {
+        return null;
+    }
 
-     function coldWalletBalance(): float {
+    public function setupWallet()
+    {
+    }
+
+    public function coldWalletBalance(): float
+    {
         return -1;
-     }
+    }
 
-     function hotWalletBalance(): float {
+    public function hotWalletBalance(): float
+    {
         return -1;
-     }
+    }
 
-     public function minBet(): float {
-         return 0.01;
-     }
-
+    public function minBet(): float
+    {
+        return 0.01;
+    }
 }

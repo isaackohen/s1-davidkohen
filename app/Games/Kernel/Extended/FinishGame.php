@@ -1,9 +1,11 @@
-<?php namespace App\Games\Kernel\Extended;
+<?php
 
-class FinishGame extends Turn {
+namespace App\Games\Kernel\Extended;
 
-    public function type(): string {
+class FinishGame extends Turn
+{
+    public function type(): string
+    {
         return 'finish';
     }
-
 }

@@ -44,23 +44,29 @@ class Rain extends Command
      *
      * @return mixed
      */
-    public function handle() {
+    public function handle()
+    {
         $usersLength = mt_rand(5, 15);
         $all = Invoice::where('status', 1)->where('created_at', '>=', Carbon::today())->get()->toArray();
-        if(count($all) < $usersLength) {
+        if (count($all) < $usersLength) {
             $a = Invoice::where('status', 1)->get()->toArray();
             shuffle($a);
             $all += $a;
         }
 
-        if(count($all) < $usersLength) return;
+        if (count($all) < $usersLength) {
+            return;
+        }
 
         shuffle($all);
 
-        $dub = []; $users = [];
+        $dub = [];
+        $users = [];
         foreach ($all as $invoice) {
             $user = User::where('_id', $invoice['user'])->first();
-            if($user == null || in_array($invoice['user'], $dub)) continue;
+            if ($user == null || in_array($invoice['user'], $dub)) {
+                continue;
+            }
             array_push($dub, $invoice['user']);
             array_push($users, $user);
         }
@@ -79,13 +85,12 @@ class Rain extends Command
             'data' => [
                 'users' => $result,
                 'reward' => floatval($currency->option('rain')),
-                'currency' => $currency->id()
+                'currency' => $currency->id(),
             ],
-            'type' => 'rain'
+            'type' => 'rain',
         ]);
 
         event(new ChatMessage($message));
         $this->info('Success');
     }
-
 }

@@ -1,13 +1,15 @@
-<?php namespace App\Currency\Option;
+<?php
 
-abstract class WalletOption {
+namespace App\Currency\Option;
 
-    abstract function id();
+abstract class WalletOption
+{
+    abstract public function id();
 
-    abstract function name(): string;
+    abstract public function name(): string;
 
-    function readOnly(): bool {
+    public function readOnly(): bool
+    {
         return false;
     }
-
 }

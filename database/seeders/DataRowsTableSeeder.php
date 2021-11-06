@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use TCG\Voyager\Models\DataRow;
 use TCG\Voyager\Models\DataType;
@@ -16,7 +18,7 @@ class DataRowsTableSeeder extends Seeder
         $roleDataType = DataType::where('slug', 'roles')->firstOrFail();
 
         $dataRow = $this->dataRow($userDataType, 'id');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'number',
                 'display_name' => __('voyager::seeders.data_rows.id'),
@@ -31,7 +33,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'name');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.name'),
@@ -46,7 +48,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'email');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.email'),
@@ -61,7 +63,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'password');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'password',
                 'display_name' => __('voyager::seeders.data_rows.password'),
@@ -76,7 +78,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'remember_token');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.remember_token'),
@@ -91,7 +93,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'created_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.created_at'),
@@ -106,7 +108,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'updated_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.updated_at'),
@@ -121,7 +123,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'avatar');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'image',
                 'display_name' => __('voyager::seeders.data_rows.avatar'),
@@ -136,7 +138,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'user_belongsto_role_relationship');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'relationship',
                 'display_name' => __('voyager::seeders.data_rows.role'),
@@ -161,7 +163,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'user_belongstomany_role_relationship');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'relationship',
                 'display_name' => 'Roles',
@@ -187,7 +189,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'settings');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'hidden',
                 'display_name' => 'Settings',
@@ -202,7 +204,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($menuDataType, 'id');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'number',
                 'display_name' => __('voyager::seeders.data_rows.id'),
@@ -217,7 +219,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($menuDataType, 'name');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.name'),
@@ -232,7 +234,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($menuDataType, 'created_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.created_at'),
@@ -247,7 +249,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($menuDataType, 'updated_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.updated_at'),
@@ -262,7 +264,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($roleDataType, 'id');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'number',
                 'display_name' => __('voyager::seeders.data_rows.id'),
@@ -277,7 +279,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($roleDataType, 'name');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.name'),
@@ -292,7 +294,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($roleDataType, 'created_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.created_at'),
@@ -307,7 +309,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($roleDataType, 'updated_at');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'timestamp',
                 'display_name' => __('voyager::seeders.data_rows.updated_at'),
@@ -322,7 +324,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($roleDataType, 'display_name');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.display_name'),
@@ -337,7 +339,7 @@ class DataRowsTableSeeder extends Seeder
         }
 
         $dataRow = $this->dataRow($userDataType, 'role_id');
-        if (!$dataRow->exists) {
+        if (! $dataRow->exists) {
             $dataRow->fill([
                 'type'         => 'text',
                 'display_name' => __('voyager::seeders.data_rows.role'),

@@ -9,8 +9,8 @@ use App\Games\Kernel\Multiplayer\MultiplayerGame;
 use App\Jobs\MultiplayerFinishAndSetupNextGame;
 use Illuminate\Console\Command;
 
-class Chain extends Command {
-
+class Chain extends Command
+{
     /**
      * The name and signature of the console command.
      *
@@ -30,7 +30,8 @@ class Chain extends Command {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -39,29 +40,34 @@ class Chain extends Command {
      *
      * @return mixed
      */
-    public function handle() {
-        if(strtolower($this->argument('api_id')) === 'all') {
+    public function handle()
+    {
+        if (strtolower($this->argument('api_id')) === 'all') {
             foreach (Game::list() as $game) {
-                if(!($game instanceof MultiplayerGame)) continue;
+                if (! ($game instanceof MultiplayerGame)) {
+                    continue;
+                }
                 $game->startChain();
-                $this->info('Started event chain for ' . $game->metadata()->name());
+                $this->info('Started event chain for '.$game->metadata()->name());
             }
+
             return;
         }
 
         $game = Game::find($this->argument('api_id'));
 
-        if($game == null) {
+        if ($game == null) {
             $this->error('Unknown game id');
+
             return;
         }
-        if(!($game instanceof MultiplayerGame)) {
+        if (! ($game instanceof MultiplayerGame)) {
             $this->error('Invalid game type');
+
             return;
         }
 
         $game->startChain();
-        $this->info('Started event chain for ' . $game->metadata()->name());
+        $this->info('Started event chain for '.$game->metadata()->name());
     }
-
 }

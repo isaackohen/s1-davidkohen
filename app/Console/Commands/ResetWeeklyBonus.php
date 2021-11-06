@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\User;
 use Illuminate\Console\Command;
 
-class ResetWeeklyBonus extends Command {
-
+class ResetWeeklyBonus extends Command
+{
     /**
      * The name and signature of the console command.
      *
@@ -36,11 +36,11 @@ class ResetWeeklyBonus extends Command {
      *
      * @return mixed
      */
-    public function handle() {
+    public function handle()
+    {
         User::query()->update([
             'weekly_bonus' => 0,
-            'weekly_bonus_obtained' => false
+            'weekly_bonus_obtained' => false,
         ]);
     }
-
 }

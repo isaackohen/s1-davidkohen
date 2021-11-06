@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\User;
 use App\Currency\Currency;
+use App\User;
 use Illuminate\Console\Command;
 
-class WalletReset extends Command {
-
+class WalletReset extends Command
+{
     /**
      * The name and signature of the console command.
      *
@@ -37,12 +37,13 @@ class WalletReset extends Command {
      *
      * @return mixed
      */
-    public function handle() {
-		foreach(Currency::all() as $currency) {
-			$wallet = 'wallet_'.$currency->id();
-			User::query()->update([
-				$wallet => null,
-			]);
-		}
+    public function handle()
+    {
+        foreach (Currency::all() as $currency) {
+            $wallet = 'wallet_'.$currency->id();
+            User::query()->update([
+                $wallet => null,
+            ]);
+        }
     }
 }

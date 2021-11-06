@@ -1,33 +1,41 @@
-<?php namespace App\Currency\NowPayments;
+<?php
 
-class BitcoinCash extends NowPaymentsSupport {
+namespace App\Currency\NowPayments;
 
-    function id(): string {
-        return "np_bch";
+class BitcoinCash extends NowPaymentsSupport
+{
+    public function id(): string
+    {
+        return 'np_bch';
     }
 
-    public function walletId(): string {
-        return "bch";
-    }
-
-    function name(): string {
-        return "BCH";
-    }
-
-    public function alias(): string {
-        return 'bitcoin-cash';
-    }
-
-    public function displayName(): string {
-        return "Bitcoin Cash";
-    }
-
-    public function style(): string {
-        return "#8dc351";
-    }
-	
-	public function nowpayments(): string {
+    public function walletId(): string
+    {
         return 'bch';
     }
 
+    public function name(): string
+    {
+        return 'BCH';
+    }
+
+    public function alias(): string
+    {
+        return 'bitcoin-cash';
+    }
+
+    public function displayName(): string
+    {
+        return 'Bitcoin Cash';
+    }
+
+    public function style(): string
+    {
+        return '#8dc351';
+    }
+
+    public function nowpayments(): string
+    {
+        return 'bch';
+    }
 }

@@ -1,33 +1,41 @@
-<?php namespace App\Currency\Native;
+<?php
 
-class Dogecoin extends V16RPCBitcoin {
+namespace App\Currency\Native;
 
-    function id(): string {
-        return "native_doge";
+class Dogecoin extends V16RPCBitcoin
+{
+    public function id(): string
+    {
+        return 'native_doge';
     }
 
-    public function walletId(): string {
-        return "doge";
+    public function walletId(): string
+    {
+        return 'doge';
     }
 
-    function name(): string {
-        return "DOGE";
+    public function name(): string
+    {
+        return 'DOGE';
     }
 
-    public function alias(): string {
-        return "dogecoin";
+    public function alias(): string
+    {
+        return 'dogecoin';
     }
 
-    public function displayName(): string {
-        return "Dogecoin";
+    public function displayName(): string
+    {
+        return 'Dogecoin';
     }
 
-    function icon(): string {
-        return "dogecoin";
+    public function icon(): string
+    {
+        return 'dogecoin';
     }
 
-    public function style(): string {
-        return "#c2a633";
+    public function style(): string
+    {
+        return '#c2a633';
     }
-
 }

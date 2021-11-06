@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use TCG\Voyager\Models\Menu;
 use TCG\Voyager\Models\MenuItem;
@@ -21,7 +23,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.dashboard',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-boat',
@@ -37,7 +39,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.media.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-images',
@@ -53,7 +55,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.users.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-person',
@@ -69,7 +71,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.roles.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-lock',
@@ -84,7 +86,7 @@ class MenuItemsTableSeeder extends Seeder
             'title'   => __('voyager::seeders.menu_items.tools'),
             'url'     => '',
         ]);
-        if (!$toolsMenuItem->exists) {
+        if (! $toolsMenuItem->exists) {
             $toolsMenuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-tools',
@@ -100,7 +102,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.menus.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-list',
@@ -116,7 +118,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.database.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-data',
@@ -132,7 +134,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.compass.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-compass',
@@ -148,7 +150,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.bread.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-bread',
@@ -164,7 +166,7 @@ class MenuItemsTableSeeder extends Seeder
             'url'     => '',
             'route'   => 'voyager.settings.index',
         ]);
-        if (!$menuItem->exists) {
+        if (! $menuItem->exists) {
             $menuItem->fill([
                 'target'     => '_self',
                 'icon_class' => 'voyager-settings',

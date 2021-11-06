@@ -7,7 +7,6 @@ use ConsoleTVs\Charts\Classes\Chartjs\Chart;
 
 /**
  * Class GamesplayedChartController
- * @package App\Http\Controllers\Admin\Charts
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
 class GamesplayedChartController extends ChartController

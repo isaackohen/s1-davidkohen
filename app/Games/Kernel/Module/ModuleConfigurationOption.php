@@ -1,20 +1,21 @@
-<?php namespace App\Games\Kernel\Module;
+<?php
 
-abstract class ModuleConfigurationOption {
+namespace App\Games\Kernel\Module;
 
-    abstract function id(): string;
+abstract class ModuleConfigurationOption
+{
+    abstract public function id(): string;
 
-    abstract function name(): string;
+    abstract public function name(): string;
 
-    abstract function description(): string;
+    abstract public function description(): string;
 
-    abstract function defaultValue(): ?string;
+    abstract public function defaultValue(): ?string;
 
     /**
      * Supported values:
      *  - input
      * @return string
      */
-    abstract function type(): string;
-
+    abstract public function type(): string;
 }

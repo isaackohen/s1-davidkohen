@@ -13,8 +13,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class MultiplayerUpdateTimestamp implements ShouldQueue {
-
+class MultiplayerUpdateTimestamp implements ShouldQueue
+{
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private \App\Games\Kernel\Game $game;
@@ -25,7 +25,8 @@ class MultiplayerUpdateTimestamp implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct(\App\Games\Kernel\Game $game, int $timestamp) {
+    public function __construct(\App\Games\Kernel\Game $game, int $timestamp)
+    {
         $this->game = $game;
         $this->timestamp = $timestamp;
     }
@@ -35,9 +36,9 @@ class MultiplayerUpdateTimestamp implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
         $state = new MultiplayerGameStateBuilder($this->game);
         $state->timestamp($this->timestamp);
     }
-
 }

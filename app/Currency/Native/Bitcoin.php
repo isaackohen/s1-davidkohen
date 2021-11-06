@@ -1,50 +1,59 @@
-<?php namespace App\Currency\Native;
+<?php
 
-class Bitcoin extends V17RPCBitcoin {
+namespace App\Currency\Native;
 
-    function id(): string {
-        return "native_btc";
+class Bitcoin extends V17RPCBitcoin
+{
+    public function id(): string
+    {
+        return 'native_btc';
     }
 
-    public function walletId(): string {
-        return "btc";
+    public function walletId(): string
+    {
+        return 'btc';
     }
 
-    function name(): string {
-        return "BTC";
+    public function name(): string
+    {
+        return 'BTC';
     }
 
-    public function alias(): string {
-        return "bitcoin";
+    public function alias(): string
+    {
+        return 'bitcoin';
     }
 
-    public function displayName(): string {
-        return "Bitcoin";
+    public function displayName(): string
+    {
+        return 'Bitcoin';
     }
 
-    function icon(): string {
-        return "btc-icon";
+    public function icon(): string
+    {
+        return 'btc-icon';
     }
 
-    function style(): string {
-        return "#f7931a";
+    public function style(): string
+    {
+        return '#f7931a';
     }
 
-    public function coldWalletBalance(): float {
+    public function coldWalletBalance(): float
+    {
         try {
-            return json_decode(file_get_contents('https://sochain.com/api/v2/get_address_balance/BTC/' . $this->option('transfer_address') . '/1'))->data->confirmed_balance;
+            return json_decode(file_get_contents('https://sochain.com/api/v2/get_address_balance/BTC/'.$this->option('transfer_address').'/1'))->data->confirmed_balance;
         } catch (\Exception $e) {
             return 0;
         }
     }
 
-
-    public function hotWalletBalance(): float {
+    public function hotWalletBalance(): float
+    {
         try {
-            return json_decode(file_get_contents('https://sochain.com/api/v2/get_address_balance/BTC/' . $this->option('withdraw_address') . '/1'))->data->confirmed_balance;
+            return json_decode(file_get_contents('https://sochain.com/api/v2/get_address_balance/BTC/'.$this->option('withdraw_address').'/1'))->data->confirmed_balance;
         } catch (\Exception $e) {
             return 0;
         }
     }
-
 }

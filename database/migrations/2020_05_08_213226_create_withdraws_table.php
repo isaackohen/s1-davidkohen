@@ -13,7 +13,8 @@ class CreateWithdrawsTable extends Migration
      */
     public function up()
     {
-        Schema::create('withdraws', function (Blueprint $table) {});
+        Schema::create('withdraws', function (Blueprint $table) {
+        });
     }
 
     /**

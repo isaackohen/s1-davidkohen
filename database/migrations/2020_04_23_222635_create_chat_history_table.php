@@ -13,7 +13,8 @@ class CreateChatHistoryTable extends Migration
      */
     public function up()
     {
-        Schema::create('chat_history', function (Blueprint $table) {});
+        Schema::create('chat_history', function (Blueprint $table) {
+        });
     }
 
     /**
